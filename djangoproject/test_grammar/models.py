@@ -1,8 +1,12 @@
+# Django modelisation of the Firehose grammar
+
+
 from django.db import models
 
 # TODO: Metadata() in SQLAlchemy -> subclass Meta in Django
 # TODO: get_absolute_url()
-# TODO: precise the max_length's
+# TODO: precise the max_lengths
+# TODO: help_text=...
 
 # use a string instead of this?
 class Message(models.Model):
@@ -71,7 +75,8 @@ class State(models.Model):
     trace = models.ForeignKey(Trace)
     location = models.ForeignKey(Location)
     notes = models.ForeignKey(Notes, blank=True, null=True)
-    # TODO: annotations(key/value pairs)
+    # we use customfields for the annotations (key/value pairs):
+    annotations = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
         return self.location + " (" + self.notes[:15] + ")"
@@ -108,8 +113,12 @@ class Generator(models.Model):
 
 # single-table inheritance (like firehose-orm)
 class Sut(models.Model): # sut = software under test
-    type = models.CharField(max_length=20)
-    # Choices: source-rpm, debian-source, debian-binary
+    SUT_TYPES = (
+        ('source-rpm', 'source-rpm'),
+        ('debian-source', 'debian-source'),
+        ('debian-binary', 'debian-binary'),
+        )
+    type = models.CharField(max_length=15, choices=SUT_TYPES)
     name = models.CharField(max_length=200)
     version = models.CharField(max_length=200)
     # optional for debian-src/bin:
