@@ -159,10 +159,16 @@ class Analysis(models.Model):
     customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
-        return self.id
+        return str(self.id)
 
 class Result(models.Model):
     analysis = models.ForeignKey(Analysis)
+    
+    # def __unicode__(self):
+    #     if hasattr(self, 'info'):
+    #         return self.info.__unicode__()
+    #     else:
+    #         return "test"
     
 # multi-table inheritance (one-to-one field automatically provided by Django)
 class Issue(Result):
@@ -176,7 +182,7 @@ class Issue(Result):
     customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
-        return "issue " + self.id
+        return "issue " + str(self.id)
 
 class Failure(Result):
     failureid = models.CharField(max_length=200, blank=True)
@@ -185,7 +191,7 @@ class Failure(Result):
     customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
-        return "failure " + self.id
+        return "failure " + str(self.id)
 
 class Info(Result):
     infoid = models.CharField(max_length=200, blank=True)
@@ -194,4 +200,4 @@ class Info(Result):
     customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
-        return "info " + self.id
+        return "info " + str(self.id)
