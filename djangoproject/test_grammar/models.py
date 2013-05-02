@@ -57,6 +57,26 @@ class Range(models.Model):
     def __unicode__(self):
         return self.start + " to " + self.end
 
+class Customfields(models.Model):
+    pass
+
+class Customfield(models.Model):
+    customfields = models.ForeignKey(Customfields)
+
+class Intfield(Customfield):
+    name = models.CharField(max_length=200)
+    value = models.IntegerField()
+    
+    def __unicode__(self):
+        return self.name + " = " + self.value
+
+class Strfield(Customfield):
+    name = models.CharField(max_length=200)
+    value = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.name + " = " + self.value
+
 class Location(models.Model):
     file = models.ForeignKey(File)
     function = models.ForeignKey(Function, blank=True, null=True)
@@ -80,26 +100,6 @@ class State(models.Model):
     
     def __unicode__(self):
         return self.location + " (" + self.notes[:15] + ")"
-
-class Customfields(models.Model):
-    pass
-
-class Customfield(models.Model):
-    customfields = models.ForeignKey(Customfields)
-
-class Intfield(Customfield):
-    name = models.CharField(max_length=200)
-    value = models.IntegerField()
-    
-    def __unicode__(self):
-        return self.name + " = " + self.value
-
-class Strfield(Customfield):
-    name = models.CharField(max_length=200)
-    value = models.CharField(max_length=200)
-    
-    def __unicode__(self):
-        return self.name + " = " + self.value
 
 class Generator(models.Model):
     name = models.CharField(max_length=200)
