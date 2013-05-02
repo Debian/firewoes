@@ -1,4 +1,6 @@
 # Django modelisation of the Firehose grammar
+# Inspired of firehose-orm:
+# https://github.com/davidmalcolm/firehose-orm/blob/master/orm.py
 
 
 from django.db import models
