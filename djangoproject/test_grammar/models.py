@@ -6,13 +6,13 @@ from django.db import models
 
 # use a string instead of this?
 class Message(models.Model):
-    text = models.CharField(max_length=1000)
+    text = models.TextField()
     
     def __unicode__(self):
         return self.text[:15]
 
 class Notes(models.Model):
-    text = models.CharField(max_length=1000)
+    text = models.TextField()
     
     def __unicode__(self):
         return self.text[:15]
@@ -20,15 +20,15 @@ class Notes(models.Model):
 
 class Hash(models.Model):
     alg = models.CharField(max_length=200)
-    hexdigest = models.CharField(max_length=1000)
+    hexdigest = models.TextField(max_length=1000)
     
     def __unicode__(self):
         return self.alg + ": " + self.hexdigest[:15]
 
 class File(models.Model):
     givenpath = models.CharField(max_length=200)
-    abspath = models.CharField(max_length=200) # optional
-    hash = models.ForeignKey(Hash) # optional
+    abspath = models.CharField(max_length=200, blank=True)
+    hash = models.ForeignKey(Hash, blank=True, null=True)
     
     def __unicode__(self):
         return self.givenpath
@@ -55,9 +55,10 @@ class Range(models.Model):
 
 class Location(models.Model):
     file = models.ForeignKey(File)
-    function = models.ForeignKey(Function) # optional
-    point = models.ForeignKey(Point) # either point or range
-    range = models.ForeignKey(Range)
+    function = models.ForeignKey(Function, blank=True, null=True)
+    # either point or range
+    point = models.ForeignKey(Point, blank=True, null=True)
+    range = models.ForeignKey(Range, blank=True, null=True)
     
     def __unicode__(self):
         place = self.point if self.point != None else self.range
@@ -69,7 +70,7 @@ class Trace(models.Model):
 class State(models.Model):
     trace = models.ForeignKey(Trace)
     location = models.ForeignKey(Location)
-    notes = models.ForeignKey(Notes) # optional
+    notes = models.ForeignKey(Notes, blank=True, null=True)
     # TODO: annotations(key/value pairs)
     
     def __unicode__(self):
@@ -97,7 +98,7 @@ class Strfield(Customfield):
 
 class Generator(models.Model):
     name = models.CharField(max_length=200)
-    version = models.CharField(max_length=200) # optional
+    version = models.CharField(max_length=200, blank=True)
     
     def __unicode__(self):
         if self.version:
@@ -107,12 +108,14 @@ class Generator(models.Model):
 
 # single-table inheritance (like firehose-orm)
 class Sut(models.Model): # sut = software under test
-    type = models.CharField(max_length=20) # nullable=False??
+    type = models.CharField(max_length=20)
     # Choices: source-rpm, debian-source, debian-binary
     name = models.CharField(max_length=200)
     version = models.CharField(max_length=200)
-    release = models.CharField(max_length=200) # optional for debian-src/bin
-    buildarch = models.CharField(max_length=200) # not for debian-src
+    # optional for debian-src/bin:
+    release = models.CharField(max_length=200, blank=True)
+    # not for debian-src:
+    buildarch = models.CharField(max_length=200, blank=True)
     # -> ForeignKey for the archs?
     
     def __unicode__(self):
@@ -132,8 +135,8 @@ class Stats(models.Model):
 class Metadata(models.Model):
     generator = models.ForeignKey(Generator)
     sut = models.ForeignKey(Sut)
-    file = models.ForeignKey(File) # optional
-    stats = models.ForeignKey(Stats) # optional
+    file = models.ForeignKey(File, blank=True, null=True)
+    stats = models.ForeignKey(Stats, blank=True, null=True)
     
     def __unicode__(self):
         return self.generator + " - " \
@@ -143,7 +146,7 @@ class Metadata(models.Model):
 
 class Analysis(models.Model):
     metadata = models.ForeignKey(Metadata)
-    customfields = models.ForeignKey(Customfields) # optional
+    customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
         return self.id
@@ -153,32 +156,32 @@ class Result(models.Model):
     
 # multi-table inheritance (one-to-one field automatically provided by Django)
 class Issue(Result):
-    cwe = models.IntegerField() # optional
-    testid = models.CharField(max_length=200) # optional
+    cwe = models.IntegerField(blank=True, null=True)
+    testid = models.CharField(max_length=200, blank=True)
     location = models.ForeignKey(Location)
     message = models.ForeignKey(Message)
-    notes = models.ForeignKey(Notes) # optional
-    trace = models.ForeignKey(Trace) # optional
-    severity = models.CharField(max_length=200) # optional
-    customfields = models.ForeignKey(Customfields) # optional
+    notes = models.ForeignKey(Notes, blank=True, null=True)
+    trace = models.ForeignKey(Trace, blank=True, null=True)
+    severity = models.CharField(max_length=200, blank=True)
+    customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
         return "issue " + self.id
 
 class Failure(Result):
-    failureid = models.CharField(max_length=200) # optional
-    location = models.ForeignKey(Location) # optional
-    message = models.ForeignKey(Message) # optional
-    customfields = models.ForeignKey(Customfields) # optional
+    failureid = models.CharField(max_length=200, blank=True)
+    location = models.ForeignKey(Location, blank=True, null=True)
+    message = models.ForeignKey(Message, blank=True, null=True)
+    customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
         return "failure " + self.id
 
 class Info(Result):
-    infoid = models.CharField(max_length=200) # optional
-    location = models.ForeignKey(Location) # optional
-    message = models.ForeignKey(Message) # optional
-    customfields = models.ForeignKey(Customfields) # optional
+    infoid = models.CharField(max_length=200, blank=True)
+    location = models.ForeignKey(Location, blank=True, null=True)
+    message = models.ForeignKey(Message, blank=True, null=True)
+    customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
     def __unicode__(self):
         return "info " + self.id
