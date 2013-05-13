@@ -1,0 +1,5 @@
+<analysis><metadata><generator name="clang" version="1.2.3" /><sut><debian-source name="awesome app" version="rc1" /></sut></metadata><results><issue><message>But, for my own part, it was Greek to me.
+		-- William Shakespeare, "Julius Caesar"
+</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue><issue><message>Excellent day to have a rotten day.
+</message><location><file given-path="foo.cpp" /><function name="string_from_int(integer)" /></location></issue><issue><message>You will be successful in love.
+</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue></results></analysis>

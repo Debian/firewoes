@@ -1,0 +1,5 @@
+<analysis><metadata><generator name="coccinelle" version="1.0" /><sut><debian-source name="awesome app" version="rc1" /></sut></metadata><results><issue><message>The difference between a Miracle and a Fact is exactly the difference
+between a mermaid and a seal.
+		-- Mark Twain
+</message><location><file given-path="foo.cpp" /><function name="string_from_int(integer)" /></location></issue><issue><message>You definitely intend to start living sometime soon.
+</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue></results></analysis>

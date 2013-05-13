@@ -1,0 +1,15 @@
+<analysis><metadata><generator name="coccinelle" version="1.0" /><sut><debian-source name="another program" version="8" /></sut></metadata><results><issue><message>Tempt not a desperate man.
+		-- William Shakespeare, "Romeo and Juliet"
+</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue><issue><message>Living your life is a task so difficult, it has never been attempted before.
+</message><location><file given-path="foo.cpp" /><function name="string_from_int(integer)" /></location></issue><issue><message>For years a secret shame destroyed my peace--
+I'd not read Eliot, Auden or MacNiece.
+But now I think a thought that brings me hope:
+Neither had Chaucer, Shakespeare, Milton, Pope.
+		-- Justin Richardson.
+</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue><issue><message>Unless hours were cups of sack, and minutes capons, and clocks the tongues
+of bawds, and dials the signs of leaping houses, and the blessed sun himself
+a fair, hot wench in flame-colored taffeta, I see no reason why thou shouldst
+be so superfluous to demand the time of the day.  I wasted time and now doth
+time waste me.
+		-- William Shakespeare
+</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue></results></analysis>

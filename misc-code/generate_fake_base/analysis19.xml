@@ -1,0 +1,2 @@
+<analysis><metadata><generator name="cool-analysis-tool" version="0.1" /><sut><debian-source name="software 1" version="2.0" /></sut></metadata><results><issue><message>Avert misunderstanding by calm, poise, and balance.
+</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue></results></analysis>

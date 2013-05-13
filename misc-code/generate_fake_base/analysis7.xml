@@ -1,0 +1,5 @@
+<analysis><metadata><generator name="coccinelle" version="spatch version 1.0.0-rc15 with Python support and with PCRE support" /><sut><debian-source name="software 1" version="2.0" /></sut></metadata><results><issue><message>Artistic ventures highlighted.  Rob a museum.
+</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue><issue><message>They spell it "da Vinci" and pronounce it "da Vinchy".  Foreigners
+always spell better than they pronounce.
+		-- Mark Twain
+</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue></results></analysis>

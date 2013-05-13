@@ -1,0 +1,2 @@
+<analysis><metadata><generator name="clang" version="1.2.3" /><sut><debian-source name="software 1" version="2.0" /></sut></metadata><results><issue><message>Executive ability is prominent in your make-up.
+</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue></results></analysis>

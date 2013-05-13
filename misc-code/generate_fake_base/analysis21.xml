@@ -1,0 +1,2 @@
+<analysis><metadata><generator name="cool-analysis-tool" version="0.1" /><sut><debian-source name="another program" version="8" /></sut></metadata><results><issue><message>A vivid and creative mind characterizes you.
+</message><location><file given-path="foo.cpp" /><function name="string_from_int(integer)" /></location></issue></results></analysis>

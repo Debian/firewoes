@@ -1,0 +1,3 @@
+<analysis><metadata><generator name="coccinelle" version="spatch version 1.0.0-rc15 with Python support and with PCRE support" /><sut><debian-source name="another program" version="8" /></sut></metadata><results><issue><message>Let him choose out of my files, his projects to accomplish.
+		-- Shakespeare, "Coriolanus"
+</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue></results></analysis>
