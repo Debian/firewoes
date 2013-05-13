@@ -13,12 +13,14 @@ from django.db import models
 
 # use a string instead of this?
 class Message(models.Model):
+    """a message given by the tool"""
     text = models.TextField()
     
     def __unicode__(self):
         return self.text[:15]
 
 class Notes(models.Model):
+    """additional notes, eg diff"""
     text = models.TextField()
     
     def __unicode__(self):
@@ -26,6 +28,7 @@ class Notes(models.Model):
 # //
 
 class Hash(models.Model):
+    """the hash result of a particular file"""
     alg = models.CharField(max_length=200)
     hexdigest = models.TextField(max_length=1000)
     
@@ -33,6 +36,7 @@ class Hash(models.Model):
         return self.alg + ": " + self.hexdigest[:15]
 
 class File(models.Model):
+    """a source file"""
     givenpath = models.CharField(max_length=200)
     abspath = models.CharField(max_length=200, blank=True)
     hash = models.ForeignKey(Hash, blank=True, null=True)
@@ -41,12 +45,14 @@ class File(models.Model):
         return self.givenpath
 
 class Function(models.Model):
+    """a particular function in the source code"""
     name = models.CharField(max_length=200)
     
     def __unicode__(self):
         return self.name
 
 class Point(models.Model):
+    """a place in a text file"""
     line = models.IntegerField()
     column = models.IntegerField()
     
@@ -54,6 +60,7 @@ class Point(models.Model):
         return self.line + ":" + self.column
 
 class Range(models.Model):
+    """a sub-string in a text file, represented by 2 points"""
     start = models.ForeignKey(Point, related_name='range_start')
     end = models.ForeignKey(Point, related_name='range_end')
     
@@ -61,12 +68,14 @@ class Range(models.Model):
         return self.start + " to " + self.end
 
 class Customfields(models.Model):
-    pass
+    """a set of key/value pairs"""
 
 class Customfield(models.Model):
+    """a key/value pair"""
     customfields = models.ForeignKey(Customfields)
 
 class Intfield(Customfield):
+    """a key/(int)value pair"""
     name = models.CharField(max_length=200)
     value = models.IntegerField()
     
@@ -74,6 +83,7 @@ class Intfield(Customfield):
         return self.name + " = " + self.value
 
 class Strfield(Customfield):
+    """a key/(string)value pair"""
     name = models.CharField(max_length=200)
     value = models.CharField(max_length=200)
     
@@ -81,6 +91,7 @@ class Strfield(Customfield):
         return self.name + " = " + self.value
 
 class Location(models.Model):
+    """a place in the code, defined by a file/function/place"""
     file = models.ForeignKey(File)
     function = models.ForeignKey(Function, blank=True, null=True)
     # either point or range
@@ -92,9 +103,10 @@ class Location(models.Model):
         return self.file + ":" + self.function + ":" + place
 
 class Trace(models.Model):
-    pass
+    """an execution/error trace, a list of states"""
 
 class State(models.Model):
+    """part of a trace"""
     trace = models.ForeignKey(Trace)
     location = models.ForeignKey(Location)
     notes = models.ForeignKey(Notes, blank=True, null=True)
@@ -105,6 +117,7 @@ class State(models.Model):
         return self.location + " (" + self.notes[:15] + ")"
 
 class Generator(models.Model):
+    """the static analysis tool"""
     name = models.CharField(max_length=200)
     version = models.CharField(max_length=200, blank=True)
     
@@ -116,6 +129,7 @@ class Generator(models.Model):
 
 # single-table inheritance (like firehose-orm)
 class Sut(models.Model): # sut = software under test
+    """the software being tested"""
     SUT_TYPES = (
         ('source-rpm', 'source-rpm'),
         ('debian-source', 'debian-source'),
@@ -139,12 +153,14 @@ class Sut(models.Model): # sut = software under test
         return sutcode
 
 class Stats(models.Model):
+    """the execution time of the tool"""
     wallclocktime = models.FloatField()
     
     def __unicode__(self):
         return self.wallclocktime
 
 class Metadata(models.Model):
+    """groups all data that is parallel to the concrete results"""
     generator = models.ForeignKey(Generator)
     sut = models.ForeignKey(Sut)
     file = models.ForeignKey(File, blank=True, null=True)
@@ -157,6 +173,7 @@ class Metadata(models.Model):
             + self.stats
 
 class Analysis(models.Model):
+    """a run from an analysis tool"""
     metadata = models.ForeignKey(Metadata)
     customfields = models.ForeignKey(Customfields, blank=True, null=True)
     
@@ -164,6 +181,8 @@ class Analysis(models.Model):
         return str(self.id)
 
 class Result(models.Model):
+    """a result from an analysis,
+    can be an issue, an info or a failure"""
     analysis = models.ForeignKey(Analysis)
     
     # def __unicode__(self):
@@ -174,6 +193,8 @@ class Result(models.Model):
     
 # multi-table inheritance (one-to-one field automatically provided by Django)
 class Issue(Result):
+    """a common result from an analysis tool,
+    which has found an error in the code"""
     cwe = models.IntegerField(blank=True, null=True)
     testid = models.CharField(max_length=200, blank=True)
     location = models.ForeignKey(Location)
@@ -187,6 +208,7 @@ class Issue(Result):
         return "issue " + str(self.id)
 
 class Failure(Result):
+    """if an analysis tool fails"""
     failureid = models.CharField(max_length=200, blank=True)
     location = models.ForeignKey(Location, blank=True, null=True)
     message = models.ForeignKey(Message, blank=True, null=True)
@@ -196,6 +218,8 @@ class Failure(Result):
         return "failure " + str(self.id)
 
 class Info(Result):
+    """not an error in the source code, but a result from a tool,
+    for example a licensing problem"""
     infoid = models.CharField(max_length=200, blank=True)
     location = models.ForeignKey(Location, blank=True, null=True)
     message = models.ForeignKey(Message, blank=True, null=True)
