@@ -1,2 +1,0 @@
-<analysis><metadata><generator name="clang" version="1.2.3" /><sut><debian-source name="software 1" version="1.0" /></sut></metadata><results><issue><message>Don't get stuck in a closet -- wear yourself out.
-</message><location><file given-path="foo.cpp" /><function name="string_from_int(integer)" /></location></issue></results></analysis>

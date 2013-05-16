@@ -1,7 +1,0 @@
-<analysis><metadata><generator name="clang" version="1.2.3" /><sut><debian-source name="hello" version="1.0" /></sut></metadata><results><issue><message>Kindness is a language which the deaf can hear and the blind can read.
-		-- Mark Twain
-</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue><issue><message>You will be attacked by a beast who has the body of a wolf, the tail of
-a lion, and the face of Donald Duck.
-</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue><issue><message>Are you a turtle?
-</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue><issue><message>Abandon the search for Truth; settle for a good fantasy.
-</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue></results></analysis>

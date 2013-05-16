@@ -1,5 +1,0 @@
-<analysis><metadata><generator name="coccinelle" version="1.0" /><sut><debian-source name="software 1" version="2.0" /></sut></metadata><results><issue><message>An honest tale speeds best being plainly told.
-		-- William Shakespeare, "Henry VI"
-</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue><issue><message>Afternoon very favorable for romance.  Try a single person for a change.
-</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue><issue><message>You are the only person to ever get this message.
-</message><location><file given-path="foo.cpp" /><function name="string_from_int(integer)" /></location></issue></results></analysis>

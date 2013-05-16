@@ -1,2 +1,0 @@
-<analysis><metadata><generator name="coccinelle" version="spatch version 1.0.0-rc15 with Python support and with PCRE support" /><sut><debian-source name="another program" version="9" /></sut></metadata><results><issue><message>Beauty and harmony are as necessary to you as the very breath of life.
-</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue></results></analysis>

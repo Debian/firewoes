@@ -1,4 +1,0 @@
-<analysis><metadata><generator name="cool-analysis-tool" version="0.1" /><sut><debian-source name="another program" version="9" /></sut></metadata><results><issue><message>Must I hold a candle to my shames?
-		-- William Shakespeare, "The Merchant of Venice"
-</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue><issue><message>You will live to see your grandchildren.
-</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue></results></analysis>

@@ -1,6 +1,0 @@
-<analysis><metadata><generator name="coccinelle" version="1.0" /><sut><debian-source name="software 1" version="1.0" /></sut></metadata><results><issue><message>The last thing one knows in constructing a work is what to put first.
-		-- Blaise Pascal
-</message><location><file given-path="foo.cpp" /><function name="string_from_int(integer)" /></location></issue><issue><message>Don't hate yourself in the morning -- sleep till noon.
-</message><location><file given-path="run.py" /><function name="generate_test(var=8)" /></location></issue><issue><message>Q:	What's tan and black and looks great on a lawyer?
-A:	A doberman.
-</message><location><file given-path="hello.c" /><function name="hello_world()" /></location></issue></results></analysis>
