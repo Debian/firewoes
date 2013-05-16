@@ -41,10 +41,10 @@ t_stats = \
 
 t_generator = \
     Table('generator', metadata,
-             #Column('id', Integer, primary_key=True),
-             Column('id', Integer, autoincrement=True),
-             Column('name', String, nullable=False, primary_key=True),
-             Column('version', String, primary_key=True),
+             Column('id', Integer, primary_key=True),
+             #Column('id', Integer, autoincrement=True),
+             Column('name', String, nullable=False),
+             Column('version', String),
              #UniqueConstraint('name', 'version')
              )
 
@@ -337,5 +337,11 @@ mapper(File, t_file,
 mapper(Hash, t_hash)
 mapper(Function, t_function)
 mapper(Point, t_point)
-mapper(Range, t_range)
+mapper(Range, t_range,
+       properties={
+         'start': relationship(Point, foreign_keys=t_range.c.start_id),
+         'end': relationship(Point, foreign_keys=t_range.c.end_id)
+         # foreign_keys specified to avoid ambiguity
+         }
+       )
 mapper(CustomFields, t_customfields)
