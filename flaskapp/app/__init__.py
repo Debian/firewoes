@@ -13,3 +13,6 @@ sys.path.insert(0,parentdir)
 from modules import ormapping
 
 # metadata.create_all(bind=db.engine)
+from app.results.views import mod as resultsModule
+app.register_blueprint(resultsModule)
+

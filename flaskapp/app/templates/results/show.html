@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Generators</h2>
+<ul>
+  {% for name, version in generators %}
+  <li>{{ name }}, {{ version }}</li>
+  {% endfor %}
+</ul>
+
+<h2>Results</h2>
+<ul>
+  {% for result in results %}
+  <li>
+    {% if result.type == "issue" %}
+      (<span style="color: blue;">issue</span>)
+    {% elif result.type == "failure" %}
+      (<span style="color: red;">failure</span>)
+    {% else %}
+      (<span style="color: black;">info</span>)
+    {% endif %}
+    <strong>{{ result.id }}</strong>:
+    {% if result.message.text %}{{ result.message.text }}
+    {% else %}(no message){% endif %}
+    
+    {% if result.location and result.location.file.givenpath %}
+      <br /><strong>in</strong> {{ result.location.file.givenpath }}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>  
+{% endblock %}

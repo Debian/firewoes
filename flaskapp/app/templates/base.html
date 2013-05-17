@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% if title %}{{ title }} | {% endif %}debcocci</title>
+  </head>
+  <body>
+    <h1>debcocci{% if title %} - {{ title }}{% endif %}</h1>
+    <hr />
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>
