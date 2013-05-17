@@ -24,7 +24,7 @@ def get_engine_session(url, echo=False):
     Given a database URL, returns an SQLAlchemy engine/session
     """
     engine = _get_engine(url, echo=echo)
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine, autoflush=True)
     session = Session()
     return engine, session
 
@@ -34,7 +34,7 @@ def insert_analysis(session, file_analysis):
     and inserts it to the db linked to session
     """
     analysis = fhm.Analysis.from_xml(file_analysis)
-    session.add(analysis)
+    session.merge(analysis)
     session.commit()
     
 import xml.etree.ElementTree as ET
@@ -75,11 +75,11 @@ if __name__ == "__main__":
         print("usage: python scripts/fill_db.py db_url < some_xml")
         sys.exit()
     
-    url = os.path.abspath(url)
-    if not os.path.exists(url):
-        print("warning: the database doesn't exist yet")
+    #url = os.path.abspath(url)
+    #if not os.path.exists(url):
+    #    print("warning: the database doesn't exist yet")
     
-    url = "sqlite:///" + url
+    #url = "sqlite:///" + url
     engine, session = get_engine_session(url, echo=True)
     
     metadata.drop_all(bind=engine) # cleans the table (for debugging)

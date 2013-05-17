@@ -1,7 +1,9 @@
 from sqlalchemy import Table, MetaData, Column, \
-    ForeignKey, Integer, String, Float
+    ForeignKey, Integer, String, Float, ForeignKeyConstraint, \
+    event, DDL
 from sqlalchemy.orm import mapper, relationship, polymorphic_union, \
     sessionmaker
+from sqlalchemy.schema import Sequence
 
 metadata = MetaData()
 
@@ -23,29 +25,27 @@ t_analysis = \
                        ForeignKey('customfields.id')),
              )
 
+t_generator = \
+    Table('generator', metadata,
+          Column('id', Integer, Sequence('foo', start=1, increment=1), unique=True),
+          Column('name', String, nullable=False, primary_key=True),
+          Column('version', String, primary_key=True),
+          )
+
 t_metadata = \
     Table('metadata', metadata,
-             Column('id', Integer, primary_key=True),
-             Column('generator_id', Integer,
-                       ForeignKey('generator.id'), nullable=False),
-             Column('sut_id', Integer, ForeignKey('sut.id')),
-             Column('file_id', Integer, ForeignKey('file.id')),
-             Column('stats_id', Integer, ForeignKey('stats.id')),
-             )
+          Column('id', Integer, primary_key=True),
+          Column('generator_id', Integer,
+                    ForeignKey('generator.id'), nullable=False),
+          Column('sut_id', Integer, ForeignKey('sut.id')),
+          Column('file_id', Integer, ForeignKey('file.id')),
+          Column('stats_id', Integer, ForeignKey('stats.id')),
+          )
 
 t_stats = \
     Table('stats', metadata,
              Column('id', Integer, primary_key=True),
              Column('wallclocktime', Float, nullable=False),
-             )
-
-t_generator = \
-    Table('generator', metadata,
-             Column('id', Integer, primary_key=True),
-             #Column('id', Integer, autoincrement=True),
-             Column('name', String, nullable=False),
-             Column('version', String),
-             #UniqueConstraint('name', 'version')
              )
 
 # For the Sut hierarchy we use single-table inheritance

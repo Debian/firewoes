@@ -1472,8 +1472,8 @@ class CustomFields(OrderedDict):
         # CustomFields instances (and assume they don't change from under
         # us)
         result = 0
-        for key, value in self.iteritems():
-            result ^= hash(key) ^ hash(value)
+        #for key, value in self.iteritems():
+        #    result ^= hash(key) ^ hash(value)
         return result
 
 #

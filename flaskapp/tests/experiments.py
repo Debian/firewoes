@@ -8,8 +8,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 #import sys
 #parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #sys.path.insert(0,parentdir) 
-#from modules.ormapping import metadata, Z1
-from experiments_model import metadata, Z1
+
+#from experiments_model import metadata, Z1
 
 app = Flask(__name__)
 
@@ -17,8 +17,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' # in-memory
 app.config['SQLALCHEMY_ECHO'] = True
 
-
-db = SQLAlchemy(app)
+db = SQLAlchemy(app, session_options=dict(autocommit=False, autoflush=True))
 
 ########################
 # do experiments here! #
@@ -28,27 +27,43 @@ db = SQLAlchemy(app)
 
 ## todo: Z1.query=db.session.query_property()
 
+class An(object):
+    def __init__(self, an_name, gen):
+        self.an_name = an_name
+        self.gen = gen
 
-"""
-class Z2(object):
-    def __init__(self, c):
-        self.c = c
+class Gen(object):
+    def __init__(self, gen_name):
+        self.gen_name =gen_name
 
-t_z2 = db.Table('z2',
-                db.Column('c', db.Integer, primary_key=True),
-                db.Column('ref_a', db.Integer),
-                db.Column('ref_b', db.Integer),
-                db.ForeignKeyConstraint(['ref_a', 'ref_b'], ['z1.a', 'z1.b'])
+t_an = db.Table('an',
+                db.Column('id', db.Integer, primary_key=True),
+                db.Column('an_name', db.String),
+                db.Column('gen_id', db.Integer, db.ForeignKey('gen.gen_name')),
                 )
-db.mapper(Z2, t_z2,
+db.mapper(An, t_an,
           properties={
-            'ccc': db.relationship(Z1, backref='z2'),
+            'gen': db.relationship(Gen),
             }
           )
-"""
+t_gen = db.Table('gen',
+                 #db.Column('id', db.Integer, primary_key=True),
+                 db.Column('gen_name', db.String, primary_key=True),
+                 )
+db.mapper(Gen, t_gen)
 
+db.drop_all()
+db.create_all()
 
-metadata.create_all(bind=db.engine)
+gen1 = Gen("coccinelle")
+gen2 = Gen("coccinelle")
 
+an1 = An("an1", gen1)
+an2 = An("an2", gen2)
+
+db.session.merge(an1)
+#db.session.commit()
+db.session.merge(an2)
+db.session.commit()
 
 os.environ['PYTHONINSPECT'] = 'True'
