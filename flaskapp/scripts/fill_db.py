@@ -5,7 +5,7 @@
 
 import os, sys
 from cStringIO import StringIO
-import argparse # TODO --sqlite, --db, --drop, ...
+import argparse
 
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0,parentdir) 
@@ -68,32 +68,40 @@ class ExtractAnalysis(object):
     def close(self):
         self.xmlbuffer.close()
 
-if __name__ == "__main__":
-    try:
-        url = sys.argv[1]
-    except:
-        print("usage: python scripts/fill_db.py db_url < some_xml")
-        sys.exit()
-    
-    #url = os.path.abspath(url)
-    #if not os.path.exists(url):
-    #    print("warning: the database doesn't exist yet")
-    
-    #url = "sqlite:///" + url
+def parse_and_create(url, streamobj, drop=False):
     engine, session = get_engine_session(url, echo=True)
     
-    metadata.drop_all(bind=engine) # cleans the table (for debugging)
-    metadata.create_all(bind=engine)
+    if drop:
+        metadata.drop_all(bind=engine) # cleans the table (for debugging)
+        metadata.create_all(bind=engine)
     
     # we feed an ExtractAnalysis object with the standard input:
     target = ExtractAnalysis(session)
     parser = ET.XMLParser(target=target)
     
     parser.feed("<xmlroot>") # to allow multiple analyses to be parsed
-    for line in sys.stdin.readlines():
+    
+    for line in streamobj.readlines():
         # TODO better (xml decl. are now inside <xmlroot>, which is incorrect):
         if not "<?xml" in line:
             target.addline(line)
             parser.feed(line.rstrip())
     parser.feed("</xmlroot>")
-    parser.close()
+    parser.close()    
+
+if __name__ == "__main__":
+    # try:
+    #     url = sys.argv[1]
+    # except:
+    #     print("usage: python scripts/fill_db.py db_url < some_xml")
+    #     sys.exit()
+    
+    parser = argparse.ArgumentParser(description="Reads XML from standard\
+    input and adds the Firehose objects into the specified database")
+    parser.add_argument("db_url", help="URL of the database")
+    parser.add_argument("--drop", help="drops the database before filling",
+                        action="store_true")
+    args = parser.parse_args()
+    
+    parse_and_create(args.db_url, sys.stdin, drop=args.drop)
+    
