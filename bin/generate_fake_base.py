@@ -54,6 +54,8 @@ def generate_fake_bases(output_dir):
     for analysis in analyses:
         f = open(os.path.join(output_dir, "analysis" + str(i) + ".xml"), "w")
         f.write(analysis.to_xml_bytes())
+        f.write("\n")
+
         f.close()
         i += 1
 
