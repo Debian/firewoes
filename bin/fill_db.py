@@ -8,11 +8,14 @@ from cStringIO import StringIO
 import argparse
 
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0,parentdir) 
 
-from modules.ormapping import metadata
+sys.path.insert(0, parentdir) 
 
-import firehose_noslots as fhm
+#from lib.firehose_orm import metadata
+import lib.firehose_orm as fhm
+metadata = fhm.metadata
+
+#import firehose_noslots as fhm
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -68,8 +71,8 @@ class ExtractAnalysis(object):
     def close(self):
         self.xmlbuffer.close()
 
-def parse_and_create(url, streamobj, drop=False):
-    engine, session = get_engine_session(url, echo=True)
+def parse_and_create(url, streamobj, drop=False, echo=False):
+    engine, session = get_engine_session(url, echo=echo)
     
     if drop:
         metadata.drop_all(bind=engine) # cleans the table (for debugging)
@@ -85,23 +88,24 @@ def parse_and_create(url, streamobj, drop=False):
         # TODO better (xml decl. are now inside <xmlroot>, which is incorrect):
         if not "<?xml" in line:
             target.addline(line)
-            parser.feed(line.rstrip())
+            try:
+                parser.feed(line.rstrip())
+            except:
+                print("HERE: %s" % line.rstrip())
+                sys.exit()
     parser.feed("</xmlroot>")
     parser.close()    
 
 if __name__ == "__main__":
-    # try:
-    #     url = sys.argv[1]
-    # except:
-    #     print("usage: python scripts/fill_db.py db_url < some_xml")
-    #     sys.exit()
     
     parser = argparse.ArgumentParser(description="Reads XML from standard\
     input and adds the Firehose objects into the specified database")
     parser.add_argument("db_url", help="URL of the database")
     parser.add_argument("--drop", help="drops the database before filling",
                         action="store_true")
+    parser.add_argument("--verbose", help="outputs SQLAlchemy requests",
+                        action="store_true")
     args = parser.parse_args()
     
-    parse_and_create(args.db_url, sys.stdin, drop=args.drop)
+    parse_and_create(args.db_url, sys.stdin, drop=args.drop, echo=args.verbose)
     
