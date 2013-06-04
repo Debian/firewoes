@@ -1,0 +1,2 @@
+- ETparser bug in fill_fb when insert multiple analyses:
+  cat cache/all.xml | python bin/fill_db.py 'postgresql://matthieu:matthieu@localhost:5432/debcocci'
