@@ -1,5 +1,7 @@
 from app import app
+from models import Message_app
 
 @app.route('/')
 def index():
-    return "Hello, world!"
+    test = Message_app()
+    return str(test)
