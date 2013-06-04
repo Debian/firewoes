@@ -2,3 +2,9 @@ Debian dependencies:
 python
 python-flask
 python-six (required by Firehose)
+postgresql (dev fast configuration: http://doc.ubuntu-fr.org/postgresql)
+python-sqlalchemy
+python-psycopg2 (required by SQLAlchemy)
+
+Python packages:
+firehose (currently lib/firehose_noslots because of __slots__)
