@@ -12,6 +12,22 @@ from firehose_noslots import *
 
 # imported from firehose-orm/orm.py:
 
+
+# FH_UNICITY enables to create a tuple for each Firehose object
+# it is used to ensure unique objects, database-side
+# the tuple contains the name of the unique columns
+# this is used by firehose_unique.get_fh_unique()
+
+FH_UNICITY = dict(
+    Generator = ("name", "version"),
+    # Analysis = ("generator", "results"),
+    # Result = ("debiansource", "message"),
+    #DebianSource = ("name", "version", "release"),
+    Message = ("text"),
+    )
+
+
+
 ############################################################################
 # Tables
 ############################################################################
@@ -27,10 +43,9 @@ t_analysis = \
 
 t_generator = \
     Table('generator', metadata,
-          Column('id', Integer, Sequence('foo', start=1, increment=1),
-                 unique=True),
-          Column('name', String, nullable=False, primary_key=True),
-          Column('version', String, primary_key=True),
+          Column('id', Integer, primary_key=True),
+          Column('name', String),
+          Column('version', String), # optional in RNG
           )
 
 t_metadata = \
@@ -49,17 +64,42 @@ t_stats = \
           Column('wallclocktime', Float, nullable=False),
           )
 
-# For the Sut hierarchy we use single-table inheritance
+# For the Sut hierarchy we use joined-table inheritance
 t_sut = \
     Table('sut', metadata,
           Column('id', Integer, primary_key=True),
           Column('type', String(20), nullable=False),
-          Column('name', String, nullable=False),
-          Column('version', String, nullable=False),
+          # Column('name', String, nullable=False),
+          # Column('version', String, nullable=False),
+          # Column('release', String),
+          # Column('buildarch', String),
+          )
+
+t_sourcerpm = \
+    Table('sourcerpm', metadata,
+          Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
+          Column('name', String),
+          Column('version', String),
           Column('release', String),
           Column('buildarch', String),
           )
-# TODOOOOOOOOOOOOO
+
+t_debianbinary = \
+    Table('debianbinary', metadata,
+          Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
+          Column('name', String),
+          Column('version', String),
+          Column('release', String),
+          Column('buildarch', String),
+          )
+
+t_debiansource = \
+    Table('debiansource', metadata,
+          Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
+          Column('name', String),
+          Column('version', String),
+          Column('release', String),
+          )
 
 # For the Result hierarchy we use joined-table inheritance
 t_result = \
@@ -76,13 +116,13 @@ t_issue = \
                  ForeignKey('result.id'), primary_key=True),
           Column('cwe', Integer),
           Column('testid', String),
-          Column('location_id', Integer,
-                 ForeignKey('location.id'), nullable=False),
+          Column('severity', String),
           Column('message_id', Integer,
                  ForeignKey('message.id'), nullable=False),
           Column('notes_id', Integer, ForeignKey('notes.id')),
+          Column('location_id', Integer,
+                 ForeignKey('location.id'), nullable=False),
           Column('trace_id', Integer, ForeignKey('trace.id')),
-          Column('severity', String),
           Column('customfields_id', Integer,
                  ForeignKey('customfields.id')),
           )
@@ -90,15 +130,11 @@ t_issue = \
 t_failure = \
     Table('failure', metadata,
           Column('result_id', Integer,
-                 ForeignKey('result.id'),
-                 primary_key=True),
+                 ForeignKey('result.id'), primary_key=True),
           Column('failureid', String),
-          Column('location_id', Integer,
-                 ForeignKey('location.id')),
-          Column('message_id', Integer,
-                 ForeignKey('message.id')),
-          Column('customfields_id', Integer,
-                 ForeignKey('customfields.id')),
+          Column('location_id', Integer, ForeignKey('location.id')),
+          Column('message_id', Integer, ForeignKey('message.id')),
+          Column('customfields_id', Integer, ForeignKey('customfields.id')),
           )
 
 t_info = \
@@ -106,28 +142,22 @@ t_info = \
           Column('result_id', Integer,
                  ForeignKey('result.id'), primary_key=True),
           Column('infoid', String),
-          Column('location_id', Integer,
-                 ForeignKey('location.id')),
-          Column('message_id', Integer,
-                 ForeignKey('message.id')),
-          Column('customfields_id', Integer,
-                 ForeignKey('customfields.id')),
+          Column('location_id', Integer, ForeignKey('location.id')),
+          Column('message_id', Integer, ForeignKey('message.id')),
+          Column('customfields_id', Integer, ForeignKey('customfields.id')),
           )
 
 t_message = \
     Table('message', metadata,
           Column('id', Integer, primary_key=True),
-          Column('text', String, nullable=False),
+          Column('text', String),
           )
-# ideally we should just store a String where these get used
 
 t_notes = \
     Table('notes', metadata,
           Column('id', Integer, primary_key=True),
-          Column('text', String, nullable=False),
+          Column('text', String),
           )
-# ideally we should just store a String where these get used
-
 
 t_trace = \
     Table('trace', metadata,
@@ -137,25 +167,21 @@ t_trace = \
 t_state = \
     Table('state', metadata,
           Column('id', Integer, primary_key=True),
-          Column('trace_id', Integer,
-                 ForeignKey('trace.id')),
+          Column('trace_id', Integer, ForeignKey('trace.id')),
           Column('location_id', Integer,
                  ForeignKey('location.id'), nullable=False),
-          Column('notes_id', Integer,
-                 ForeignKey('notes.id')),
+          Column('notes_id', Integer, ForeignKey('notes.id')),
+          # annotation (key/value) pairs -> why not CustomFields here?
           )
 
 t_location = \
     Table('location', metadata,
           Column('id', Integer, primary_key=True),
-          Column('file_id', Integer,
-                 ForeignKey('file.id'), nullable=False),
-          Column('function_id', Integer,
-                 ForeignKey('function.id')),
-          Column('point_id', Integer,
-                 ForeignKey('point.id')),
-          Column('range_id', Integer,
-                 ForeignKey('range.id')),
+          Column('file_id', Integer, ForeignKey('file.id'), nullable=False),
+          Column('function_id', Integer, ForeignKey('function.id')),
+          # either a point or a range:
+          Column('point_id', Integer, ForeignKey('point.id')),
+          Column('range_id', Integer, ForeignKey('range.id')),
           )
 
 t_file = \
@@ -200,6 +226,8 @@ t_customfields = \
     Table('customfields', metadata,
           Column('id', Integer, primary_key=True))
 
+# inheritance here?
+
 t_intfield = \
     Table('intfield', metadata,
           Column('id', Integer, primary_key=True),
@@ -223,127 +251,129 @@ t_strfield = \
 ############################################################################
 
 mapper(Analysis, t_analysis,
-          properties={
-            'metadata' : relationship(Metadata),
-            # FIXME: should do both issues *and* failures
-            'results' : relationship(Result), #, backref='analysis', order_by=t_issue.c.id)
-            'customfields' : relationship(CustomFields),
-            }
-          )
+       properties={
+        'metadata': relationship(Metadata),
+        # FIXME: should do both issues *and* failures
+        'results': relationship(
+            Result, backref='analysis', lazy='joined', order_by=t_result.c.id),
+        'customfields': relationship(CustomFields),
+        }
+       )
 
 mapper(Metadata, t_metadata,
-          properties={
-            'generator' : relationship(Generator),
-            'sut' : relationship(Sut),
-            'file_' : relationship(File),
-            'stats' : relationship(Stats),
-            }
-          )
+       properties={
+        'generator': relationship(Generator),
+        'sut': relationship(Sut),
+        'file_': relationship(File),
+        'stats': relationship(Stats),
+        }
+       )
 
 mapper(Generator, t_generator)
 
 # Map the Sut hierarchy using single table inheritance
-sut_mapper = mapper(Sut, t_sut,
-                       polymorphic_on=t_sut.c.type,
-                       polymorphic_identity='sut')
+mapper(Sut, t_sut,
+       polymorphic_on=t_sut.c.type,
+       polymorphic_identity='sut')
 
-source_rpm_mapper = mapper(SourceRpm,
-                             inherits=sut_mapper,
-                             polymorphic_identity='source-rpm')
+mapper(SourceRpm, t_sourcerpm,
+       inherits=Sut,
+       polymorphic_identity='source-rpm')
 
-debian_binary_mapper = mapper(DebianBinary,
-                             inherits=sut_mapper,
-                             polymorphic_identity='debian-binary')
+mapper(DebianBinary, t_debianbinary,
+       inherits=Sut,
+       polymorphic_identity='debian-binary')
 
-debian_source_mapper = mapper(DebianSource,
-                             inherits=sut_mapper,
-                             polymorphic_identity='debian-source')
+mapper(DebianSource, t_debiansource,
+       inherits=Sut,
+       polymorphic_identity='debian-source')
 
 mapper(Stats, t_stats)
 mapper(Message, t_message)
 mapper(Notes, t_notes)
 
 mapper(Trace, t_trace,
-          properties={
-            'states' : relationship(State,
-                                       backref='trace',
-                                       order_by=t_state.c.id,
-                                       lazy='joined')
-            }
-          )
+       properties={
+        'states': relationship(
+            State, backref='trace', order_by=t_state.c.id, lazy='joined')
+        }
+       )
 
 mapper(State, t_state,
-          properties={
-            'location': relationship(Location, lazy='joined'),
-            'notes': relationship(Notes, lazy='joined'),
-            }
-          )
+       properties={
+        'location': relationship(Location, lazy='joined'),
+        'notes': relationship(Notes, lazy='joined'),
+        }
+       )
 
 # Map the Result hierarchy using Joined Table Inheritance:
 
 mapper(Result, t_result,
-          polymorphic_on=t_result.c.type,
-          polymorphic_identity='result')
+       polymorphic_on=t_result.c.type,
+       polymorphic_identity='result')
 
 mapper(Issue, t_issue,
-          inherits=Result,
-          polymorphic_identity='issue',
-          properties={
-            'location' : relationship(Location,
-                                         backref='issues',
-                                         order_by=t_location.c.id,
-                                         lazy='joined'),
-            'message':  relationship(Message, lazy='joined'),
-            'notes':  relationship(Notes, lazy='joined'),
-            'trace' : relationship(Trace, lazy='joined'),
-            'customfields' : relationship(CustomFields),
-            }
-          )
+       inherits=Result,
+       polymorphic_identity='issue',
+       properties={
+        'location': relationship(Location, lazy='joined'),
+        'message':  relationship(Message, lazy='joined'),
+        'notes':  relationship(Notes, lazy='joined'),
+        'trace': relationship(Trace, lazy='joined'),
+        'customfields': relationship(CustomFields),
+        }
+       )
 
 mapper(Failure, t_failure,
-          inherits=Result,
-          polymorphic_identity='failure',
-          properties={
-            'location' : relationship(Location),
-            'message' : relationship(Message),
-            'customfields' : relationship(CustomFields),
-            }
-          )
+       inherits=Result,
+       polymorphic_identity='failure',
+       properties={
+        'location': relationship(Location, lazy='joined'),
+        'message': relationship(Message, lazy='joined'),
+        'customfields': relationship(CustomFields),
+        }
+       )
 
 mapper(Info, t_info,
-          inherits=Result,
-          polymorphic_identity='info',
-          properties={
-            'location' : relationship(Location),
-            'message' : relationship(Message),
-            'customfields' : relationship(CustomFields),
-            }
-          )
+       inherits=Result,
+       polymorphic_identity='info',
+       properties={
+        'location': relationship(Location, lazy='joined'),
+        'message': relationship(Message, lazy='joined'),
+        'customfields': relationship(CustomFields),
+        }
+       )
 
 mapper(Location, t_location,
-          properties={
-            'file' : relationship(File, lazy='joined'),
-                    #, backref='locations', order_by=t_file.c.abspath)
-            'function' : relationship(Function, lazy='joined'),
-            'point' : relationship(Point, lazy='joined'),
-            'range_' : relationship(Range, lazy='joined'),
-            }
-          )
+       properties={
+        'file': relationship(File, lazy='joined'),
+        #, backref='locations', order_by=t_file.c.abspath)
+        'function': relationship(Function, lazy='joined'),
+        'point': relationship(Point, lazy='joined'),
+        'range_': relationship(Range, lazy='joined'),
+        }
+       )
 
 mapper(File, t_file,
-          properties={
-            'hash_' : relationship(Hash, lazy='joined'),
-            }
-          )
+       properties={
+        'hash_': relationship(Hash, lazy='joined'),
+        }
+       )
 
 mapper(Hash, t_hash)
+
 mapper(Function, t_function)
+
 mapper(Point, t_point)
+
 mapper(Range, t_range,
        properties={
-         'start': relationship(Point, foreign_keys=t_range.c.start_id),
-         'end': relationship(Point, foreign_keys=t_range.c.end_id)
-         # foreign_keys specified to avoid ambiguity
-         }
+        'start': relationship(Point, foreign_keys=t_range.c.start_id,
+                              lazy='joined'),
+        'end': relationship(Point, foreign_keys=t_range.c.end_id,
+                            lazy='joined')
+        # foreign_keys specified to avoid ambiguity
+        }
        )
+
 mapper(CustomFields, t_customfields)
