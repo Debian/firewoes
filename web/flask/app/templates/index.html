@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Static analysis generators</h2>
+<ul>
+  {% for gen in generators %}
+    <li>{{ gen.name }} ({{ gen.version }})</li>
+  {% endfor %}
+</ul>
+
+<h2>Software under test</h2>
+<ul>
+  {% for sut in suts %}
+    <li>{{ sut.name }} ({{ sut.version }}) - ({{ sut.type }})</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

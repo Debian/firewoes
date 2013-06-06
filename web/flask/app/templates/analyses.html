@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<ul>
+{% for analysis in analyses %}
+  <li>{{ analysis.id }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
