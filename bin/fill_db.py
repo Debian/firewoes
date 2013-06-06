@@ -7,6 +7,7 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.insert(0, parentdir) 
 
+from lib.firehose_unique import get_fh_unique
 #from lib.firehose_orm import metadata
 import lib.firehose_orm as fhm
 metadata = fhm.metadata
@@ -33,6 +34,9 @@ def insert_analysis(session, xml_file):
     and inserts it to the db linked to session
     """
     analysis = fhm.Analysis.from_xml(xml_file)
+    # unicity:
+    analysis = get_fh_unique(session, analysis)
+    
     session.merge(analysis)
     session.commit()
     
@@ -46,10 +50,11 @@ def read_and_create(url, xml_file, drop=False, echo=False):
     for file_ in xml_file:
         try:
             insert_analysis(session, file_)
-        except:
+        except Exception as e:
             print("Error in file %s, it maybe contains "
                   "invalid characters" % file_)
-
+            print(e)
+            
 
 if __name__ == "__main__":
     
