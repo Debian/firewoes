@@ -20,10 +20,18 @@ from firehose_noslots import *
 
 FH_UNICITY = dict(
     Generator = ("name", "version"),
-    # Analysis = ("generator", "results"),
-    # Result = ("debiansource", "message"),
-    #DebianSource = ("name", "version", "release"),
+    #Sut = ("type", "name", "version", "release", "buildarch"),
+    SourceRpm = ("name", "version", "release", "buildarch"),
+    DebianBinary = ("name", "version", "release", "buildarch"),
+    DebianSource = ("name", "version", "release"),
     Message = ("text"),
+    Notes = ("text"),
+    Location = ("file", "function", "point", "range_"),
+    File = ("givenpath", "abspath", "hash_"),
+    Hash = ("alg", "hexdigest"),
+    Function = ("name"),
+    Point = ("line", "column"),
+    Range = ("start", "end"),
     )
 
 
@@ -69,37 +77,38 @@ t_sut = \
     Table('sut', metadata,
           Column('id', Integer, primary_key=True),
           Column('type', String(20), nullable=False),
-          # Column('name', String, nullable=False),
-          # Column('version', String, nullable=False),
-          # Column('release', String),
-          # Column('buildarch', String),
-          )
-
-t_sourcerpm = \
-    Table('sourcerpm', metadata,
-          Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
-          Column('name', String),
-          Column('version', String),
+          Column('name', String, nullable=False),
+          Column('version', String, nullable=False),
           Column('release', String),
           Column('buildarch', String),
           )
 
-t_debianbinary = \
-    Table('debianbinary', metadata,
-          Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
-          Column('name', String),
-          Column('version', String),
-          Column('release', String),
-          Column('buildarch', String),
-          )
+# t_sourcerpm = \
+#     Table('sourcerpm', metadata,
+#           Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
+#           Column('name', String),
+#           Column('version', String),
+#           Column('release', String),
+#           Column('buildarch', String),
+#           )
 
-t_debiansource = \
-    Table('debiansource', metadata,
-          Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
-          Column('name', String),
-          Column('version', String),
-          Column('release', String),
-          )
+# t_debianbinary = \
+#     Table('debianbinary', metadata,
+#           Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
+#           Column('name', String),
+#           Column('version', String),
+#           Column('release', String),
+#           Column('buildarch', String),
+#           )
+
+# t_debiansource = \
+#     Table('debiansource', metadata,
+#           Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
+#           Column('name', String),
+#           Column('version', String),
+#           Column('release', String),
+#           )
+
 
 # For the Result hierarchy we use joined-table inheritance
 t_result = \
@@ -272,20 +281,20 @@ mapper(Metadata, t_metadata,
 mapper(Generator, t_generator)
 
 # Map the Sut hierarchy using single table inheritance
-mapper(Sut, t_sut,
-       polymorphic_on=t_sut.c.type,
-       polymorphic_identity='sut')
+sut_mapper = mapper(Sut, t_sut,
+                    polymorphic_on=t_sut.c.type,
+                    polymorphic_identity='sut')
 
-mapper(SourceRpm, t_sourcerpm,
-       inherits=Sut,
+mapper(SourceRpm, #t_sourcerpm,
+       inherits=sut_mapper,
        polymorphic_identity='source-rpm')
 
-mapper(DebianBinary, t_debianbinary,
-       inherits=Sut,
+mapper(DebianBinary, #t_debianbinary,
+       inherits=sut_mapper,
        polymorphic_identity='debian-binary')
 
-mapper(DebianSource, t_debiansource,
-       inherits=Sut,
+mapper(DebianSource, #t_debiansource,
+       inherits=sut_mapper,
        polymorphic_identity='debian-source')
 
 mapper(Stats, t_stats)
