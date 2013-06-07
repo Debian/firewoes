@@ -2,13 +2,9 @@ from flask import render_template, jsonify
 from flask.views import View
 
 from app import app
-from models import Message_app, Analysis_app, MetaInfo
+from models import MetaInfo, Result_app
+from models import Http404Error, Http500Error
 
-
-### EXCEPTIONS ###
-
-class Http500Error(Exception): pass
-class Http404Error(Exception): pass
 
 
 ### ERRORS ###
@@ -65,7 +61,7 @@ class GeneralView(View):
 ### INDEX ###
 
 class IndexView(GeneralView):
-    def get_objects(self, query=None):
+    def get_objects(self):
         meta_info = MetaInfo()
         return dict(generators = meta_info.get_generators(),
                     suts = meta_info.get_suts())
@@ -82,3 +78,24 @@ app.add_url_rule('/api/', view_func=IndexView.as_view(
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
         ))
 
+
+### RESULT ###
+
+class ResultView(GeneralView):
+    def get_objects(self, id=1):
+        result = Result_app(id).infos()
+        return dict(id = result.id,
+                    message = result.message)
+
+
+app.add_url_rule('/result/<int:id>/', view_func=ResultView.as_view(
+        'result_html',
+        render_func=lambda **kwargs: render_template('result.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+app.add_url_rule('/api/result/', view_func=ResultView.as_view(
+        'result_json',
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
