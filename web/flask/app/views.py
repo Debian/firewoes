@@ -64,7 +64,8 @@ class IndexView(GeneralView):
     def get_objects(self):
         meta_info = MetaInfo()
         return dict(generators = meta_info.get_generators(),
-                    suts = meta_info.get_suts())
+                    suts = meta_info.get_suts(),
+                    analyses = meta_info.get_analyses())
 
 app.add_url_rule('/', view_func=IndexView.as_view(
         'index_html',
@@ -99,3 +100,4 @@ app.add_url_rule('/api/result/', view_func=ResultView.as_view(
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
         ))
+

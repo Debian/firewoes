@@ -16,4 +16,11 @@
   {% endfor %}
 </ul>
 
+<h2>Last analyses</h2>
+<ul>
+  {% for analysis in analyses %}
+    <li>{{ analysis.id }} ({{ analysis.generator }})</li>
+  {% endfor %}
+</ul>
+
 {% endblock %}
