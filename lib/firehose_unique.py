@@ -53,7 +53,7 @@ def _as_unique(session, cls, *args, **kwargs):
         clauses = []
         for arg in kwargs:
             if arg in unique_attrs:
-                clauses.append(getattr(cls, arg) == arg)
+                clauses.append(getattr(cls, arg) == kwargs[arg])
         # returns and_(Foo.bar1 == bar1, Foo.bar2 == bar2, ...)
         return query.filter(and_(*clauses))
     
