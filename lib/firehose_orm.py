@@ -261,10 +261,10 @@ t_strfield = \
 
 mapper(Analysis, t_analysis,
        properties={
-        'metadata': relationship(Metadata),
+        'metadata': relationship(Metadata, lazy='joined'),
         # FIXME: should do both issues *and* failures
         'results': relationship(
-            Result, backref='analysis', lazy='joined', order_by=t_result.c.id),
+            Result, backref='analysis', order_by=t_result.c.id),
         'customfields': relationship(CustomFields),
         }
        )
