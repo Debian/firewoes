@@ -2,7 +2,7 @@ from flask import render_template, jsonify
 from flask.views import View
 
 from app import app
-from models import Generator_app, Analysis_app
+from models import Generator_app, Analysis_app, Sut_app
 from models import Http404Error, Http500Error
 
 
@@ -154,6 +154,37 @@ app.add_url_rule('/api/view/analysis/<int:id>/', view_func=ElemView.as_view(
 app.add_url_rule('/api/view/analysis/', view_func=ListView.as_view(
         'analysis_list_json',
         class_=Analysis_app,
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
+
+
+# SOFTWARE # HTML
+app.add_url_rule('/view/sut/<int:id>/', view_func=ElemView.as_view(
+        'sut_elem_html',
+        class_=Sut_app,
+        render_func=lambda **kwargs: render_template('sut.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+app.add_url_rule('/view/sut/', view_func=ListView.as_view(
+        'sut_list_html',
+        class_=Sut_app,
+        render_func=lambda **kwargs: render_template('sut_list.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+# SOFTWARE # JSON
+app.add_url_rule('/api/view/sut/<int:id>/', view_func=ElemView.as_view(
+        'sut_elem_json',
+        class_=Sut_app,
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
+
+app.add_url_rule('/api/view/sut/', view_func=ListView.as_view(
+        'sut_list_json',
+        class_=Sut_app,
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
         ))

@@ -83,3 +83,7 @@ class Analysis_app(FHGeneric):
         elem = to_dict(elem)
         elem['results'] = to_dict(session.query(Result.id).filter(Result.analysis_id == id).all())
         return elem
+
+class Sut_app(FHGeneric):
+    def __init__(self):
+        self.fh_class = Sut

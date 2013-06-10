@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% import "macros.inc.html" as macros %}
+
+{% block title %}Software list{% endblock %}
+
+{% block content %}
+
+<h2>{{ self.title() }}</h2>
+
+<ul>
+  {% for res in list %}
+  <li>
+      <a href="{{ url_for('sut_elem_html', id=res.id) }}">
+        {{ res.name }} ({{ res.version }})</a>
+  </li>
+  {% endfor %}
+</ul>
+
+
+{% endblock %}
