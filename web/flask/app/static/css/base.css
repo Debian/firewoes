@@ -7,6 +7,16 @@
     padding-left: 200px;
 }
 
+table {
+    border: 1px solid black;
+}
+
+table .rowname {
+    background-color: #eeeeee;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+}
 
 .bg_1 {
     background-color: #9ACFF5;

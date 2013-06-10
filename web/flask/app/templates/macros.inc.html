@@ -1,39 +1,18 @@
-{% macro render_analysis(analysis) %}
-  <div class="bg_1">
-    <strong>Metadata:</strong>
-    <br />
-    {{ render_metadata(analysis.metadata) }}
-  </div>
-  <div class="bg_2">
-    <strong>Custom fields:</strong>
-    <br />
-    {{ render_customfields(analysis.customfields) }}
-  </div>
-  <div>
-    <strong>Results:</strong>
-    {% for res in analysis.results %}
-      <a href="{{ url_for('result_elem_html', id=res.id) }}">#{{ res.id
-         }}</a>
+{% macro display_table(telems) %}
+  <table>
+    {% for (name, content) in telems %}
+    <tr>
+      <td class="rowname">{{ name }}</td>
+      <td>{{ content }}</td>
+    </tr>
     {% endfor %}
-  </div>
-    
+  </table>
 {% endmacro %}
+
 
 {% macro render_generator(generator) %}
   {{ generator.name }}
   {% if generator.version %}({{ generator.version }}){% endif %}
-{% endmacro %}
-
-{% macro render_metadata(metadata) %}
-  {% if metadata %}
-  <strong>Generator:</strong> {{ render_generator(metadata.generator) }}
-  <br />
-  <strong>Sut:</strong> {{ render_sut(metadata.sut) }}
-  <br />
-  <strong>File:</strong> {{ render_file(metadata.file_) }}
-  <br />
-  <strong>Stats:</strong> {{ render_stats(metadata.stats) }}
-  {% endif %}
 {% endmacro %}
 
 {% macro render_stats(stats) %}
@@ -46,54 +25,9 @@
   {% if sut.buildarch %}({{ sut.buildarch }}){% endif %}
 {% endmacro %}
 
-{% macro render_issue(issue) %}
-  <div id="issue">
-    <div class="bg_1">
-      <strong>Common weakness enumeration:</strong> {{ issue.cwe }}
-      <br />
-      <strong>Severity:</strong> {{ issue.severity }}
-      <br />
-      {% if issue.message %}
-        <strong>Message:</strong> {{ render_message(issue.message) }}
-        <br />
-      {% endif %}
-      <strong>Notes:</strong> {{ render_notes(issue.notes) }}
-    </div>
-    <div class="location">
-      <strong>Location:</strong> {{ render_location(issue.location) }}
-    </div>
-    <div class="trace">
-      <strong>Trace: </strong> {{ render_trace(issue.trace) }}
-    </div>
-    <div class="customfields">
-      <strong>Custom fields:</strong> {{
-      render_customfields(issue.customfields) }}
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro render_failure(failure) %}
-  <strong>Message:</strong> {{ render_message(failure.message) }}
-  <br />
-  <strong>Location:</strong> {{ render_location(failure.location) }}
-  <br />
-  <strong>Custom fields:</strong> {{
-  render_customfields(failure.customfields) }}
-{% endmacro %}
-
-{% macro render_info(info) %}
-  <strong>Message:</strong> {{ render_message(info.message) }}
-  <br />
-  <strong>Location:</strong> {{ render_location(info.location) }}
-  <br />
-  <strong>Custom fields:</strong> {{
-  render_customfields(info.customfields) }}
-{% endmacro %}
-
 {% macro render_message(message) %}
   {{ message.text }}
 {% endmacro %}
-
 
 {% macro render_notes(notes) %}
   {{ notes.text }}
@@ -118,8 +52,10 @@
   <br />
   <strong>Function:</strong> {{ render_function(location.function) }}
   <br />
-  {% if location.point %}{{ render_point(location.point) }}
-  {% elif location.range %}{{ render_range(location.range) }}
+  {% if location.point %}<strong>Point:</strong>
+    {{ render_point(location.point) }}
+  {% elif location.range %}<strong>Range:</strong>
+    {{ render_range(location.range) }}
   {% endif %}
 {% endmacro %}
 
@@ -127,6 +63,7 @@
   {% if file %}
   {{ file.givenpath }}
   {% if file.abspath %}- ({{ file.abspath }}){% endif %}
+  <br />
   <strong>Hash:</strong> {{ render_hash(file.hash_) }}
   {% endif %}
 {% endmacro %}
@@ -136,7 +73,7 @@
 {% endmacro %}
 
 {% macro render_function(function) %}
-  function {{ function.name }}
+  {{ function.name }}
 {% endmacro %}
 
 {% macro render_point(point) %}

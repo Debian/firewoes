@@ -7,6 +7,25 @@
 
 <h2>{{ self.title() }}</h2>
 
-{{ macros.render_analysis(result) }}
+  <div>
+    <h3>Metadata:</h3>
+    {{ macros.display_table([
+      ("Generator", macros.render_generator(result.metadata.generator)),
+      ("Software under test", macros.render_sut(result.metadata.sut)),
+      ("File", macros.render_file(result.metadata.file_)),
+      ("Stats", macros.render_stats(result.metadata.stats))]) }}
+  </div>
+  <div>
+    <h3>Custom fields:</h3>
+    {{ macros.display_table([
+      ("Custom fields", macros.render_customfields(result.customfields))]) }}
+  </div>
+  <div>
+    <h3>Results:</h3>
+    {% for res in result.results %}
+      <a href="{{ url_for('result_elem_html', id=res.id) }}">#{{ res.id
+         }}</a>
+    {% endfor %}
+</div>
 
 {% endblock %}

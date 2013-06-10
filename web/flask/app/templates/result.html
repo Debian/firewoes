@@ -8,10 +8,33 @@
 <h2>{{ self.title() }}</h2>
 
 {% if result.type == "issue" %}
-  {{ macros.render_issue(result) }}
+
+{{ macros.display_table([
+      ("Type", "Issue"),
+      ("CWE", result.cwe),
+      ("Severity", result.severity),
+      ("Message", macros.render_message(result.message)),
+      ("Notes", macros.render_notes(result.notes)),
+      ("Location", macros.render_location(result.location)),
+      ("Trace", macros.render_trace(result.trace)),
+      ("Custom fields", macros.render_customfields(result.customfields))]) }}
+
+
 {% elif result.type == "failure" %}
-  {{ macros.render_failure(result) }}
+
+  {{ macros.display_table([
+      ("Type", "Failure"),
+      ("Message", macros.render_message(result.message)),
+      ("Location", macros.render_location(result.location)),
+      ("Custom fields", macros.render_customfields(result.customfields))]) }}
+
 {% elif result.type == "info" %}
-  {{ macros.render_info(result) }}
+
+  {{ macros.display_table([
+      ("Type", "Info"),
+      ("Message", macros.render_message(result.message)),
+      ("Location", macros.render_location(result.location)),
+      ("Custom fields", macros.render_customfields(result.customfields))]) }}
+
 {% endif %}
 {% endblock %}
