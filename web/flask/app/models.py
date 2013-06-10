@@ -20,18 +20,26 @@ def to_dict(elem):
     """
     if elem is None:
         return None
+    elif type(elem) in [int, float, str, unicode]:#_string_type]
+        return elem
     
-    if isinstance(elem, list):
+    elif isinstance(elem, list):
         return [to_dict(e) for e in elem]
+    elif isinstance(elem, tuple): # KeyedTuple (queries with specified columns)
+        res = dict()
+        elem = elem._asdict()
+        for attr_name in elem:
+            res[attr_name] = to_dict(elem[attr_name])
+        return res
     else:
         res = dict()
         cls = type(elem)
         for attr_name in cls._sa_class_manager.local_attrs:
                 attr = getattr(elem, attr_name)
-                if type(attr) in [int, float, str, unicode]:#_string_type]
-                    res[attr_name] = attr
-                else:
-                    res[attr_name] = to_dict(attr)
+                #if type(attr) in [int, float, str, unicode]:#_string_type]
+                #    res[attr_name] = attr
+                #else:
+                res[attr_name] = to_dict(attr)
         return res
 
 
@@ -54,9 +62,6 @@ class FHGeneric(object):
                                % (self.fh_class.__name__, id))
         return to_dict(elem)
 
-    def get_class(self):
-        return self.fh_class.__name__
-
 class Generator_app(FHGeneric):
     def __init__(self):
         self.fh_class = Generator
@@ -65,3 +70,16 @@ class Generator_app(FHGeneric):
         elem = session.query(self.fh_class).order_by(Generator.name).all()
         return to_dict(elem)
 
+class Analysis_app(FHGeneric):
+    def __init__(self):
+        self.fh_class = Analysis
+
+    def all(self):
+        elem = session.query(Analysis.id).all()
+        return to_dict(elem)
+
+    def id(self, id):
+        elem = session.query(Analysis).filter(Analysis.id == id).first()
+        elem = to_dict(elem)
+        elem['results'] = to_dict(session.query(Result.id).filter(Result.analysis_id == id).all())
+        return elem
