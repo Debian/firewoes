@@ -2,7 +2,7 @@ from flask import render_template, jsonify
 from flask.views import View
 
 from app import app
-from models import FHGeneric, Result
+from models import FHGeneric, Result, Generator_app
 from models import Http404Error, Http500Error
 
 
@@ -44,9 +44,11 @@ def server_error(e):
 ### GENERAL VIEW HANDLING ###
 
 class GeneralView(View):
-    def __init__(self, render_func=jsonify, err_func=lambda *x: x):
+    def __init__(self, render_func=jsonify, err_func=lambda *x: x, **kwargs):
         self.render_func = render_func
         self.err_func = err_func
+        for kwarg in kwargs:
+            setattr(self, kwarg, kwargs[kwarg])
     
     def dispatch_request(self, **kwargs):
         try:
@@ -81,26 +83,46 @@ app.add_url_rule('/api/', view_func=IndexView.as_view(
         ))
 
 
-### RESULT ###
+### FIREHOSE ELEMENT/LIST ###
 
-class ResultView(GeneralView):
-    def get_objects(self, id=1):
-        #result = Result_app(id).infos()
-        #return dict(id = result.id,
-        #            message = result.message)
-        result = FHGeneric(Result)
-        return result.id(id)
+class ElemView(GeneralView):
+    def get_objects(self, id=None, **kwargs):
+        obj = self.class_()
+        result = obj.id(id)
+        return dict(result=result, firehose_type=obj.get_class())
 
+class ListView(GeneralView):
+    def get_objects(self):
+        obj = self.class_()
+        result = obj.all()
+        return dict(result=result, firehose_type=obj.get_class())
 
-app.add_url_rule('/result/<int:id>/', view_func=ResultView.as_view(
-        'result_html',
-        render_func=lambda **kwargs: render_template('result.html', **kwargs),
+# GENERATOR # HTML
+app.add_url_rule('/view/generator/<int:id>/', view_func=ElemView.as_view(
+        'generator_elem_html',
+        class_=Generator_app,
+        render_func=lambda **kwargs: render_template('elem.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
-app.add_url_rule('/api/result/<int:id>/', view_func=ResultView.as_view(
-        'result_json',
+app.add_url_rule('/view/generator/', view_func=ListView.as_view(
+        'generator_list_html',
+        class_=Generator_app,
+        render_func=lambda **kwargs: render_template('list.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+# GENERATOR # JSON
+app.add_url_rule('/api/view/generator/<int:id>/', view_func=ElemView.as_view(
+        'generator_elem_json',
+        class_=Generator_app,
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
         ))
 
+app.add_url_rule('/api/view/generator/', view_func=ListView.as_view(
+        'generator_list_json',
+        class_=Generator_app,
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
