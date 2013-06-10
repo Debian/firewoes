@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import "macros.inc.html" as macros %}
+
+{% block title %}Generator #{{ result.id }}{% endblock %}
+
+{% block content %}
+
+<h2>{{ self.title() }}</h2>
+
+{{ macros.render_generator(result) }}
+
+{% endblock %}

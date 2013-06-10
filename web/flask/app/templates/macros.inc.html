@@ -1,9 +1,18 @@
 {% macro render_analysis(analysis) %}
-  <strong>Id:</strong> {{ analysis.id }}
-  <br />
-  <strong>Metadata:</strong> {{ render_metadata(analysis.metadata) }}
-  <strong>Custom fields:</strong> {{
-  render_customfields(analysis.customfields) }}
+  <div class="bg_1">
+    <strong>Metadata:</strong>
+    <br />
+    {{ render_metadata(analysis.metadata) }}
+  </div>
+  <div class="bg_2">
+    <strong>Custom fields:</strong>
+    <br />
+    {{ render_customfields(analysis.customfields) }}
+  </div>
+  <div>
+    <strong>Results:</strong>
+  </div>
+    
 {% endmacro %}
 
 {% macro render_generator(generator) %}
@@ -12,13 +21,15 @@
 {% endmacro %}
 
 {% macro render_metadata(metadata) %}
-  Generator: {{ render_generator(metadata.generator) }}
+  {% if metadata %}
+  <strong>Generator:</strong> {{ render_generator(metadata.generator) }}
   <br />
-  Sut: {{ render_sut(metadata.sut) }}
+  <strong>Sut:</strong> {{ render_sut(metadata.sut) }}
   <br />
-  File: {{ render_file(metadata.file) }}
+  <strong>File:</strong> {{ render_file(metadata.file_) }}
   <br />
-  Stats: {{ render_stats(metadata.stats) }}
+  <strong>Stats:</strong> {{ render_stats(metadata.stats) }}
+  {% endif %}
 {% endmacro %}
 
 {% macro render_stats(stats) %}
@@ -33,7 +44,7 @@
 
 {% macro render_issue(issue) %}
   <div id="issue">
-    <div class="infos">
+    <div class="bg_1">
       <strong>Common weakness enumeration:</strong> {{ issue.cwe }}
       <br />
       <strong>Severity:</strong> {{ issue.severity }}
@@ -109,16 +120,15 @@
 {% endmacro %}
 
 {% macro render_file(file) %}
-  <strong>Given path:</strong> {{ file.givenpath }}
-  <br />
+  {% if file %}
+  {{ file.givenpath }}
   {% if file.abspath %}- ({{ file.abspath }}){% endif %}
-  <br />
   <strong>Hash:</strong> {{ render_hash(file.hash_) }}
+  {% endif %}
 {% endmacro %}
 
 {% macro render_hash(hash) %}
-  alg: {{ hash.alg }}
-  hexdigest: {{ hash.hexdigest }}
+  {{ hash.alg }} / {{ hash.hexdigest }}
 {% endmacro %}
 
 {% macro render_function(function) %}
