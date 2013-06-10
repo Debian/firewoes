@@ -2,7 +2,7 @@ from flask import render_template, jsonify
 from flask.views import View
 
 from app import app
-from models import Generator_app, Analysis_app, Sut_app
+from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Http404Error, Http500Error
 
 
@@ -97,94 +97,40 @@ class ListView(GeneralView):
         result = obj.all()
         return dict(list=result)#dict(result=result)
 
-# GENERATOR # HTML
-app.add_url_rule('/view/generator/<int:id>/', view_func=ElemView.as_view(
-        'generator_elem_html',
-        class_=Generator_app,
-        render_func=lambda **kwargs: render_template('generator.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
+def add_firehose_view(name, class_):
+    # OBJ ELEMENT (HTML)
+    app.add_url_rule('/view/%s/<int:id>/' % name, view_func=ElemView.as_view(
+            '%s_elem_html' % name,
+            class_=class_,
+            render_func=lambda **kwargs: render_template(
+                '%s.html' %name, **kwargs),
+            err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+            ))
+    # OBJ LIST (HTML)
+    app.add_url_rule('/view/%s/' %name, view_func=ListView.as_view(
+            '%s_list_html' %name,
+            class_=class_,
+            render_func=lambda **kwargs: render_template(
+                '%s_list.html' %name, **kwargs),
+            err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+            ))
+    # OBJ ELEMENT (JSON)
+    app.add_url_rule('/api/view/%s/<int:id>/' %name, view_func=ElemView.as_view(
+            '%s_elem_json' %name,
+            class_=class_,
+            render_func=jsonify,
+            err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+            ))
+    # OBJ LIST (JSON)
+    app.add_url_rule('/api/view/%s/' %name, view_func=ListView.as_view(
+            '%s_list_json' %name,
+            class_=class_,
+            render_func=jsonify,
+            err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+            ))
+    
+add_firehose_view('generator', Generator_app)
+add_firehose_view('analysis', Analysis_app)
+add_firehose_view('sut', Sut_app)
+add_firehose_view('result', Result_app)
 
-app.add_url_rule('/view/generator/', view_func=ListView.as_view(
-        'generator_list_html',
-        class_=Generator_app,
-        render_func=lambda **kwargs: render_template('generator_list.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-# GENERATOR # JSON
-app.add_url_rule('/api/view/generator/<int:id>/', view_func=ElemView.as_view(
-        'generator_elem_json',
-        class_=Generator_app,
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
-app.add_url_rule('/api/view/generator/', view_func=ListView.as_view(
-        'generator_list_json',
-        class_=Generator_app,
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
-
-# ANALYSIS # HTML
-app.add_url_rule('/view/analysis/<int:id>/', view_func=ElemView.as_view(
-        'analysis_elem_html',
-        class_=Analysis_app,
-        render_func=lambda **kwargs: render_template('analysis.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-app.add_url_rule('/view/analysis/', view_func=ListView.as_view(
-        'analysis_list_html',
-        class_=Analysis_app,
-        render_func=lambda **kwargs: render_template('analysis_list.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-# ANALYSIS # JSON
-app.add_url_rule('/api/view/analysis/<int:id>/', view_func=ElemView.as_view(
-        'analysis_elem_json',
-        class_=Analysis_app,
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
-app.add_url_rule('/api/view/analysis/', view_func=ListView.as_view(
-        'analysis_list_json',
-        class_=Analysis_app,
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
-
-# SOFTWARE # HTML
-app.add_url_rule('/view/sut/<int:id>/', view_func=ElemView.as_view(
-        'sut_elem_html',
-        class_=Sut_app,
-        render_func=lambda **kwargs: render_template('sut.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-app.add_url_rule('/view/sut/', view_func=ListView.as_view(
-        'sut_list_html',
-        class_=Sut_app,
-        render_func=lambda **kwargs: render_template('sut_list.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-# SOFTWARE # JSON
-app.add_url_rule('/api/view/sut/<int:id>/', view_func=ElemView.as_view(
-        'sut_elem_json',
-        class_=Sut_app,
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
-app.add_url_rule('/api/view/sut/', view_func=ListView.as_view(
-        'sut_list_json',
-        class_=Sut_app,
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
