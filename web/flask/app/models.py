@@ -1,4 +1,4 @@
-from lib.firehose_orm import Analysis, Result, Generator, Sut
+from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut
 #from lib.firehose_noslo
 
 from app import session
@@ -34,91 +34,40 @@ def to_dict(elem):
                     res[attr_name] = to_dict(attr)
         return res
 
-
+fh_types = dict(
+    result = Result,
+    issue = Issue,
+    failure = Failure,
+    info = Info,
+    )
 
 class FHGeneric(object):
-    def __init__(self, fh_class):
-        self.fh_class = fh_class
-    
     def all(self):
         elem = session.query(self.fh_class).all()
         return to_dict(elem)
     
     def id(self, id):
-        elem = session.query(self.fh_class).filter(
-            self.fh_class.id == id).first()
-        return to_dict(elem)
-                
-
-
-# class MetaInfo(object):
-#     def __init__(self):
-#         self.generators = Generator_app().all()
-#         self.suts = Sut_app().all()
-#         self.analyses = Analysis_app().last_ones()
-
-#     def get_generators(self):
-#         r = []#dict()
-#         for gen in self.generators:
-#             r.append(dict(name=gen.name, version=gen.version))
-#         return r
-#         #return self.get_generators
-
-#     def get_suts(self):
-#         r = []
-#         for s in self.suts:
-#             r.append(dict(name=s.name, version=s.version, type=s.type))
-#         return r
-    
-#     def get_analyses(self):
-#         r = []
-#         for a in self.analyses:
-#             r.append(dict(id = a.id, generator = a.metadata.generator.name))
-#                                                    # fixme
-#         return r
-
-
-# class Generator_app(object):
-#     def __init__(self):
-#         pass
-    
-#     def all(self):
-#         return session.query(Generator).all()
-
-# class Sut_app(object):
-#     def __init__(self):
-#         pass
-    
-#     def all(self):
-#         return session.query(Sut).all()
-
-# class Analysis_app(object):
-#     def __init__(self):
-#         pass
-    
-#     def all(self):
-#         self.analyses = session.query(Analysis).all()
-#         return self.analyses
-    
-#     def last_ones(self, n=10):
-#         self.last_ones = session.query(
-#             Analysis).order_by(Analysis.id.desc()).limit(n)
-#         return self.last_ones
-
-
-# class Result_app(object):
-#     def __init__(self, id):
-#         self.result = session.query(Result).filter(Result.id == id).first()
-#         if not(self.result):
-#             raise Http404Error("Result with id %d doesn't exist." % id)
+        try:
+            elem = session.query(self.fh_class).filter(
+                self.fh_class.id == id).first()
+        except:
+            raise Http500Error
         
-#     def infos(self):
-#         return self.result
+        try:
+            id = elem.id # raises error if the element doesn't exist
+        except:
+            raise Http404Error("This element (%s, %i) doesn't exist."
+                               % (self.fh_class.__name__, id))
+        return to_dict(elem)
 
+    def get_class(self):
+        return self.fh_class.__name__
 
-# class Message_app(object):
-#     def __init__(self):
-#         self.message = session.query(Message).first()
-    
-#     def __repr__(self):
-#         return self.message.__repr__()
+class Generator_app(FHGeneric):
+    def __init__(self):
+        self.fh_class = Generator
+
+    def all(self):
+        elem = session.query(self.fh_class).order_by(Generator.name).all()
+        return to_dict(elem)
+
