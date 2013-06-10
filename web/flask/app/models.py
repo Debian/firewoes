@@ -34,12 +34,6 @@ def to_dict(elem):
                     res[attr_name] = to_dict(attr)
         return res
 
-fh_types = dict(
-    result = Result,
-    issue = Issue,
-    failure = Failure,
-    info = Info,
-    )
 
 class FHGeneric(object):
     def all(self):
