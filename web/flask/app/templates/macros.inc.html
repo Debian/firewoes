@@ -11,6 +11,10 @@
   </div>
   <div>
     <strong>Results:</strong>
+    {% for res in analysis.results %}
+      <a href="{{ url_for('result_elem_html', id=res.id) }}">#{{ res.id
+         }}</a>
+    {% endfor %}
   </div>
     
 {% endmacro %}
