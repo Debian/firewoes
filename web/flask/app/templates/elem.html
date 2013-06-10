@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "macros.inc.html" as macros %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css"
+        href="{{ url_for('static', filename='css/elems.css') }}" />
+{% endblock %}
+
+{% block title %}{{ firehose_type.capitalize() }} #{{ result.id }}{% endblock %}
+
+{% block content %}
+
+<h2>{{ self.title() }}</h2>
+
+{% if firehose_type == "Issue" %}
+  {{ macros.render_issue(result) }}
+{% elif firehose_type == "Failure" %}
+  {{ macros.render_failure(result) }}
+{% elif firehose_type == "Generator" %}
+  {{ macros.render_generator(result) }}
+{% else %}
+ Call macro in elem.html! {{ firehose_type }}
+{% endif %}
+
+{% endblock %}

@@ -1,13 +1,28 @@
 <!doctype html>
 <html>
   <head>
+    {% block head %}
     <meta charset="utf-8">
-    <title>{% if title %}{{ title }} | {% endif %}debcocci</title>
+    <link rel="stylesheet" type="text/css"
+        href="{{ url_for('static', filename='css/base.css') }}" />
+    <title>{% block title %} {% endblock %} | debcocci</title>
+    {% endblock %}
   </head>
   <body>
     <h1>debcocci{% if title %} - {{ title }}{% endif %}</h1>
     <hr />
-    {% block content %}
-    {% endblock %}
+    <div id="leftmenu">
+      <h2>Menu</h2>
+      <ul>
+        <li><a href="">Analyses</a></li>
+        <li><a href="">Issues</a></li>
+        <li><a href="">Software</a></li>
+        <li><a href="{{ url_for('generator_list_html') }}">Generators</a></li>
+      </ul>
+    </div>
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
   </body>
 </html>

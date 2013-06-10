@@ -1,0 +1,8 @@
+#leftmenu {
+    float: left;
+    width: 200px;
+}
+
+#content {
+    padding-left: 200px;
+}
