@@ -2,7 +2,7 @@ from flask import render_template, jsonify
 from flask.views import View
 
 from app import app
-from models import MetaInfo, Result_app
+from models import FHGeneric, Result
 from models import Http404Error, Http500Error
 
 
@@ -62,10 +62,11 @@ class GeneralView(View):
 
 class IndexView(GeneralView):
     def get_objects(self):
-        meta_info = MetaInfo()
-        return dict(generators = meta_info.get_generators(),
-                    suts = meta_info.get_suts(),
-                    analyses = meta_info.get_analyses())
+        return dict()
+        # meta_info = MetaInfo()
+        # return dict(generators = meta_info.get_generators(),
+        #             suts = meta_info.get_suts(),
+        #             analyses = meta_info.get_analyses())
 
 app.add_url_rule('/', view_func=IndexView.as_view(
         'index_html',
@@ -84,9 +85,11 @@ app.add_url_rule('/api/', view_func=IndexView.as_view(
 
 class ResultView(GeneralView):
     def get_objects(self, id=1):
-        result = Result_app(id).infos()
-        return dict(id = result.id,
-                    message = result.message)
+        #result = Result_app(id).infos()
+        #return dict(id = result.id,
+        #            message = result.message)
+        result = FHGeneric(Result)
+        return result.id(id)
 
 
 app.add_url_rule('/result/<int:id>/', view_func=ResultView.as_view(
@@ -95,7 +98,7 @@ app.add_url_rule('/result/<int:id>/', view_func=ResultView.as_view(
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
-app.add_url_rule('/api/result/', view_func=ResultView.as_view(
+app.add_url_rule('/api/result/<int:id>/', view_func=ResultView.as_view(
         'result_json',
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
