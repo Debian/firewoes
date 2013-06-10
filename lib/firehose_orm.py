@@ -264,7 +264,7 @@ mapper(Analysis, t_analysis,
         'metadata': relationship(Metadata, lazy='joined'),
         # FIXME: should do both issues *and* failures
         'results': relationship(
-            Result, backref='analysis', order_by=t_result.c.id),
+            Result, order_by=t_result.c.id),
         'customfields': relationship(CustomFields),
         }
        )
@@ -304,7 +304,7 @@ mapper(Notes, t_notes)
 mapper(Trace, t_trace,
        properties={
         'states': relationship(
-            State, backref='trace', order_by=t_state.c.id, lazy='joined')
+            State, order_by=t_state.c.id, lazy='joined')
         }
        )
 
