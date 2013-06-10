@@ -264,17 +264,17 @@ mapper(Analysis, t_analysis,
         'metadata': relationship(Metadata, lazy='joined'),
         # FIXME: should do both issues *and* failures
         'results': relationship(
-            Result, order_by=t_result.c.id),
+            Result, order_by=t_result.c.id, lazy='noload'),
         'customfields': relationship(CustomFields),
         }
        )
 
 mapper(Metadata, t_metadata,
        properties={
-        'generator': relationship(Generator),
-        'sut': relationship(Sut),
-        'file_': relationship(File),
-        'stats': relationship(Stats),
+        'generator': relationship(Generator, lazy='joined'),
+        'sut': relationship(Sut, lazy='joined'),
+        'file_': relationship(File, lazy='joined'),
+        'stats': relationship(Stats, lazy='joined'),
         }
        )
 
