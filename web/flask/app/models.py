@@ -87,3 +87,11 @@ class Analysis_app(FHGeneric):
 class Sut_app(FHGeneric):
     def __init__(self):
         self.fh_class = Sut
+
+class Result_app(FHGeneric):
+    def __init__(self):
+        self.fh_class = Result
+        
+    def all(self):
+        elem = session.query(Result.id).all()
+        return to_dict(elem)
