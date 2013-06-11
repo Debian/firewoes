@@ -7,6 +7,7 @@
 
 <h2>{{ self.title() }}</h2>
 
-{{ macros.render_generator(result) }}
+{{ macros.display_table([("Name", result.name),
+                         ("Version", result.version)]) }}
 
 {% endblock %}

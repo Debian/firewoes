@@ -7,6 +7,9 @@
 
 <h2>{{ self.title() }}</h2>
 
-{{ macros.render_sut(result) }}
+{{ macros.display_table([("Type", result.type),
+                         ("Name", result.name),
+                         ("Version", result.version),
+                         ("Release", result.release)]) }}
 
 {% endblock %}
