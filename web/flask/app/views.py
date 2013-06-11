@@ -149,6 +149,7 @@ class FilterView(GeneralView):
             current_result = None
             previous_result = None
             next_result = None
+            current_result_range = None
         else:
             try:
                 current_result_id = int(get['id'])
@@ -161,16 +162,18 @@ class FilterView(GeneralView):
             for i, elem in enumerate(list_):
                 if elem['id'] == current_result_id:
                     break
-            if i == 0:
+            current_result_range = i
+            if current_result_range == 0:
                 previous_result = None
             else:
-                previous_result = list_[i-1]['id']
-            if i == len(list_) - 1:
+                previous_result = list_[current_result_range-1]['id']
+            if current_result_range == len(list_) - 1:
                 next_result = None
             else:
-                next_result = list_[i+1]['id']
+                next_result = list_[current_result_range+1]['id']
         
         return dict(list=list_, current_result=current_result,
+                    current_result_range=current_result_range+1,
                     packagename = package,
                     previous_result=previous_result, next_result=next_result)
 

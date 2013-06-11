@@ -10,17 +10,20 @@
 {% if list %}
 
 {% if previous_result %}
-  <a href="{{ url_for('filter_html', package=packagename,
-           id=previous_result) }}">previous</a>
+  [<a href="{{ url_for('filter_html', package=packagename,
+           id=previous_result) }}">previous</a>]
   {% else %}
-  previous
+  [previous]
   {% endif %}
-  {{ current_result.id }}
+  #{{ current_result.id }}
+  {% if current_result_range %}
+    ({{ current_result_range }}/{{ list|length}})
+  {% endif %}
   {% if next_result %}
-  <a href="{{ url_for('filter_html', package=packagename,
-           id=next_result) }}">next</a>
+  [<a href="{{ url_for('filter_html', package=packagename,
+           id=next_result) }}">next</a>]
   {% else %}
-  next
+  [next]
   {% endif %}
   <br />
   <br />
