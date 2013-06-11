@@ -9,11 +9,7 @@
 
   <div>
     <h3>Metadata:</h3>
-    {{ macros.display_table([
-      ("Generator", macros.render_generator(result.metadata.generator)),
-      ("Software under test", macros.render_sut(result.metadata.sut)),
-      ("File", macros.render_file(result.metadata.file_)),
-      ("Stats", macros.render_stats(result.metadata.stats))]) }}
+    {{ macros.render_metadata(result.metadata) }}
   </div>
   <div>
     <h3>Custom fields:</h3>

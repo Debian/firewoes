@@ -31,6 +31,13 @@
   </form>
 {%- endmacro %}
 
+{% macro render_metadata(metadata) %}
+{{ display_table([
+      ("Generator", render_generator(metadata.generator)),
+      ("Software under test", render_sut(metadata.sut)),
+      ("File", render_file(metadata.file_)),
+      ("Stats", render_stats(metadata.stats))]) }}
+{% endmacro %}
 
 {% macro render_result(result) %}
 {% if result.type == "issue" %}

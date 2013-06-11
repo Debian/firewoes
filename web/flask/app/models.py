@@ -126,3 +126,13 @@ class Result_app(FHGeneric):
                 *clauses)).order_by(Result.id).all()
                 #Sut.name == packagename)).order_by(Result.id).all()
         return to_dict(elem)
+
+    def id(self, id, with_metadata=False):
+        if not(with_metadata):
+            return super(Result_app, self).id(id)
+        else:
+            elem = session.query(Result, Metadata).filter(and_(
+                    Result.id == id,
+                    Result.analysis_id == Analysis.id,
+                    Analysis.metadata_id == Metadata.id)).first()
+            return to_dict(elem)

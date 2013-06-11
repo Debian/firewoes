@@ -191,7 +191,8 @@ class FilterView(GeneralView):
             except: # default
                 current_result_id = list_[0]['id']
 
-            current_result = Result_app().id(current_result_id)
+            current_result = Result_app().id(current_result_id,
+                                             with_metadata=True)
             
             # we get the previous and next results (for links)
             for i, elem in enumerate(list_):
@@ -212,7 +213,6 @@ class FilterView(GeneralView):
                     filter=filter_,
                     current_result=current_result,
                     current_result_range=current_result_range,
-                    packagename = packagename,
                     previous_result=previous_result, next_result=next_result)
 
 # FILTER HTML

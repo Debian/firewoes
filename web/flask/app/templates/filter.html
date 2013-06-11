@@ -10,24 +10,30 @@
 {% if list %}
 
 {% if previous_result %}
-  [<a href="{{ url_for('filter_html', packagename=packagename,
-           id=previous_result) }}">previous</a>]
+  [<a href="{{ url_for('filter_html', packagename=filter.packagename,
+           id=previous_result, packageversion=filter.packageversion,
+           generator=filter.generator) }}">previous</a>]
   {% else %}
   [previous]
   {% endif %}
-  #{{ current_result.id }}
+  #{{ current_result.Result.id }}
   {% if current_result_range %}
     ({{ current_result_range }}/{{ list|length}})
   {% endif %}
   {% if next_result %}
-  [<a href="{{ url_for('filter_html', packagename=packagename,
-           id=next_result) }}">next</a>]
+  [<a href="{{ url_for('filter_html', packagename=filter.packagename,
+           id=next_result, packageversion=filter.packageversion,
+           generator=filter.generator) }}">next</a>]
   {% else %}
   [next]
   {% endif %}
   <br />
-  <br />
-  {{ macros.render_result(current_result) }}
+  
+  <h3>Metadata</h3>
+  {{ macros.render_metadata(current_result.Metadata) }}
+  
+  <h3>Result</h3>
+  {{ macros.render_result(current_result.Result) }}
   
 {% else %}
   No results found!
