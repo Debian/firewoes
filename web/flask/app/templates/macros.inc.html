@@ -9,6 +9,39 @@
   </table>
 {% endmacro %}
 
+{% macro render_result(result) %}
+{% if result.type == "issue" %}
+
+{{ display_table([
+      ("Type", "Issue"),
+      ("CWE", result.cwe),
+      ("Severity", result.severity),
+      ("Message", render_message(result.message)),
+      ("Notes", render_notes(result.notes)),
+      ("Location", render_location(result.location)),
+      ("Trace", render_trace(result.trace)),
+      ("Custom fields", render_customfields(result.customfields))]) }}
+
+
+{% elif result.type == "failure" %}
+
+  {{ display_table([
+      ("Type", "Failure"),
+      ("Message", render_message(result.message)),
+      ("Location", render_location(result.location)),
+      ("Custom fields", render_customfields(result.customfields))]) }}
+
+{% elif result.type == "info" %}
+
+  {{ display_table([
+      ("Type", "Info"),
+      ("Message", render_message(result.message)),
+      ("Location", render_location(result.location)),
+      ("Custom fields",
+      render_customfields(result.customfields))]) }}
+{% endif %}
+
+{% endmacro %}
 
 {% macro render_generator(generator) %}
   {{ generator.name }}

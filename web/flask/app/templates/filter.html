@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "macros.inc.html" as macros %}
+
+{% block title %}Filter: {{ packagename }}{% endblock %}
+
+{% block content %}
+
+<h2>{{ self.title() }}</h2>
+
+{% if list %}
+
+{% if previous_result %}
+  <a href="{{ url_for('filter_html', package=packagename,
+           id=previous_result) }}">previous</a>
+  {% else %}
+  previous
+  {% endif %}
+  {{ current_result.id }}
+  {% if next_result %}
+  <a href="{{ url_for('filter_html', package=packagename,
+           id=next_result) }}">next</a>
+  {% else %}
+  next
+  {% endif %}
+  <br />
+  <br />
+  {{ macros.render_result(current_result) }}
+  
+{% else %}
+  No results found!
+{% endif %}
+{% endblock %}

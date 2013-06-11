@@ -99,3 +99,11 @@ class Result_app(FHGeneric):
     def all(self):
         elem = session.query(Result.id).all()
         return to_dict(elem)
+    
+    def filter_by_package(self, package):
+        elem = session.query(Result.id).filter(and_(
+                Result.analysis_id == Analysis.id,
+                Analysis.metadata_id == Metadata.id,
+                Metadata.sut_id == Sut.id,
+                Sut.name == package)).order_by(Result.id).all()
+        return to_dict(elem)

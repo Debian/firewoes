@@ -12,12 +12,24 @@
     <h1>debcocci{% if title %} - {{ title }}{% endif %}</h1>
     <hr />
     <div id="leftmenu">
-      <h2>Menu</h2>
+      <h2>Find</h2>
+      
+      <strong>Filter</strong> by package:
+      <form name="filter-by-package"
+            action="{{ url_for('filter_html') }}" method="GET">
+        <input type="text" name="package" />
+        <input type="submit" value="Search" />
+      </form>
+      
       <ul>
-        <li><a href="{{ url_for('analysis_list_html') }}">Analyses</a></li>
-        <li><a href="{{ url_for('result_list_html') }}">Results</a></li>
-        <li><a href="{{ url_for('sut_list_html') }}">Software</a></li>
-        <li><a href="{{ url_for('generator_list_html') }}">Generators</a></li>
+        <li><a href="{{ url_for('analysis_list_html') }}">
+            All analyses</a></li>
+        <li><a href="{{ url_for('result_list_html') }}">
+            All results</a></li>
+        <li><a href="{{ url_for('sut_list_html') }}">
+            All software</a></li>
+        <li><a href="{{ url_for('generator_list_html') }}">
+            All generators</a></li>
       </ul>
     </div>
     <div id="content">

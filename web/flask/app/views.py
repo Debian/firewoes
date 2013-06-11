@@ -1,4 +1,4 @@
-from flask import render_template, jsonify
+from flask import render_template, jsonify, request
 from flask.views import View
 
 from app import app
@@ -126,38 +126,7 @@ def add_firehose_view(name, class_):
         
     add_(name, class_) # HTML
     add_(name, class_, api="api") # JSON
-        
-    # # OBJ ELEMENT (HTML)
-    # app.add_url_rule('/view/%s/<int:id>/' % name, view_func=ElemView.as_view(
-    #         '%s_elem_html' % name,
-    #         class_=class_,
-    #         render_func=lambda **kwargs: render_template(
-    #             '%s.html' %name, **kwargs),
-    #         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-    #         ))
-    # # OBJ LIST (HTML)
-    # app.add_url_rule('/view/%s/' %name, view_func=ListView.as_view(
-    #         '%s_list_html' %name,
-    #         class_=class_,
-    #         render_func=lambda **kwargs: render_template(
-    #             '%s_list.html' %name, **kwargs),
-    #         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-    #         ))
-    # # OBJ ELEMENT (JSON)
-    # app.add_url_rule('/api/view/%s/<int:id>/' %name, view_func=ElemView.as_view(
-    #         '%s_elem_json' %name,
-    #         class_=class_,
-    #         render_func=jsonify,
-    #         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-    #         ))
-    # # OBJ LIST (JSON)
-    # app.add_url_rule('/api/view/%s/' %name, view_func=ListView.as_view(
-    #         '%s_list_json' %name,
-    #         class_=class_,
-    #         render_func=jsonify,
-    #         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-    #         ))
-    
+
 add_firehose_view('generator', Generator_app)
 add_firehose_view('analysis', Analysis_app)
 add_firehose_view('sut', Sut_app)
@@ -167,5 +136,55 @@ add_firehose_view('result', Result_app)
 
 class FilterView(GeneralView):
     def get_objects(self, get=None):
-        if get is None:
-            return dict()
+        # we get the list of result.id linked to the specified package
+        get = request.args
+        try:
+            package = get['package']
+        except:
+            raise Http404Error("No package specified")
+        list_ = Result_app().filter_by_package(package)
+        
+        # we get the current viewed result
+        if len(list_) == 0:
+            current_result = None
+            previous_result = None
+            next_result = None
+        else:
+            try:
+                current_result_id = int(get['id'])
+            except: # default
+                current_result_id = list_[0]['id']
+
+            current_result = Result_app().id(current_result_id)
+            
+            # we get the previous and next results (for links)
+            for i, elem in enumerate(list_):
+                if elem['id'] == current_result_id:
+                    break
+            if i == 0:
+                previous_result = None
+            else:
+                previous_result = list_[i-1]['id']
+            if i == len(list_) - 1:
+                next_result = None
+            else:
+                next_result = list_[i+1]['id']
+        
+        return dict(list=list_, current_result=current_result,
+                    packagename = package,
+                    previous_result=previous_result, next_result=next_result)
+
+# FILTER HTML
+app.add_url_rule('/filter/', view_func=FilterView.as_view(
+        'filter_html',
+        render_func=lambda **kwargs: render_template(
+            'filter.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+# FILTER JSON
+app.add_url_rule('/api/filter/', view_func=FilterView.as_view(
+        'filter_json',
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
