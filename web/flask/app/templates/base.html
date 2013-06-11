@@ -12,8 +12,7 @@
     <h1>debcocci{% if title %} - {{ title }}{% endif %}</h1>
     <hr />
     <div id="leftmenu">
-      <h2>Find</h2>
-      
+      <h2>Filter results</h2>
       <strong>Filter</strong> by package:
       <form name="filter-by-package"
             action="{{ url_for('filter_html') }}" method="GET">
@@ -21,6 +20,7 @@
         <input type="submit" value="Search" />
       </form>
       
+      <h2>Other</h2>
       <ul>
         <li><a href="{{ url_for('analysis_list_html') }}">
             All analyses</a></li>
