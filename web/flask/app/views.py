@@ -98,39 +98,74 @@ class ListView(GeneralView):
         return dict(list=result)#dict(result=result)
 
 def add_firehose_view(name, class_):
-    # OBJ ELEMENT (HTML)
-    app.add_url_rule('/view/%s/<int:id>/' % name, view_func=ElemView.as_view(
-            '%s_elem_html' % name,
-            class_=class_,
-            render_func=lambda **kwargs: render_template(
-                '%s.html' %name, **kwargs),
-            err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-            ))
-    # OBJ LIST (HTML)
-    app.add_url_rule('/view/%s/' %name, view_func=ListView.as_view(
-            '%s_list_html' %name,
-            class_=class_,
-            render_func=lambda **kwargs: render_template(
-                '%s_list.html' %name, **kwargs),
-            err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-            ))
-    # OBJ ELEMENT (JSON)
-    app.add_url_rule('/api/view/%s/<int:id>/' %name, view_func=ElemView.as_view(
-            '%s_elem_json' %name,
-            class_=class_,
-            render_func=jsonify,
-            err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-            ))
-    # OBJ LIST (JSON)
-    app.add_url_rule('/api/view/%s/' %name, view_func=ListView.as_view(
-            '%s_list_json' %name,
-            class_=class_,
-            render_func=jsonify,
-            err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-            ))
+    def add_(name, class_, api=""):
+        if api == "":
+            mode = 'html'
+        else:
+            mode = 'json'
+            api = '/'+api
+        
+        # LIST VIEW
+        app.add_url_rule('%s/view/%s/' % (api, name),
+                         view_func=ListView.as_view(
+                '%s_list_%s' % (name, mode),
+                class_=class_,
+                render_func=lambda **kwargs: render_template(
+                    '%s_list.html' %name, **kwargs),
+                err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
+                ))
+        # ELEM VIEW
+        app.add_url_rule('%s/view/%s/<int:id>/' % (api, name),
+                         view_func=ElemView.as_view(
+                '%s_elem_%s' % (name, mode),
+                class_=class_,
+                render_func=lambda **kwargs: render_template(
+                    '%s.html' %name, **kwargs),
+                err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
+                ))
+        
+    add_(name, class_) # HTML
+    add_(name, class_, api="api") # JSON
+        
+    # # OBJ ELEMENT (HTML)
+    # app.add_url_rule('/view/%s/<int:id>/' % name, view_func=ElemView.as_view(
+    #         '%s_elem_html' % name,
+    #         class_=class_,
+    #         render_func=lambda **kwargs: render_template(
+    #             '%s.html' %name, **kwargs),
+    #         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+    #         ))
+    # # OBJ LIST (HTML)
+    # app.add_url_rule('/view/%s/' %name, view_func=ListView.as_view(
+    #         '%s_list_html' %name,
+    #         class_=class_,
+    #         render_func=lambda **kwargs: render_template(
+    #             '%s_list.html' %name, **kwargs),
+    #         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+    #         ))
+    # # OBJ ELEMENT (JSON)
+    # app.add_url_rule('/api/view/%s/<int:id>/' %name, view_func=ElemView.as_view(
+    #         '%s_elem_json' %name,
+    #         class_=class_,
+    #         render_func=jsonify,
+    #         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+    #         ))
+    # # OBJ LIST (JSON)
+    # app.add_url_rule('/api/view/%s/' %name, view_func=ListView.as_view(
+    #         '%s_list_json' %name,
+    #         class_=class_,
+    #         render_func=jsonify,
+    #         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+    #         ))
     
 add_firehose_view('generator', Generator_app)
 add_firehose_view('analysis', Analysis_app)
 add_firehose_view('sut', Sut_app)
 add_firehose_view('result', Result_app)
 
+### FILTERS ###
+
+class FilterView(GeneralView):
+    def get_objects(self, get=None):
+        if get is None:
+            return dict()
