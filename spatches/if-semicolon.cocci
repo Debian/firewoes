@@ -17,8 +17,5 @@ if (...);@p
 p0 << r1.p;
 @@
 // Emacs org-mode output
-@initialize:python depends on !firehose@
 cocci.print_main("", p0)
 cocci.print_secs("", p0)
-@initialize:python depends on firehose@
-coccilib.firehose.xml_firehose(
