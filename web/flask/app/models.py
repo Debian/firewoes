@@ -1,5 +1,5 @@
-from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut
-#from lib.firehose_noslo
+from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut, Metadata
+from sqlalchemy import and_
 
 from app import session
 
@@ -20,7 +20,7 @@ def to_dict(elem):
     """
     if elem is None:
         return None
-    elif type(elem) in [int, float, str, unicode]:#_string_type]
+    elif type(elem) in [int, float, str, unicode, bool]:#_string_type]
         return elem
     
     elif isinstance(elem, list):
@@ -75,13 +75,17 @@ class Analysis_app(FHGeneric):
         self.fh_class = Analysis
 
     def all(self):
-        elem = session.query(Analysis.id).all()
+        elem = session.query(Analysis.id,
+                             Generator.name.label("generator_name")).filter(
+            and_(Analysis.metadata_id == Metadata.id,
+                 Metadata.generator_id == Generator.id)).all()
         return to_dict(elem)
 
     def id(self, id):
         elem = session.query(Analysis).filter(Analysis.id == id).first()
         elem = to_dict(elem)
-        elem['results'] = to_dict(session.query(Result.id).filter(Result.analysis_id == id).all())
+        elem['results'] = to_dict(session.query(
+                Result.id).filter(Result.analysis_id == id).all())
         return elem
 
 class Sut_app(FHGeneric):
