@@ -2,24 +2,16 @@
 
 {% block content %}
 
+<h2>Home</h2>
+{{ lipsum(n=2) }}
+
 <h2>Static analysis generators</h2>
 <ul>
   {% for gen in generators %}
-    <li>{{ gen.name }} ({{ gen.version }})</li>
-  {% endfor %}
-</ul>
-
-<h2>Software under test</h2>
-<ul>
-  {% for sut in suts %}
-    <li>{{ sut.name }} ({{ sut.version }}) - ({{ sut.type }})</li>
-  {% endfor %}
-</ul>
-
-<h2>Last analyses</h2>
-<ul>
-  {% for analysis in analyses %}
-    <li>{{ analysis.id }} ({{ analysis.generator }})</li>
+    <li><a href="{{ url_for('generator_elem_html', id=gen.id) }}">
+        {{ gen.name }}
+        {% if gen.version %}({{ gen.version }}){% endif %}
+    </a></li>
   {% endfor %}
 </ul>
 

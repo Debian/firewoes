@@ -96,11 +96,7 @@ class GeneralView(View):
 
 class IndexView(GeneralView):
     def get_objects(self):
-        return dict()
-        # meta_info = MetaInfo()
-        # return dict(generators = meta_info.get_generators(),
-        #             suts = meta_info.get_suts(),
-        #             analyses = meta_info.get_analyses())
+        return dict(generators = Generator_app().all())
 
 app.add_url_rule('/', view_func=IndexView.as_view(
         'index_html',
