@@ -69,6 +69,10 @@ class Generator_app(FHGeneric):
     def all(self):
         elem = session.query(self.fh_class).order_by(Generator.name).all()
         return to_dict(elem)
+    
+    def unique_by_name(self):
+        elem = session.query(Generator.name).distinct().all()
+        return to_dict(elem)
 
 class Analysis_app(FHGeneric):
     def __init__(self):
@@ -91,6 +95,11 @@ class Analysis_app(FHGeneric):
 class Sut_app(FHGeneric):
     def __init__(self):
         self.fh_class = Sut
+        
+    def versions(self, name):
+        elem = session.query(Sut.version).filter(
+            Sut.name==name).order_by(Sut.version).all()
+        return to_dict(elem)
 
 class Result_app(FHGeneric):
     def __init__(self):
@@ -100,10 +109,20 @@ class Result_app(FHGeneric):
         elem = session.query(Result.id).all()
         return to_dict(elem)
     
-    def filter_by_package(self, package):
+    def filter(self, packagename="", packageversion="", generator=""):
+        clauses = []
+        if packagename != "":
+            clauses.append(Sut.name == packagename)
+        if packageversion != "":
+            clauses.append(Sut.version == packageversion)
+        if generator != "":
+            clauses.append(Metadata.generator_id == Generator.id)
+            clauses.append(Generator.name == generator)
+        
         elem = session.query(Result.id).filter(and_(
                 Result.analysis_id == Analysis.id,
                 Analysis.metadata_id == Metadata.id,
                 Metadata.sut_id == Sut.id,
-                Sut.name == package)).order_by(Result.id).all()
+                *clauses)).order_by(Result.id).all()
+                #Sut.name == packagename)).order_by(Result.id).all()
         return to_dict(elem)

@@ -4,6 +4,7 @@ from flask.views import View
 from app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Http404Error, Http500Error
+from forms import SearchForm
 
 
 
@@ -21,11 +22,11 @@ def deal_404_error(error, mode='html'):
     if mode == 'json':
         return jsonify(dict(error=404))
     else:
-        return render_template('404.html'), 404
+        return html('404.html'), 404
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return html('404.html'), 404
 
 def deal_500_error(error, mode='html'):
     """ logs a 500 error and returns the correct template """
@@ -34,11 +35,42 @@ def deal_500_error(error, mode='html'):
     if mode == 'json':
         return jsonify(dict(error=500))
     else:
-        return render_template('500.html'), 500
+        return html('500.html'), 500
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template('500.html'), 500
+    return html('500.html'), 500
+
+### HTML FUNCTION ###
+
+def html(templatename, **kwargs):
+    # search form preprocessing
+    searchform = SearchForm()
+    try:
+        filter_ = kwargs['filter']
+    except:
+        filter_ = None
+    if filter_ is not None:
+        if filter_['packagename'] != "":
+            versions = Sut_app().versions(filter_['packagename'])
+            searchform.packageversion.choices = [('', '(all)')]
+            searchform.packageversion.choices += [
+                (vers['version'], vers['version']) for vers in versions]
+            # default selected choice:
+            searchform.packageversion.data = filter_['packageversion']
+    
+    generators = Generator_app().unique_by_name()
+    
+    searchform.generator.choices = [('', '(all)')]
+    searchform.generator.choices += [
+        (gen['name'], gen['name']) for gen in generators]
+    if filter_ is not None:
+        # default selected choice:
+        searchform.generator.data = filter_['generator']
+    
+    return render_template(templatename,
+                           searchform=searchform,
+                           **kwargs)
 
 
 ### GENERAL VIEW HANDLING ###
@@ -72,7 +104,7 @@ class IndexView(GeneralView):
 
 app.add_url_rule('/', view_func=IndexView.as_view(
         'index_html',
-        render_func=lambda **kwargs: render_template('index.html', **kwargs),
+        render_func=lambda **kwargs: html('index.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
@@ -110,8 +142,7 @@ def add_firehose_view(name, class_):
                          view_func=ListView.as_view(
                 '%s_list_%s' % (name, mode),
                 class_=class_,
-                render_func=lambda **kwargs: render_template(
-                    '%s_list.html' %name, **kwargs),
+                render_func=lambda **kwargs:html('%s_list.html' %name, **kwargs),
                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
                 ))
         # ELEM VIEW
@@ -119,8 +150,7 @@ def add_firehose_view(name, class_):
                          view_func=ElemView.as_view(
                 '%s_elem_%s' % (name, mode),
                 class_=class_,
-                render_func=lambda **kwargs: render_template(
-                    '%s.html' %name, **kwargs),
+                render_func=lambda **kwargs: html('%s.html' %name, **kwargs),
                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
                 ))
         
@@ -135,14 +165,23 @@ add_firehose_view('result', Result_app)
 ### FILTERS ###
 
 class FilterView(GeneralView):
-    def get_objects(self, get=None):
+    def get_objects(self):
         # we get the list of result.id linked to the specified package
         get = request.args
-        try:
-            package = get['package']
-        except:
-            raise Http404Error("No package specified")
-        list_ = Result_app().filter_by_package(package)
+        try: packagename = get['packagename']
+        except: packagename = ""
+        
+        try: packageversion = get['packageversion']
+        except: packageversion = ""
+        
+        try: generator = get['generator']
+        except: generator = ""
+        
+        filter_ = dict(packagename=packagename,
+                       packageversion=packageversion,
+                       generator=generator)
+
+        list_ = Result_app().filter(**filter_)        
         
         # we get the current viewed result
         if len(list_) == 0:
@@ -171,17 +210,19 @@ class FilterView(GeneralView):
                 next_result = None
             else:
                 next_result = list_[current_result_range+1]['id']
+            current_result_range += 1 # humans don't start at 0
         
-        return dict(list=list_, current_result=current_result,
-                    current_result_range=current_result_range+1,
-                    packagename = package,
+        return dict(list=list_,
+                    filter=filter_,
+                    current_result=current_result,
+                    current_result_range=current_result_range,
+                    packagename = packagename,
                     previous_result=previous_result, next_result=next_result)
 
 # FILTER HTML
 app.add_url_rule('/filter/', view_func=FilterView.as_view(
         'filter_html',
-        render_func=lambda **kwargs: render_template(
-            'filter.html', **kwargs),
+        render_func=lambda **kwargs: html('filter.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 

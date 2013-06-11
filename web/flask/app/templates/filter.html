@@ -10,7 +10,7 @@
 {% if list %}
 
 {% if previous_result %}
-  [<a href="{{ url_for('filter_html', package=packagename,
+  [<a href="{{ url_for('filter_html', packagename=packagename,
            id=previous_result) }}">previous</a>]
   {% else %}
   [previous]
@@ -20,7 +20,7 @@
     ({{ current_result_range }}/{{ list|length}})
   {% endif %}
   {% if next_result %}
-  [<a href="{{ url_for('filter_html', package=packagename,
+  [<a href="{{ url_for('filter_html', packagename=packagename,
            id=next_result) }}">next</a>]
   {% else %}
   [next]

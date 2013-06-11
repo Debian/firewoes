@@ -9,6 +9,29 @@
   </table>
 {% endmacro %}
 
+{% macro display_searchform(form, filter, display="block") -%}
+  <form action="{{ url_for('filter_html') }}" name="searchform"
+        method="get" style="display: {{ display }};">
+    
+    Filter by <strong>package</strong>:
+    <br />
+    {% if filter %}
+      {{ form.packagename(value=filter.packagename) }}
+    {% else %}
+      {{ form.packagename(autofocus=True) }}
+    {% endif %}
+    {{ form.packageversion }}
+    <br /><br />
+    Filter by <strong>generator</strong>:
+    <br />
+    {{ form.generator }}
+    <br /><br />
+
+    <input type="submit" value="Search" />
+  </form>
+{%- endmacro %}
+
+
 {% macro render_result(result) %}
 {% if result.type == "issue" %}
 

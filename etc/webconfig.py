@@ -13,7 +13,7 @@ DEBUG = True
 
 #THREADS_PER_PAGE = 8
 
-#CSRF_ENABLED = True
+CSRF_ENABLED = False
 #CSRF_SESSION_KEY = "somethingimpossibletoguess"
 
 #SQLALCHEMY_ECHO = True
