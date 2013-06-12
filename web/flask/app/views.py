@@ -163,13 +163,16 @@ add_firehose_view('result', Result_app)
 def get_filter_from_url_params(request_args):
     try: packagename = request_args['packagename']
     except: packagename = ""
-        
-    try: packageversion = request_args['packageversion']
-    except: packageversion = ""
-        
+    
+    if packagename != "":
+        try: packageversion = request_args['packageversion']
+        except: packageversion = ""
+    else:
+        packageversion = ""
+    
     try: generator = request_args['generator']
     except: generator = ""
-        
+    
     return dict(packagename=packagename,
                    packageversion=packageversion,
                    generator=generator)
