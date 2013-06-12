@@ -6,9 +6,9 @@
 
 <h2>{{ self.title() }}</h2>
 
-{{ lipsum(n=2) }}
+Hello, world!
 
-<h2>Static analysis generators</h2>
+<h3>Static analysis generators</h2>
 <ul>
   {% for gen in generators %}
     <li><a href="{{ url_for('generator_elem_html', id=gen.id) }}">

@@ -51,6 +51,18 @@ table .rowname {
     background-color: #E6413E;
 }
 
+.color-issue {
+    color: grey;
+}
+
+.color-failure {
+    color: red;
+}
+
+.color-info {
+    color: blue;
+}
+
 #filterlist li {
     margin: 1em;
 }

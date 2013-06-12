@@ -7,19 +7,21 @@
 
 <h2>{{ self.title() }}</h2>
 
+{{ list|length }} results
 
 <ul id="filterlist">
   {% for res in list %}
   <li>
-    <strong>{{ res.sut_name }}</strong> in
-    {{ res.Location.file.givenpath }}
-    {% if res.Location.range_ %}
+    <small><span class="color-{{ res.type }}">[{{ res.type }}]</span></small>
+    <strong>{{ res.sutname }}</strong> in
+    {{ res.givenpath }}
+    {% if res.Range %}
       range (TODO)
     {% else %}
-      ({{ res.Location.point.line }}:{{ res.Location.point.column }})
+      ({{ res.Point.line }}:{{ res.Point.column }})
     {% endif %}
     :<br />
-    {{ res.message_text }}
+    {{ res.text }}
     <small>
       <a href="{{ url_for('result_elem_html', id=res.id) }}">details</a>
     </small>

@@ -1,4 +1,4 @@
-from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut, Metadata, Message, Location, File
+from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut, Metadata, Message, Location, File, Point, Range
 from sqlalchemy import and_
 
 from app import session
@@ -119,36 +119,28 @@ class Result_app(FHGeneric):
             clauses.append(Metadata.generator_id == Generator.id)
             clauses.append(Generator.name == generator)
         
-        elem = session.query(Result.id).filter(and_(
-                Result.analysis_id == Analysis.id,
-                Analysis.metadata_id == Metadata.id,
-                Metadata.sut_id == Sut.id,
-                *clauses)).order_by(Result.id).all()
-        return to_dict(elem)
-    
-    def filter2(self, packagename="", packageversion="", generator=""):
-        clauses = []
-        if packagename != "":
-            clauses.append(Sut.name == packagename)
-        if packageversion != "":
-            clauses.append(Sut.version == packageversion)
-        if generator != "":
-            clauses.append(Metadata.generator_id == Generator.id)
-            clauses.append(Generator.name == generator)
+        def make_q(class_):
+            """ returns a request for a result (issue/failure/info) """
+            return (session.query(
+                    class_.id, class_.type, File.givenpath, Message.text,
+                    Point, Range, Sut.name.label('sutname'))
+                    .outerjoin(Location)
+                    .outerjoin(File)
+                    .outerjoin(Point)
+                    .outerjoin(Range, and_( # TOTEST
+                        Range.start_id==Point.id, Range.end_id==Point.id))
+                    .outerjoin(Analysis)
+                    .outerjoin(Metadata)
+                    .outerjoin(Sut)
+                    .outerjoin(Message)
+                    .filter(*clauses))
         
-        elem = session.query(Issue.id,
-                             Sut.name.label("sut_name"),
-                             Message.text.label("message_text"),
-                             #File.givenpath.label("file_path"),
-                             Location
-                             ).filter(and_(
-                Issue.analysis_id == Analysis.id,
-                Analysis.metadata_id == Metadata.id,
-                Metadata.sut_id == Sut.id,
-                Issue.message_id == Message.id,
-                Issue.location_id == Location.id,
-                #Location.file_id == File.id,
-                *clauses)).order_by(Result.id).all()
+        # TODO: polymorphism?
+        q_issue = make_q(Issue)
+        q_failure = make_q(Failure)
+        q_info = make_q(Info)
+        elem = q_issue.union(q_failure, q_info).all()
+        
         return to_dict(elem)
 
     def id(self, id, with_metadata=True):

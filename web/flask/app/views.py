@@ -222,7 +222,7 @@ def get_filter_from_url_params(request_args):
 class FilterListView(GeneralView):
     def get_objects(self):
         filter_ = get_filter_from_url_params(request.args)
-        results = Result_app().filter2(**filter_)
+        results = Result_app().filter(**filter_)
         
         return dict(list=results, filter=filter_)
 
