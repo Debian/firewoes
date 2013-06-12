@@ -13,7 +13,7 @@
   {% for res in list %}
   <li>
     <small><span class="color-{{ res.type }}">[{{ res.type }}]</span></small>
-    <strong>{{ res.sutname }}</strong> in
+    <strong>{{ res.Sut.name }} ({{ res.Sut.version }})</strong> in
     {{ res.givenpath }}
     {% if res.Range %}
       range (TODO)

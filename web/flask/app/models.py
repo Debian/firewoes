@@ -123,7 +123,7 @@ class Result_app(FHGeneric):
             """ returns a request for a result (issue/failure/info) """
             return (session.query(
                     class_.id, class_.type, File.givenpath, Message.text,
-                    Point, Range, Sut.name.label('sutname'))
+                    Point, Range, Sut)
                     .outerjoin(Location)
                     .outerjoin(File)
                     .outerjoin(Point)
