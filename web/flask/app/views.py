@@ -160,71 +160,94 @@ add_firehose_view('result', Result_app)
 
 ### FILTERS ###
 
-class FilterView(GeneralView):
-    def get_objects(self):
-        # we get the list of result.id linked to the specified package
-        get = request.args
-        try: packagename = get['packagename']
-        except: packagename = ""
+def get_filter_from_url_params(request_args):
+    try: packagename = request_args['packagename']
+    except: packagename = ""
         
-        try: packageversion = get['packageversion']
-        except: packageversion = ""
+    try: packageversion = request_args['packageversion']
+    except: packageversion = ""
         
-        try: generator = get['generator']
-        except: generator = ""
+    try: generator = request_args['generator']
+    except: generator = ""
         
-        filter_ = dict(packagename=packagename,
-                       packageversion=packageversion,
-                       generator=generator)
+    return dict(packagename=packagename,
+                   packageversion=packageversion,
+                   generator=generator)
 
-        list_ = Result_app().filter(**filter_)        
+# class FilterView(GeneralView):
+#     def get_objects(self):
+#         # we get the list of result.id linked to the specified package
+#         filter_ = get_filter_from_url_params(request.args)
+#         list_ = Result_app().filter(**filter_)        
         
-        # we get the current viewed result
-        if len(list_) == 0:
-            current_result = None
-            previous_result = None
-            next_result = None
-            current_result_range = None
-        else:
-            try:
-                current_result_id = int(get['id'])
-            except: # default
-                current_result_id = list_[0]['id']
+#         # we get the current viewed result
+#         if len(list_) == 0:
+#             current_result = None
+#             previous_result = None
+#             next_result = None
+#             current_result_range = None
+#         else:
+#             try:
+#                 current_result_id = int(get['id'])
+#             except: # default
+#                 current_result_id = list_[0]['id']
 
-            current_result = Result_app().id(current_result_id,
-                                             with_metadata=True)
+#             current_result = Result_app().id(current_result_id,
+#                                              with_metadata=True)
             
-            # we get the previous and next results (for links)
-            for i, elem in enumerate(list_):
-                if elem['id'] == current_result_id:
-                    break
-            current_result_range = i
-            if current_result_range == 0:
-                previous_result = None
-            else:
-                previous_result = list_[current_result_range-1]['id']
-            if current_result_range == len(list_) - 1:
-                next_result = None
-            else:
-                next_result = list_[current_result_range+1]['id']
-            current_result_range += 1 # humans don't start at 0
+#             # we get the previous and next results (for links)
+#             for i, elem in enumerate(list_):
+#                 if elem['id'] == current_result_id:
+#                     break
+#             current_result_range = i
+#             if current_result_range == 0:
+#                 previous_result = None
+#             else:
+#                 previous_result = list_[current_result_range-1]['id']
+#             if current_result_range == len(list_) - 1:
+#                 next_result = None
+#             else:
+#                 next_result = list_[current_result_range+1]['id']
+#             current_result_range += 1 # humans don't start at 0
         
-        return dict(list=list_,
-                    filter=filter_,
-                    current_result=current_result,
-                    current_result_range=current_result_range,
-                    previous_result=previous_result, next_result=next_result)
+#         return dict(list=list_,
+#                     filter=filter_,
+#                     current_result=current_result,
+#                     current_result_range=current_result_range,
+#                     previous_result=previous_result, next_result=next_result)
 
-# FILTER HTML
-app.add_url_rule('/filter/', view_func=FilterView.as_view(
-        'filter_html',
-        render_func=lambda **kwargs: html('filter.html', **kwargs),
+class FilterListView(GeneralView):
+    def get_objects(self):
+        filter_ = get_filter_from_url_params(request.args)
+        results = Result_app().filter2(**filter_)
+        
+        return dict(list=results, filter=filter_)
+
+# FILTER LIST HTML
+app.add_url_rule('/filter/', view_func=FilterListView.as_view(
+        'filterlist_html',
+        render_func=lambda **kwargs: html('filter_list.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
-# FILTER JSON
-app.add_url_rule('/api/filter/', view_func=FilterView.as_view(
-        'filter_json',
+# FILTER LIST JSON
+app.add_url_rule('/api/filter/', view_func=FilterListView.as_view(
+        'filterlist_json',
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
         ))
+
+
+# # FILTER HTML
+# app.add_url_rule('/filter/', view_func=FilterView.as_view(
+#         'filter_html',
+#         render_func=lambda **kwargs: html('filter.html', **kwargs),
+#         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+#         ))
+
+# # FILTER JSON
+# app.add_url_rule('/api/filter/', view_func=FilterView.as_view(
+#         'filter_json',
+#         render_func=jsonify,
+#         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+#         ))

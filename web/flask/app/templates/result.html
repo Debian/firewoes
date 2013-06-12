@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 {% import "macros.inc.html" as macros %}
 
-{% block title %}Result #{{ result.id }}{% endblock %}
+{% block title %}Result #{{ result.Result.id }}{% endblock %}
 
 {% block content %}
 
 <h2>{{ self.title() }}</h2>
 
-{{ macros.render_result(result) }}
+<h3>Metadata</h3>
+{{ macros.render_metadata(result.Metadata) }}
+  
+<h3>Result</h3>
+{{ macros.render_result(result.Result) }}
+
 
 {% endblock %}

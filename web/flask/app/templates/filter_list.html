@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "macros.inc.html" as macros %}
+
+{% block title %}Filter list{% endblock %}
+
+{% block content %}
+
+<h2>{{ self.title() }}</h2>
+
+
+<ul id="filterlist">
+  {% for res in list %}
+  <li>
+    <strong>{{ res.sut_name }}</strong> in
+    {{ res.Location.file.givenpath }}
+    {% if res.Location.range_ %}
+      range (TODO)
+    {% else %}
+      ({{ res.Location.point.line }}:{{ res.Location.point.column }})
+    {% endif %}
+    :<br />
+    {{ res.message_text }}
+    <small>
+      <a href="{{ url_for('result_elem_html', id=res.id) }}">details</a>
+    </small>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

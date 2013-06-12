@@ -51,6 +51,10 @@ table .rowname {
     background-color: #E6413E;
 }
 
+#filterlist li {
+    margin: 1em;
+}
+
 /* copied from debsources */
 
 #header{

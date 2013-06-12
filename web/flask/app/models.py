@@ -1,4 +1,4 @@
-from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut, Metadata
+from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut, Metadata, Message, Location, File
 from sqlalchemy import and_
 
 from app import session
@@ -124,10 +124,34 @@ class Result_app(FHGeneric):
                 Analysis.metadata_id == Metadata.id,
                 Metadata.sut_id == Sut.id,
                 *clauses)).order_by(Result.id).all()
-                #Sut.name == packagename)).order_by(Result.id).all()
+        return to_dict(elem)
+    
+    def filter2(self, packagename="", packageversion="", generator=""):
+        clauses = []
+        if packagename != "":
+            clauses.append(Sut.name == packagename)
+        if packageversion != "":
+            clauses.append(Sut.version == packageversion)
+        if generator != "":
+            clauses.append(Metadata.generator_id == Generator.id)
+            clauses.append(Generator.name == generator)
+        
+        elem = session.query(Issue.id,
+                             Sut.name.label("sut_name"),
+                             Message.text.label("message_text"),
+                             #File.givenpath.label("file_path"),
+                             Location
+                             ).filter(and_(
+                Issue.analysis_id == Analysis.id,
+                Analysis.metadata_id == Metadata.id,
+                Metadata.sut_id == Sut.id,
+                Issue.message_id == Message.id,
+                Issue.location_id == Location.id,
+                #Location.file_id == File.id,
+                *clauses)).order_by(Result.id).all()
         return to_dict(elem)
 
-    def id(self, id, with_metadata=False):
+    def id(self, id, with_metadata=True):
         if not(with_metadata):
             return super(Result_app, self).id(id)
         else:
