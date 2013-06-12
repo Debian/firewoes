@@ -134,19 +134,27 @@ def add_firehose_view(name, class_):
             api = '/'+api
         
         # LIST VIEW
+        if mode == "html":
+            render_func = lambda **kwargs:html('%s_list.html' %name, **kwargs)
+        else:
+            render_func = jsonify
         app.add_url_rule('%s/view/%s/' % (api, name),
                          view_func=ListView.as_view(
                 '%s_list_%s' % (name, mode),
                 class_=class_,
-                render_func=lambda **kwargs:html('%s_list.html' %name, **kwargs),
+                render_func=render_func,
                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
                 ))
         # ELEM VIEW
+        if mode == "html":
+            render_func = lambda **kwargs:html('%s.html' %name, **kwargs)
+        else:
+            render_func = jsonify
         app.add_url_rule('%s/view/%s/<int:id>/' % (api, name),
                          view_func=ElemView.as_view(
                 '%s_elem_%s' % (name, mode),
                 class_=class_,
-                render_func=lambda **kwargs: html('%s.html' %name, **kwargs),
+                render_func=render_func,
                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
                 ))
         
