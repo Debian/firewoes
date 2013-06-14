@@ -1,0 +1,68 @@
+/*
+Copyright (C) 2013  Matthieu Caneill <matthieu.caneill@gmail.com>
+License: GNU Affero General Public License, version 3 or above.
+*/
+
+@import url("debian.css");
+
+#leftmenu {
+    float: left;
+    width: 200px;
+    background-color: #f7f7f7;
+    padding: 10px;
+    padding-top: 0px;
+    border: 1px solid #dddddd;
+    margin: 10px;
+}
+
+#leftmenu select {
+    max-width: 100%;
+}
+
+#content {
+    padding-left: 240px;
+}
+
+table {
+    border: 1px solid black;
+}
+
+table .rowname {
+    background-color: #eeeeee;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+}
+
+.bg_1 {
+    background-color: #9ACFF5;
+}
+
+.bg_2 {
+    background-color: #CEE4F5;
+}
+
+.bg_3 {
+    background-color: #F79492;
+}
+
+.bg_4 {
+    background-color: #E6413E;
+}
+
+.color-issue {
+    color: grey;
+}
+
+.color-failure {
+    color: red;
+}
+
+.color-info {
+    color: blue;
+}
+
+#filterlist li {
+    margin: 1em;
+}
+
