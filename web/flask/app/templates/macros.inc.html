@@ -16,7 +16,7 @@
     Filter by <strong>package</strong>:
     <br />
     {% if filter %}
-      {{ form.packagename(value=filter.packagename) }}
+      {{ form.packagename }}
     {% else %}
       {{ form.packagename(autofocus=True) }}
     {% endif %}
@@ -24,7 +24,8 @@
     <br /><br />
     Filter by <strong>generator</strong>:
     <br />
-    {{ form.generator }}
+    {{ form.generatorname }}
+    {{ form.generatorversion }}
     <br /><br />
 
     <input type="submit" value="Search" />

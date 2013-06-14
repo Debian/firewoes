@@ -73,6 +73,11 @@ class Generator_app(FHGeneric):
     def unique_by_name(self):
         elem = session.query(Generator.name).distinct().all()
         return to_dict(elem)
+    
+    def versions(self, name):
+        elem = session.query(Generator.version).filter(
+            Generator.name == name).all()
+        return to_dict(elem)
 
 class Analysis_app(FHGeneric):
     def __init__(self):
@@ -109,15 +114,18 @@ class Result_app(FHGeneric):
         elem = session.query(Result.id).all()
         return to_dict(elem)
     
-    def filter(self, packagename="", packageversion="", generator=""):
+    def filter(self, packagename="", packageversion="",
+               generatorname="", generatorversion=""):
         clauses = []
         if packagename != "":
             clauses.append(Sut.name == packagename)
         if packageversion != "":
             clauses.append(Sut.version == packageversion)
-        if generator != "":
+        if generatorname != "":
             clauses.append(Metadata.generator_id == Generator.id)
-            clauses.append(Generator.name == generator)
+            clauses.append(Generator.name == generatorname)
+        if generatorversion != "":
+            clauses.append(Generator.version == generatorversion)
         
         def make_q(class_):
             """ returns a request for a result (issue/failure/info) """

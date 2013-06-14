@@ -61,12 +61,20 @@ def html(templatename, **kwargs):
     
     generators = Generator_app().unique_by_name()
     
-    searchform.generator.choices = [('', '(all)')]
-    searchform.generator.choices += [
+    searchform.generatorname.choices = [('', '(all)')]
+    searchform.generatorname.choices += [
         (gen['name'], gen['name']) for gen in generators]
     if filter_ is not None:
-        # default selected choice:
-        searchform.generator.data = filter_['generator']
+        if filter_['generatorname'] != "": # we add the versions
+            searchform.generatorversion.choices = [('', '(all)')]
+            versions = Generator_app().versions(filter_['generatorname'])
+            searchform.generatorversion.choices += [
+                (vers['version'], vers['version']) for vers in versions]
+            
+            
+            # default selected choice:
+            searchform.generatorname.data = filter_['generatorname']
+            searchform.generatorversion.data = filter_['generatorversion']
     
     return render_template(templatename,
                            searchform=searchform,
@@ -178,12 +186,19 @@ def get_filter_from_url_params(request_args):
     else:
         packageversion = ""
     
-    try: generator = request_args['generator']
-    except: generator = ""
+    try: generatorname = request_args['generatorname']
+    except: generatorname = ""
+    
+    if generatorname != "":
+        try: generatorversion = request_args['generatorversion']
+        except: generatorversion = ""
+    else:
+        generatorversion = ""
     
     return dict(packagename=packagename,
-                   packageversion=packageversion,
-                   generator=generator)
+                packageversion=packageversion,
+                generatorname=generatorname,
+                generatorversion=generatorversion)
 
 # class FilterView(GeneralView):
 #     def get_objects(self):
