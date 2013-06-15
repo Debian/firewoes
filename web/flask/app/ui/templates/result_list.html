@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "macros.inc.html" as macros %}
 
-{% block title %}Software list{% endblock %}
+{% block title %}Result list{% endblock %}
 
 {% block content %}
 
@@ -10,8 +10,8 @@
 <ul>
   {% for res in list %}
   <li>
-      <a href="{{ url_for('sut_elem_html', id=res.id) }}">
-        {{ res.name }} ({{ res.version }})</a>
+      <a href="{{ url_for('.result_elem_html', id=res.id) }}">
+        #{{ res.id }}</a>
   </li>
   {% endfor %}
 </ul>

@@ -19,7 +19,7 @@
   <div>
     <h3>Results:</h3>
     {% for res in result.results %}
-      <a href="{{ url_for('result_elem_html', id=res.id) }}">#{{ res.id
+      <a href="{{ url_for('.result_elem_html', id=res.id) }}">#{{ res.id
          }}</a>
     {% endfor %}
 </div>

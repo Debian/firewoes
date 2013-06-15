@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "macros.inc.html" as macros %}
 
-{% block title %}Result list{% endblock %}
+{% block title %}Generators list{% endblock %}
 
 {% block content %}
 
@@ -10,8 +10,8 @@
 <ul>
   {% for res in list %}
   <li>
-      <a href="{{ url_for('result_elem_html', id=res.id) }}">
-        #{{ res.id }}</a>
+      <a href="{{ url_for('.generator_elem_html', id=res.id) }}">
+        {{ macros.render_generator(res) }}</a>
   </li>
   {% endfor %}
 </ul>

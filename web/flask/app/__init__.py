@@ -18,4 +18,7 @@ Session = sessionmaker(bind=engine, autoflush=True)
 session = Session()
 
 
-import views
+#import views
+
+from app.ui.views import mod as uiModule
+app.register_blueprint(uiModule)

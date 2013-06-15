@@ -11,7 +11,7 @@ Hello, world!
 <h3>Static analysis generators</h2>
 <ul>
   {% for gen in generators %}
-    <li><a href="{{ url_for('generator_elem_html', id=gen.id) }}">
+    <li><a href="{{ url_for('.generator_elem_html', id=gen.id) }}">
         {{ gen.name }}
         {% if gen.version %}({{ gen.version }}){% endif %}
     </a></li>

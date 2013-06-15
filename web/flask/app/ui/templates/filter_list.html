@@ -23,7 +23,7 @@
     :<br />
     {{ res.text }}
     <small>
-      <a href="{{ url_for('result_elem_html', id=res.id) }}">details</a>
+      <a href="{{ url_for('.result_elem_html', id=res.id) }}">details</a>
     </small>
   </li>
   {% endfor %}

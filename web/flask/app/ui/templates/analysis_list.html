@@ -10,7 +10,7 @@
 <ul>
   {% for res in list %}
   <li>
-      <a href="{{ url_for('analysis_elem_html', id=res.id) }}">
+      <a href="{{ url_for('.analysis_elem_html', id=res.id) }}">
         #{{ res.id }}</a> ({{ res.generator_name }})
   </li>
   {% endfor %}

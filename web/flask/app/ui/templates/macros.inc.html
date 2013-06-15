@@ -10,7 +10,7 @@
 {% endmacro %}
 
 {% macro display_searchform(form, filter, display="block") -%}
-  <form action="{{ url_for('filterlist_html') }}" name="searchform"
+  <form action="{{ url_for('.filterlist_html') }}" name="searchform"
         method="get" style="display: {{ display }};">
     
     Filter by <strong>package</strong>:

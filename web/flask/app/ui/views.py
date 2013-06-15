@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, request
+from flask import render_template, jsonify, request, Blueprint
 from flask.views import View
 
 from app import app
@@ -6,7 +6,7 @@ from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Http404Error, Http500Error
 from forms import SearchForm
 
-
+mod = Blueprint('ui', __name__, template_folder='templates')#, url_prefix='/')
 
 ### ERRORS ###
 
@@ -24,9 +24,9 @@ def deal_404_error(error, mode='html'):
     else:
         return html('404.html'), 404
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return html('404.html'), 404
+# @mod.errorhandler(404)
+# def page_not_found(e):
+#     return html('404.html'), 404
 
 def deal_500_error(error, mode='html'):
     """ logs a 500 error and returns the correct template """
@@ -37,9 +37,9 @@ def deal_500_error(error, mode='html'):
     else:
         return html('500.html'), 500
 
-@app.errorhandler(500)
-def server_error(e):
-    return html('500.html'), 500
+# @mod.errorhandler(500)
+# def server_error(e):
+#     return html('500.html'), 500
 
 ### HTML FUNCTION ###
 
@@ -106,13 +106,13 @@ class IndexView(GeneralView):
     def get_objects(self):
         return dict(generators = Generator_app().all())
 
-app.add_url_rule('/', view_func=IndexView.as_view(
+mod.add_url_rule('/', view_func=IndexView.as_view(
         'index_html',
         render_func=lambda **kwargs: html('index.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
-app.add_url_rule('/api/', view_func=IndexView.as_view(
+mod.add_url_rule('/api/', view_func=IndexView.as_view(
         'index_json',
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
@@ -146,7 +146,7 @@ def add_firehose_view(name, class_):
             render_func = lambda **kwargs:html('%s_list.html' %name, **kwargs)
         else:
             render_func = jsonify
-        app.add_url_rule('%s/view/%s/' % (api, name),
+        mod.add_url_rule('%s/view/%s/' % (api, name),
                          view_func=ListView.as_view(
                 '%s_list_%s' % (name, mode),
                 class_=class_,
@@ -158,7 +158,7 @@ def add_firehose_view(name, class_):
             render_func = lambda **kwargs:html('%s.html' %name, **kwargs)
         else:
             render_func = jsonify
-        app.add_url_rule('%s/view/%s/<int:id>/' % (api, name),
+        mod.add_url_rule('%s/view/%s/<int:id>/' % (api, name),
                          view_func=ElemView.as_view(
                 '%s_elem_%s' % (name, mode),
                 class_=class_,
@@ -250,14 +250,14 @@ class FilterListView(GeneralView):
         return dict(list=results, filter=filter_)
 
 # FILTER LIST HTML
-app.add_url_rule('/filter/', view_func=FilterListView.as_view(
+mod.add_url_rule('/filter/', view_func=FilterListView.as_view(
         'filterlist_html',
         render_func=lambda **kwargs: html('filter_list.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
 # FILTER LIST JSON
-app.add_url_rule('/api/filter/', view_func=FilterListView.as_view(
+mod.add_url_rule('/api/filter/', view_func=FilterListView.as_view(
         'filterlist_json',
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
