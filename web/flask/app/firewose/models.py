@@ -115,31 +115,44 @@ class Result_app(FHGeneric):
         return to_dict(elem)
     
     def filter(self, request_args):
-        def get_filter_clauses_from_query(query):
+        def get_clean_args_from_query(query):
+            """ when all args are in q, this extracts them """
             # query string preprocessing
             query = query.replace(",", " ")
             query = query.replace(";", " ")
             
             args = query.split()
-            clauses = []
-            filter_ = []
+            clean_args = []
+
             for arg in args:
                 try:
                     name, value = arg.split(":")
+                    clean_args.append((name, value))
+                except: pass
+
+            return clean_args
+            
+        def get_filter_clauses_from_clean_args(args):
+            """
+            returns the filter and the clauses correponding to
+            the given args
+            """
+            filter_ = dict()
+            clauses = []
+            for (name, value) in args:
+                if value != "":
                     if name == "sut.name":
                         clauses.append(Sut.name == value)
-                        filter_.append(("sut.name", value))
-                        app.logger.info(filter_)
+                        filter_["sut.name"] = value
                     elif name == "sut.version":
                         clauses.append(Sut.version == value)
-                        filter_.append(("sut.version", value))
+                        filter_["sut.version"] = value
                     elif name == "generator.name":
                         clauses.append(Generator.name == value)
                         clauses.append(Metadata.generator_id == Generator.id)
-                        filter_.append(("generator.name", value))
-                except: pass
-            
+                        filter_["generator.name"] = value
             return filter_, clauses
+
         
         def make_q(class_, clauses):
             """ returns a request for a result (issue/failure/info) """
@@ -158,9 +171,14 @@ class Result_app(FHGeneric):
                     .filter(*clauses))
         
         if "q" in request_args.keys():
-            filter_, clauses = get_filter_clauses_from_query(request_args["q"])
+            # /search?q=sut.name:hello%20sut.version:blabla...
+            clean_args = get_clean_args_from_query(request_args["q"])
         else:
-            filter_, clauses = [], []
+            # /search?sut.name=hello&sut.version=blabla...
+            clean_args = [(name, value) for name, value
+                          in request_args.iteritems()]
+
+        filter_, clauses = get_filter_clauses_from_clean_args(clean_args)
         
         # TODO: polymorphism?
         q_issue = make_q(Issue, clauses)

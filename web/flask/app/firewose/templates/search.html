@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "macros.inc.html" as macros %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+
+<h2>{{ self.title() }}</h2>
+
+<form action="" method="get" name="directsearch" style="display: none;">
+  <input type="text" name="q" value="{{ q }}" style="width: 300px;" />
+  <input type="submit" value="search!" />
+</form>
+<br />
+
+<form action="" method="get" name="search">
+  Sut.name: <input type="text" name="sut.name" value="{{
+  filter['sut.name'] }}" />
+  Sut.version: <input type="text" name="sut.version" value="{{
+  filter['sut.version'] }}" />
+  Generator.name: <input type="text" name="generator.name" value="{{
+  filter['generator.name'] }}" />
+  <input type="submit" value="search!" />
+</form>
+
+<br />
+
+{% if results %}
+  {{ results|length }} results
+  <ul>
+  {% for res in results %}
+  <li>
+    <small><span class="color-{{ res.type }}">[{{ res.type }}]</span></small>
+    <strong>{{ res.Sut.name }} ({{ res.Sut.version }})</strong> in
+    {{ res.givenpath }}
+    {% if res.Range %}
+      range (TODO)
+    {% else %}
+      ({{ res.Point.line }}:{{ res.Point.column }})
+    {% endif %}
+    :<br />
+    {{ res.text }}
+    <small>
+      <a href="{{ url_for('.result_elem_html', id=res.id) }}">details</a>
+    </small>
+  </li>
+  {% endfor %}
+  </ul>
+{% else %}
+<p>Try the keywords: sut.name:STRING, sut.version:STRING,
+  generator.name:STRING
+</p>
+
+{% endif %}
+
+{% endblock %}
