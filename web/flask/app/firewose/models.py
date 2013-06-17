@@ -1,7 +1,7 @@
 from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut, Metadata, Message, Location, File, Point, Range
 from sqlalchemy import and_
 
-from app import session
+from app import session, app
 
 
 ### EXCEPTIONS ###
@@ -114,20 +114,34 @@ class Result_app(FHGeneric):
         elem = session.query(Result.id).all()
         return to_dict(elem)
     
-    def filter(self, packagename="", packageversion="",
-               generatorname="", generatorversion=""):
-        clauses = []
-        if packagename != "":
-            clauses.append(Sut.name == packagename)
-        if packageversion != "":
-            clauses.append(Sut.version == packageversion)
-        if generatorname != "":
-            clauses.append(Metadata.generator_id == Generator.id)
-            clauses.append(Generator.name == generatorname)
-        if generatorversion != "":
-            clauses.append(Generator.version == generatorversion)
+    def filter(self, request_args):
+        def get_filter_clauses_from_query(query):
+            # query string preprocessing
+            query = query.replace(",", " ")
+            query = query.replace(";", " ")
+            
+            args = query.split()
+            clauses = []
+            filter_ = []
+            for arg in args:
+                try:
+                    name, value = arg.split(":")
+                    if name == "sut.name":
+                        clauses.append(Sut.name == value)
+                        filter_.append(("sut.name", value))
+                        app.logger.info(filter_)
+                    elif name == "sut.version":
+                        clauses.append(Sut.version == value)
+                        filter_.append(("sut.version", value))
+                    elif name == "generator.name":
+                        clauses.append(Generator.name == value)
+                        clauses.append(Metadata.generator_id == Generator.id)
+                        filter_.append(("generator.name", value))
+                except: pass
+            
+            return filter_, clauses
         
-        def make_q(class_):
+        def make_q(class_, clauses):
             """ returns a request for a result (issue/failure/info) """
             return (session.query(
                     class_.id, class_.type, File.givenpath, Message.text,
@@ -143,13 +157,18 @@ class Result_app(FHGeneric):
                     .outerjoin(Message)
                     .filter(*clauses))
         
+        if "q" in request_args.keys():
+            filter_, clauses = get_filter_clauses_from_query(request_args["q"])
+        else:
+            filter_, clauses = [], []
+        
         # TODO: polymorphism?
-        q_issue = make_q(Issue)
-        q_failure = make_q(Failure)
-        q_info = make_q(Info)
+        q_issue = make_q(Issue, clauses)
+        q_failure = make_q(Failure, clauses)
+        q_info = make_q(Info, clauses)
         elem = q_issue.union(q_failure, q_info).all()
         
-        return to_dict(elem)
+        return (to_dict(elem), filter_)
 
     def id(self, id, with_metadata=True):
         if not(with_metadata):

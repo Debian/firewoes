@@ -25,6 +25,7 @@
         <p class="hidecss"><a href="#content">Skip Quicknav</a></p>
         <ul>
           <li><a href="/">Home</a></li>
+          <li><a href="{{ url_for('.search_html') }}">Search</a></li>
         </ul>
       </div> <!-- end navbar -->
       <p id="breadcrumbs">{% block breadcrumbs %}{% endblock %}</p>

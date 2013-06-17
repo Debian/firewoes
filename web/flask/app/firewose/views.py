@@ -132,6 +132,21 @@ add_firehose_view('analysis', Analysis_app)
 add_firehose_view('sut', Sut_app)
 add_firehose_view('result', Result_app)
 
+
+class SearchView(GeneralView):
+    def get_objects(self):
+        results, filter_ = Result_app().filter(request.args)
+        return dict(results=results, filter=filter_)
+
+mod.add_url_rule('/search/', view_func=SearchView.as_view(
+        'search_html',
+        render_func=lambda **kwargs: html('search.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+
+
+
 ### FILTERS ###
 
 def get_filter_from_url_params(request_args):
