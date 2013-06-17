@@ -132,6 +132,7 @@ add_firehose_view('analysis', Analysis_app)
 add_firehose_view('sut', Sut_app)
 add_firehose_view('result', Result_app)
 
+### SEARCH ###
 
 class SearchView(GeneralView):
     def get_objects(self):
@@ -144,34 +145,40 @@ mod.add_url_rule('/search/', view_func=SearchView.as_view(
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
+mod.add_url_rule('/api/search/', view_func=SearchView.as_view(
+        'search_json',
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
 
 
 
-### FILTERS ###
 
-def get_filter_from_url_params(request_args):
-    try: packagename = request_args['packagename']
-    except: packagename = ""
+# ### FILTERS ###
+
+# def get_filter_from_url_params(request_args):
+#     try: packagename = request_args['packagename']
+#     except: packagename = ""
     
-    if packagename != "":
-        try: packageversion = request_args['packageversion']
-        except: packageversion = ""
-    else:
-        packageversion = ""
+#     if packagename != "":
+#         try: packageversion = request_args['packageversion']
+#         except: packageversion = ""
+#     else:
+#         packageversion = ""
     
-    try: generatorname = request_args['generatorname']
-    except: generatorname = ""
+#     try: generatorname = request_args['generatorname']
+#     except: generatorname = ""
     
-    if generatorname != "":
-        try: generatorversion = request_args['generatorversion']
-        except: generatorversion = ""
-    else:
-        generatorversion = ""
+#     if generatorname != "":
+#         try: generatorversion = request_args['generatorversion']
+#         except: generatorversion = ""
+#     else:
+#         generatorversion = ""
     
-    return dict(packagename=packagename,
-                packageversion=packageversion,
-                generatorname=generatorname,
-                generatorversion=generatorversion)
+#     return dict(packagename=packagename,
+#                 packageversion=packageversion,
+#                 generatorname=generatorname,
+#                 generatorversion=generatorversion)
 
 
 # class FilterListView(GeneralView):
