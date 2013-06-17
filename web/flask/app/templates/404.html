@@ -1,12 +1,12 @@
-{% extends "base.html" %}
+{% extends "error-base.html" %}
+
+{% block title %}404 error{% endblock %}
 
 {% block content %}
 
-<h2>404 error</h2>
-
 <p>The requested page doesn't exist.
   <br />
-  <a href="{{ url_for('index_html') }}">Back to home</a>.
+  <a href="/">Back to home</a>.
 </p>
 
 {% endblock %}

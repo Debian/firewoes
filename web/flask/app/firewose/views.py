@@ -24,10 +24,6 @@ def deal_404_error(error, mode='html'):
     else:
         return html('404.html'), 404
 
-# @mod.errorhandler(404)
-# def page_not_found(e):
-#     return html('404.html'), 404
-
 def deal_500_error(error, mode='html'):
     """ logs a 500 error and returns the correct template """
     # app.logger.error(error)
@@ -36,10 +32,6 @@ def deal_500_error(error, mode='html'):
         return jsonify(dict(error=500))
     else:
         return html('500.html'), 500
-
-# @mod.errorhandler(500)
-# def server_error(e):
-#     return html('500.html'), 500
 
 ### HTML FUNCTION ###
 

@@ -1,6 +1,6 @@
 import os, sys
 
-from flask import Flask
+from flask import Flask, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -18,7 +18,15 @@ Session = sessionmaker(bind=engine, autoflush=True)
 session = Session()
 
 
-#import views
-
 from app.firewose.views import mod as uiModule
 app.register_blueprint(uiModule)
+
+# 404 / 500 errors
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('500.html'), 500
