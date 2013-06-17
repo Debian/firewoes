@@ -173,10 +173,12 @@ class Result_app(FHGeneric):
         if "q" in request_args.keys():
             # /search?q=sut.name:hello%20sut.version:blabla...
             clean_args = get_clean_args_from_query(request_args["q"])
-        else:
+        elif len(request_args) > 0:
             # /search?sut.name=hello&sut.version=blabla...
             clean_args = [(name, value) for name, value
                           in request_args.iteritems()]
+        else: # no search
+            return [], dict()
 
         filter_, clauses = get_filter_clauses_from_clean_args(clean_args)
         
