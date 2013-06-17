@@ -4,7 +4,7 @@ from flask.views import View
 from app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Http404Error, Http500Error
-from forms import SearchForm
+#from forms import SearchForm
 
 mod = Blueprint('firewose', __name__, template_folder='templates')
 
@@ -36,41 +36,7 @@ def deal_500_error(error, mode='html'):
 ### HTML FUNCTION ###
 
 def html(templatename, **kwargs):
-    # search form preprocessing
-    searchform = SearchForm()
-    try:
-        filter_ = kwargs['filter']
-    except:
-        filter_ = None
-    if filter_ is not None:
-        if filter_['packagename'] != "":
-            versions = Sut_app().versions(filter_['packagename'])
-            searchform.packageversion.choices = [('', '(all)')]
-            searchform.packageversion.choices += [
-                (vers['version'], vers['version']) for vers in versions]
-            # default selected choice:
-            searchform.packageversion.data = filter_['packageversion']
-    
-    generators = Generator_app().unique_by_name()
-    
-    searchform.generatorname.choices = [('', '(all)')]
-    searchform.generatorname.choices += [
-        (gen['name'], gen['name']) for gen in generators]
-    if filter_ is not None:
-        if filter_['generatorname'] != "": # we add the versions
-            searchform.generatorversion.choices = [('', '(all)')]
-            versions = Generator_app().versions(filter_['generatorname'])
-            searchform.generatorversion.choices += [
-                (vers['version'], vers['version']) for vers in versions]
-            
-            
-            # default selected choice:
-            searchform.generatorname.data = filter_['generatorname']
-            searchform.generatorversion.data = filter_['generatorversion']
-    
-    return render_template(templatename,
-                           searchform=searchform,
-                           **kwargs)
+    return render_template(templatename, **kwargs)
 
 
 ### GENERAL VIEW HANDLING ###
@@ -192,80 +158,33 @@ def get_filter_from_url_params(request_args):
                 generatorname=generatorname,
                 generatorversion=generatorversion)
 
-# class FilterView(GeneralView):
+
+# class FilterListView(GeneralView):
 #     def get_objects(self):
-#         # we get the list of result.id linked to the specified package
 #         filter_ = get_filter_from_url_params(request.args)
-#         list_ = Result_app().filter(**filter_)        
+#         #results = Result_app().filter(**filter_)
+#         results = []
         
-#         # we get the current viewed result
-#         if len(list_) == 0:
-#             current_result = None
-#             previous_result = None
-#             next_result = None
-#             current_result_range = None
-#         else:
-#             try:
-#                 current_result_id = int(get['id'])
-#             except: # default
-#                 current_result_id = list_[0]['id']
+#         from filters import Filter
+#         f = Filter()
+#         f.add_elem("software name", Sut.name, value=filter_['packagename'])
 
-#             current_result = Result_app().id(current_result_id,
-#                                              with_metadata=True)
-            
-#             # we get the previous and next results (for links)
-#             for i, elem in enumerate(list_):
-#                 if elem['id'] == current_result_id:
-#                     break
-#             current_result_range = i
-#             if current_result_range == 0:
-#                 previous_result = None
-#             else:
-#                 previous_result = list_[current_result_range-1]['id']
-#             if current_result_range == len(list_) - 1:
-#                 next_result = None
-#             else:
-#                 next_result = list_[current_result_range+1]['id']
-#             current_result_range += 1 # humans don't start at 0
+#         global searchform # uuuuuuuuuuuuuuugh
+#         searchform = f.get_form()
         
-#         return dict(list=list_,
-#                     filter=filter_,
-#                     current_result=current_result,
-#                     current_result_range=current_result_range,
-#                     previous_result=previous_result, next_result=next_result)
-
-class FilterListView(GeneralView):
-    def get_objects(self):
-        filter_ = get_filter_from_url_params(request.args)
-        results = Result_app().filter(**filter_)
         
-        return dict(list=results, filter=filter_)
+#         return dict(list=results, filter=filter_)
 
-# FILTER LIST HTML
-mod.add_url_rule('/filter/', view_func=FilterListView.as_view(
-        'filterlist_html',
-        render_func=lambda **kwargs: html('filter_list.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-# FILTER LIST JSON
-mod.add_url_rule('/api/filter/', view_func=FilterListView.as_view(
-        'filterlist_json',
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
-
-# # FILTER HTML
-# app.add_url_rule('/filter/', view_func=FilterView.as_view(
-#         'filter_html',
-#         render_func=lambda **kwargs: html('filter.html', **kwargs),
+# # FILTER LIST HTML
+# mod.add_url_rule('/filter/', view_func=FilterListView.as_view(
+#         'filterlist_html',
+#         render_func=lambda **kwargs: html('filter_list.html', **kwargs),
 #         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
 #         ))
 
-# # FILTER JSON
-# app.add_url_rule('/api/filter/', view_func=FilterView.as_view(
-#         'filter_json',
+# # FILTER LIST JSON
+# mod.add_url_rule('/api/filter/', view_func=FilterListView.as_view(
+#         'filterlist_json',
 #         render_func=jsonify,
 #         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
 #         ))
