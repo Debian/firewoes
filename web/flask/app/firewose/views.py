@@ -6,7 +6,7 @@ from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Http404Error, Http500Error
 from forms import SearchForm
 
-mod = Blueprint('ui', __name__, template_folder='templates')#, url_prefix='/')
+mod = Blueprint('firewose', __name__, template_folder='templates')
 
 ### ERRORS ###
 

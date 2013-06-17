@@ -20,5 +20,5 @@ session = Session()
 
 #import views
 
-from app.ui.views import mod as uiModule
+from app.firewose.views import mod as uiModule
 app.register_blueprint(uiModule)
