@@ -23,11 +23,18 @@ License: GNU Affero General Public License, version 3 or above.
     padding-left: 240px;
 }
 
-table {
+.tableresult {
     border: 1px solid black;
+    border-collapse:collapse
 }
 
-table .rowname {
+.tableresult td {
+    border: 1px solid black;
+    vertical-align: middle;
+    padding: 5px;
+}
+
+.tableresult .rowname {
     background-color: #eeeeee;
     font-weight: bold;
     text-align: center;
