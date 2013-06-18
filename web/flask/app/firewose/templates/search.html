@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "macros.inc.html" as macros %}
 
-{% block title %}Search{% endblock %}
+{% block title %}Search results{% endblock %}
 
 {% block content %}
 
@@ -11,9 +11,8 @@
   <input type="text" name="q" value="{{ q }}" style="width: 300px;" />
   <input type="submit" value="search!" />
 </form>
-<br />
 
-<form action="" method="get" name="search">
+<form action="" method="get" name="search" style="display: none;">
   Sut.name: <input type="text" name="sut.name" value="{{
   filter['sut.name'] }}" />
   Sut.version: <input type="text" name="sut.version" value="{{
@@ -23,7 +22,10 @@
   <input type="submit" value="search!" />
 </form>
 
-<br />
+<div id="rightmenu">
+  <h2>Precise search</h2>
+  
+</div>
 
 {% if results %}
   {{ results|length }} results
