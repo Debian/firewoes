@@ -115,22 +115,22 @@ class Result_app(FHGeneric):
         return to_dict(elem)
     
     def filter(self, request_args):
-        def get_clean_args_from_query(query):
-            """ when all args are in q, this extracts them """
-            # query string preprocessing
-            query = query.replace(",", " ")
-            query = query.replace(";", " ")
+        # def get_clean_args_from_query(query):
+        #     """ when all args are in q, this extracts them """
+        #     # query string preprocessing
+        #     query = query.replace(",", " ")
+        #     query = query.replace(";", " ")
             
-            args = query.split()
-            clean_args = []
+        #     args = query.split()
+        #     clean_args = []
 
-            for arg in args:
-                try:
-                    name, value = arg.split(":")
-                    clean_args.append((name, value))
-                except: pass
+        #     for arg in args:
+        #         try:
+        #             name, value = arg.split(":")
+        #             clean_args.append((name, value))
+        #         except: pass
 
-            return clean_args
+        #     return clean_args
             
         def get_filter_clauses_from_clean_args(args):
             """
@@ -139,25 +139,54 @@ class Result_app(FHGeneric):
             """
             filter_ = dict()
             clauses = []
+            keys = [name for (name, value) in args]
+            
             for (name, value) in args:
                 if value != "":
                     if name == "sut.name":
                         clauses.append(Sut.name == value)
                         filter_["sut.name"] = value
-                    elif name == "sut.version":
+                    elif name == "sut.version" and "sut.name" in keys:
+                        # sut.version only avaiblable if sut.name exists
                         clauses.append(Sut.version == value)
                         filter_["sut.version"] = value
+                    elif name == "sut.release":
+                        clauses.append(Sut.release == value)
+                        filter_["sut.release"] = value
+                    elif name == "sut.type":
+                        clauses.append(Sut.type == value)
+                        filter_["sut.type"] = value
                     elif name == "generator.name":
                         clauses.append(Generator.name == value)
                         clauses.append(Metadata.generator_id == Generator.id)
                         filter_["generator.name"] = value
+                    elif (name == "generator.version"
+                          and "generator.name" in keys):
+                        # generator.version only avaiblable if generator.name
+                        clauses.append(Generator.version == value)
+                        filter_["generator.value"] = value
+                    elif name == "result.type":
+                        clauses.append(Result.type == value)
+                        filter_["result.type"] = value
+                    elif name == "message.id":
+                        clauses.append(Message.id == value)
+                        filter_["message.id"] = value
+                    # TODO: issue.cwe
+                    elif name == "location.file":
+                        clauses.append(Location.file_id == File.id)
+                        clauses.append(File.givenpath == value)
+                        filter_["location.file"] = value
+                    elif name == "location.function":
+                        clauses.append(Location.function_id == Function.id)
+                        clauses.append(Function.name == value)
+                        filter_["location.function"] = value
             return filter_, clauses
 
         
         def make_q(class_, clauses):
             """ returns a request for a result (issue/failure/info) """
             return (session.query(
-                    class_.id, class_.type, File.givenpath, Message.text,
+                    class_.id, Result.type, File.givenpath, Message.text,
                     Point, Range, Sut)
                     .outerjoin(Location)
                     .outerjoin(File)
