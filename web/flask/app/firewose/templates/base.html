@@ -32,7 +32,30 @@
     </div> <!-- end header -->
     
     <div id="leftmenu">
-      <h2>Filter results</h2>
+      <h2>Search</h2>
+      <ul>
+        <li>
+          <form name="search_sut" action="{{ url_for('.search_html') }}"
+                method="get">
+            <label for="sut.name">By <em>package name</em></label>
+            <input type="text" name="sut.name" id="sut.name" />
+            <input type="submit" value="search!" />
+          </form>
+        </li>
+        <li>
+          <form name="search_gen" action="{{ url_for('.search_html') }}"
+                method="get">
+            <label for="generator.name">By <em>generator</em></label>
+            <select name="generator.name" id="generator.name">
+              {% for gen in generators_by_name %}
+                <option name="{{ gen.name }}">{{ gen.name }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" value="search!" />
+          </form>
+        </li>
+        </ul>
+
       {#{ macros.display_searchform(searchform, filter) }#}
       
       <h2>Other</h2>

@@ -36,7 +36,10 @@ def deal_500_error(error, mode='html'):
 ### HTML FUNCTION ###
 
 def html(templatename, **kwargs):
-    return render_template(templatename, **kwargs)
+    generators_by_name = Generator_app().unique_by_name()
+    return render_template(templatename,
+                           generators_by_name=generators_by_name,
+                           **kwargs)
 
 
 ### GENERAL VIEW HANDLING ###
@@ -62,7 +65,7 @@ class GeneralView(View):
 
 class IndexView(GeneralView):
     def get_objects(self):
-        return dict(generators = Generator_app().all())
+        return dict()
 
 mod.add_url_rule('/', view_func=IndexView.as_view(
         'index_html',
