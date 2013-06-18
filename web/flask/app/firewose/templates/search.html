@@ -24,7 +24,29 @@
 
 <div id="rightmenu">
   <h2>Precise search</h2>
-  
+  <ul>
+    {% for name, type, items in precise_menu %}
+        {% if type == "remove" %}
+          <h3>{{ name }}</h3>
+          <span class="small">
+            <em>{{ items[0] }}</em>
+            (<a href="{{ url_for('.search_html', **items[1]) }}">remove</a>)
+          </span>
+        {% elif (type == "list") and (items|length > 0) %}
+          <h3>{{ name }}</h3>
+          <ul>
+            {% for item in items %}
+              <li class="small">
+                <a href="{{ url_for('.search_html', **item[1]) }}">
+                  {{ item[0] }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+    {% endfor %}
+  </ul>
 </div>
 
 {% if results %}
@@ -33,8 +55,8 @@
   {% for res in results %}
   <li>
     <small><span class="color-{{ res.type }}">[{{ res.type }}]</span></small>
-    <strong>{{ res.Sut.name }} ({{ res.Sut.version }})</strong> in
-    {{ res.givenpath }}
+    <strong>{{ res["sut.name"] }} ({{ res["sut.version"] }})</strong> in
+    {{ res["location.file"] }}
     {% if res.Range %}
       range (TODO)
     {% else %}

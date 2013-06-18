@@ -24,7 +24,15 @@ License: GNU Affero General Public License, version 3 or above.
     background-color: #f7f7f7;
     padding: 10px;
     border: 1px solid #dddddd;
-    max-width: 250px;
+    width: 250px;
+}
+
+#rightmenu .small {
+    font-size: small;
+}
+
+#rightmenu h3 {
+    margin-top: 5px;
 }
 
 #content {

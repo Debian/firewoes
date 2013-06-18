@@ -139,8 +139,10 @@ add_firehose_view('result', Result_app)
 
 class SearchView(GeneralView):
     def get_objects(self):
-        results, filter_ = Result_app().filter(request.args)
-        return dict(results=results, filter=filter_)
+        results, filter_, precise_menu = Result_app().filter(request.args)
+        return dict(results=results,
+                    filter=filter_,
+                    precise_menu=precise_menu)
 
 mod.add_url_rule('/search/', view_func=SearchView.as_view(
         'search_html',
