@@ -151,7 +151,7 @@ class Result_app(FHGeneric):
             """
             if cool_name is None:
                 cool_name = attr_name.replace(".", " ").capitalize()
-            if attr_name in keys and filter_[attr_name] != "":
+            if attr_name in keys:# and filter_[attr_name] != "":
                 return (
                     (cool_name,
                      "remove",
@@ -230,54 +230,54 @@ class Result_app(FHGeneric):
             # - add the right clauses for retrieving the results
             # - add it in filter_ for later use
             for (name, value) in args:
-                if value != "":
-                    if name == "sut.name":
-                        clauses.append(Sut.name == value)
-                        filter_["sut.name"] = value
-                        
-                    elif name == "sut.version" and "sut.name" in keys:
-                        # sut.version only avaiblable if sut.name exists
-                        clauses.append(Sut.version == value)
-                        filter_["sut.version"] = value
-                        
-                    elif name == "sut.release":
-                        clauses.append(Sut.release == value)
-                        filter_["sut.release"] = value
-                        
-                    elif name == "sut.type":
-                        clauses.append(Sut.type == value)
-                        filter_["sut.type"] = value
-                        
-                    elif name == "generator.name":
-                        clauses.append(Generator.name == value)
-                        clauses.append(Metadata.generator_id == Generator.id)
-                        filter_["generator.name"] = value
-                        
-                    elif (name == "generator.version"
-                          and "generator.name" in keys):
-                        # generator.version only avaiblable if generator.name
-                        clauses.append(Generator.version == value)
-                        filter_["generator.version"] = value
-                        
-                    elif name == "result.type":
-                        clauses.append(Result.type == value)
-                        filter_["result.type"] = value
-                        
-                    elif name == "message.id":
-                        clauses.append(Message.id == value)
-                        filter_["message.id"] = value
-                        
+                #if value != "":
+                if name == "sut.name":
+                    clauses.append(Sut.name == value)
+                    filter_["sut.name"] = value
+                    
+                elif name == "sut.version" and "sut.name" in keys:
+                    # sut.version only avaiblable if sut.name exists
+                    clauses.append(Sut.version == value)
+                    filter_["sut.version"] = value
+                    
+                elif name == "sut.release":
+                    clauses.append(Sut.release == value)
+                    filter_["sut.release"] = value
+                    
+                elif name == "sut.type":
+                    clauses.append(Sut.type == value)
+                    filter_["sut.type"] = value
+                    
+                elif name == "generator.name":
+                    clauses.append(Generator.name == value)
+                    clauses.append(Metadata.generator_id == Generator.id)
+                    filter_["generator.name"] = value
+                    
+                elif (name == "generator.version"
+                      and "generator.name" in keys):
+                    # generator.version only avaiblable if generator.name
+                    clauses.append(Generator.version == value)
+                    filter_["generator.version"] = value
+                    
+                elif name == "result.type":
+                    clauses.append(Result.type == value)
+                    filter_["result.type"] = value
+                    
+                elif name == "message.id":
+                    clauses.append(Message.id == value)
+                    filter_["message.id"] = value
+                    
                     # TODO: issue.cwe
-                    elif name == "location.file" and "sut.name" in keys:
-                        clauses.append(Location.file_id == File.id)
-                        clauses.append(File.givenpath == value)
-                        filter_["location.file"] = value
-                        
-                    elif name == "location.function" and "location.file" in keys:
-                        clauses.append(Location.function_id == Function.id)
-                        clauses.append(Function.name == value)
-                        filter_["location.function"] = value
-                        
+                elif name == "location.file" and "sut.name" in keys:
+                    clauses.append(Location.file_id == File.id)
+                    clauses.append(File.givenpath == value)
+                    filter_["location.file"] = value
+
+                elif name == "location.function" and "location.file" in keys:
+                    clauses.append(Location.function_id == Function.id)
+                    clauses.append(Function.name == value)
+                    filter_["location.function"] = value
+                    
             return filter_, clauses
 
         
