@@ -40,14 +40,14 @@ def insert_analysis(session, xml_file):
     session.merge(analysis)
     session.commit()
     
-def read_and_create(url, xml_file, drop=False, echo=False):
+def read_and_create(url, xml_files, drop=False, echo=False):
     engine, session = get_engine_session(url, echo=echo)
     
     if drop:
         metadata.drop_all(bind=engine) # cleans the table (for debugging)
         metadata.create_all(bind=engine)
     
-    for file_ in xml_file:
+    for file_ in xml_files:
         try:
             insert_analysis(session, file_)
         except Exception as e:
