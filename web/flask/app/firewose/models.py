@@ -198,8 +198,7 @@ class Result_app(FHGeneric):
         
         if "generator.name" in keys:
             menu.append(get_menu_item("generator.version"))
-            
-        menu.append(get_menu_item("message.text", cool_name="Message"))
+            menu.append(get_menu_item("message.text", cool_name="Message"))
 
         return menu
     
