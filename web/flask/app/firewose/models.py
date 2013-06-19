@@ -182,6 +182,8 @@ class Result_app(FHGeneric):
         keys = filter_.keys()
         menu = []
         
+        menu.append(get_menu_item("result.type"))
+
         menu.append(get_menu_item("sut.name", cool_name="Package name"))
         
         if "sut.name" in keys:
@@ -287,7 +289,7 @@ class Result_app(FHGeneric):
             """ returns a request for a result (issue/failure/info) """
             return (session.query(
                     class_.id,
-                    Result.type,
+                    Result.type.label("result.type"),
                     File.givenpath.label("location.file"),
                     Function.name.label("location.function"),
                     Message.text.label("message.text"),
