@@ -43,7 +43,11 @@
               <li class="small">
                 <a href="{{ url_for('.search_html', **item[1]) }}">
                   {% if item[0] != "" %}
-                    {{ item[0] }}
+                    {% if item[0]|length > 30 %}
+                      {{ item[0][:30] }}...
+                    {% else %}
+                      {{ item[0] }}
+                    {% endif %}
                   {% else %}
                     (blank)
                   {% endif %}
@@ -71,7 +75,11 @@
       ({{ res.Point.line }}:{{ res.Point.column }})
     {% endif %}
     :<br />
-    {{ res.text }}
+    {% if res["message.text"] %}
+      {{ res["message.text"] }}
+    {% else %}
+      (no message)
+    {% endif %}
     <small>
       <a href="{{ url_for('.result_elem_html', id=res.id) }}">details</a>
     </small>

@@ -196,6 +196,8 @@ class Result_app(FHGeneric):
         
         if "generator.name" in keys:
             menu.append(get_menu_item("generator.version"))
+            
+        menu.append(get_menu_item("message.text", cool_name="Message"))
 
         return menu
     
@@ -263,9 +265,9 @@ class Result_app(FHGeneric):
                     clauses.append(Result.type == value)
                     filter_["result.type"] = value
                     
-                elif name == "message.id":
-                    clauses.append(Message.id == value)
-                    filter_["message.id"] = value
+                elif name == "message.text":
+                    clauses.append(Message.text == value)
+                    filter_["message.text"] = value
                     
                     # TODO: issue.cwe
                 elif name == "location.file" and "sut.name" in keys:
@@ -288,7 +290,8 @@ class Result_app(FHGeneric):
                     Result.type,
                     File.givenpath.label("location.file"),
                     Function.name.label("location.function"),
-                    Message.text,
+                    Message.text.label("message.text"),
+                    Message.id.label("message.id"),
                     Point, Range,
                     Sut.name.label("sut.name"),
                     Sut.version.label("sut.version"),
