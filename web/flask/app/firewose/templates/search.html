@@ -41,17 +41,18 @@
           <ul>
             {% for item in items %}
               <li class="small">
-                <a href="{{ url_for('.search_html', **item[1]) }}">
+                <a href="{{ url_for('.search_html', **item[2]) }}">{# link #}
                   {% if item[0] != "" %}
-                    {% if item[0]|length > 30 %}
+                    {% if item[0]|length > 30 %}{# loooooong name #}
                       {{ item[0][:30] }}...
                     {% else %}
-                      {{ item[0] }}
+                      {{ item[0] }}{# short name #}
                     {% endif %}
                   {% else %}
                     (blank)
                   {% endif %}
                 </a>
+                <span>({{ item[1] }}){# number of items #}</span>
               </li>
             {% endfor %}
           </ul>

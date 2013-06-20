@@ -24,3 +24,6 @@ DATABASE_URI = 'postgresql://matthieu:matthieu@localhost:5432/debcocci'
 
 # The css used for the main design
 CSS_FILE = "css/base-debian.css"
+
+# The maximum number of elements which are displayed in the drill-down menu
+MAX_NUMBER_OF_MENU_ELEMENTS = 10

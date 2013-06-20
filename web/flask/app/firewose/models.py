@@ -124,8 +124,8 @@ class Result_app(FHGeneric):
         
         [
             (attr_name1, "list", [
-                    ("foo", foo_filter),
-                    ("bar", bar_filter),
+                    ("foo", nb_occur_foo, foo_filter),
+                    ("bar", nb_occur_bar, bar_filter),
                     ]),
             (attr_name2, "remove", ("foo", foo_filter)),
             ...
@@ -143,11 +143,17 @@ class Result_app(FHGeneric):
             newdict[attr_name] = value
             return newdict
         
-        def get_menu_item(attr_name, cool_name=None):
+        def get_menu_item(attr_name, cool_name=None,
+                          max_items=app.config["MAX_NUMBER_OF_MENU_ELEMENTS"]):
             """
             constructs a menu item
             If the attr_name is present in the parameters, the it's a "remove"
             Otherwise it's a "list"
+            
+            Parameters:
+            attr_name: the attribute name with which we filter the results
+            cool_name: the rendered name for a nice title
+            max_items: max number of items displayed in a list
             """
             if cool_name is None:
                 cool_name = attr_name.replace(".", " ").capitalize()
@@ -161,21 +167,29 @@ class Result_app(FHGeneric):
             else:
                 # we get the different items corresponding to this parameter
                 # in the results list
-                sublist = set()
+                sublist = dict()
+                # sublist[item] = number of occurences of this item in results
                 for res in results:
                     try:
                         elem = getattr(res, attr_name)
                         if elem is not None:
-                            sublist.add(elem)
+                            try:
+                                sublist[elem] += 1
+                            except KeyError:
+                                sublist[elem] = 1
                     except Exception as e:
                         app.logger.info(e)
-                sublist_with_links = [(elem, get_add_dict(attr_name, elem))
-                                      for elem in sublist]
+                sublist_with_links = [
+                    (elem, nb_occur, get_add_dict(attr_name, elem))
+                    for elem, nb_occur in sublist.iteritems()
+                    ]
                 
                 return (
                     (cool_name,
                      "list",
-                     sublist_with_links,
+                     sorted(sublist_with_links,
+                            key=lambda x: x[1],
+                            reverse=True)[:max_items]
                      )
                     )
 
