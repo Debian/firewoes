@@ -30,3 +30,6 @@ SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS = 10
 
 # The maximum width of a result in the drill-down menu
 SEARCH_MENU_MAX_NUMBER_OF_CHARS = 28
+
+# The number of results to display (per default) on a search results page
+SEARCH_RESULTS_OFFSET = 10

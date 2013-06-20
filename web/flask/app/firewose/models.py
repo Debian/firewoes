@@ -335,7 +335,22 @@ class Result_app(FHGeneric):
         q_issue = make_q(Issue, clauses)
         q_failure = make_q(Failure, clauses)
         q_info = make_q(Info, clauses)
-        results = q_issue.union(q_failure, q_info).all()
+        
+        # we get the page number and the offset
+        try:  page = int(request_args["page"])
+        except: page = 1
+        
+        try: offset = int(request_args["offset"])
+        except: offset = app.config["SEARCH_RESULTS_OFFSET"]
+        
+        # we calculate the range of results
+        start = (page - 1) * offset
+        end = start + offset
+        
+        results = (q_issue.union(q_failure, q_info)
+                   .order_by(Result.id)
+                   .slice(start, end)
+                   .all())
         
         precise_menu = self._get_precise_menu(results, filter_)
 
