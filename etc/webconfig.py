@@ -22,4 +22,5 @@ ROOT_FOLDER = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 DATABASE_URI = 'postgresql://matthieu:matthieu@localhost:5432/debcocci'
 
+# The css used for the main design
 CSS_FILE = "css/base-debian.css"
