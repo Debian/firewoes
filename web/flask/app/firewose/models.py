@@ -315,17 +315,10 @@ class Result_app(FHGeneric):
                     Sut.version.label("sut.version"),
                     Generator.name.label("generator.name"),
                     Generator.version.label("generator.version"))
-                    .outerjoin(Location)
-                    .outerjoin(File)
-                    .outerjoin(Function)
-                    .outerjoin(Point)
+                    .outerjoin(Location, File, Function, Point, Analysis,
+                               Metadata, Generator, Sut, Message)
                     .outerjoin(Range, and_( # TOTEST
                         Range.start_id==Point.id, Range.end_id==Point.id))
-                    .outerjoin(Analysis)
-                    .outerjoin(Metadata)
-                    .outerjoin(Generator)
-                    .outerjoin(Sut)
-                    .outerjoin(Message)
                     .filter(*clauses))
         
         if "q" in request_args.keys():
