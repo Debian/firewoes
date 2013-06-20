@@ -23,8 +23,8 @@ Session = sessionmaker(bind=engine, autoflush=True)
 session = Session()
 
 
-from app.firewose.views import mod as uiModule
-app.register_blueprint(uiModule)
+from app.firewose.views import mod as firewose_module
+app.register_blueprint(firewose_module)
 
 # 404 / 500 errors
 
