@@ -239,7 +239,7 @@ class Result_app(FHGeneric):
             
         def get_filter_clauses_from_clean_args(args):
             """
-            returns the filter and the clauses correponding to
+            returns the filter and the clauses corresponding to
             the given args
             """
             filter_ = dict()
