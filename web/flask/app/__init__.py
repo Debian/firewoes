@@ -5,9 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 class CustomFlask(Flask):
+    # we deal with jinja2 options to remove whitespace
     jinja_options = dict(
-        Flask.jinja_options, trim_blocks=True)
-    #, lstrip_blocks=True) # in debian-testing
+        Flask.jinja_options, trim_blocks=True, lstrip_blocks=True)
 
 app = CustomFlask(__name__)
 

@@ -29,11 +29,11 @@
         {% if type == "remove" %}
           <h3>{{ name }}</h3>
           <span class="small">
-            <em>{% if items[0] != "" %}
+            <em>{% if items[0] != "" -%}
                   {{ items[0] }}
-                {% else %}
-                   (blank)
-              {% endif %} </em>
+              {%- else -%}
+                  (blank)
+              {%- endif %}</em>
             (<a href="{{ url_for('.search_html', **items[1]) }}">remove</a>)
           </span>
         {% elif (type == "list") and (items|length > 0) %}
@@ -42,17 +42,16 @@
             {% for item in items %}
               <li class="small">
                 <a href="{{ url_for('.search_html', **item[2]) }}">{# link #}
-                  {% if item[0] != "" %}
+                  {% if item[0] != "" -%}
                     {% if item[0]|length >
-                  config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"] %}{# long name #}
+                  config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"] -%}{# long name #}
                     {{ item[0][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}...
-                    {% else %}
+                    {%- else -%}
                       {{ item[0] }}{# short name #}
-                    {% endif %}
-                  {% else %}
+                    {%- endif %}
+                  {%- else -%}
                     (blank)
-                  {% endif %}
-                </a>
+                  {%- endif %}</a>
                 <span>({{ item[1] }}){# number of items #}</span>
               </li>
             {% endfor %}
