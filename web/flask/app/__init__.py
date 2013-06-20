@@ -4,7 +4,12 @@ from flask import Flask, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-app = Flask(__name__)
+class CustomFlask(Flask):
+    jinja_options = dict(
+        Flask.jinja_options, trim_blocks=True)
+    #, lstrip_blocks=True) # in debian-testing
+
+app = CustomFlask(__name__)
 
 app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     '../../../etc/webconfig.py'))
