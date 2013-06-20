@@ -28,5 +28,5 @@ CSS_FILE = "css/base-debian.css"
 # The maximum number of elements which are displayed in the drill-down menu
 SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS = 10
 
-# The maximum
+# The maximum width of a result in the drill-down menu
 SEARCH_MENU_MAX_NUMBER_OF_CHARS = 28
