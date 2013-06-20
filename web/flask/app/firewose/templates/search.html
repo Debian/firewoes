@@ -43,8 +43,9 @@
               <li class="small">
                 <a href="{{ url_for('.search_html', **item[2]) }}">{# link #}
                   {% if item[0] != "" %}
-                    {% if item[0]|length > 30 %}{# loooooong name #}
-                      {{ item[0][:30] }}...
+                    {% if item[0]|length >
+                  config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"] %}{# long name #}
+                    {{ item[0][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}...
                     {% else %}
                       {{ item[0] }}{# short name #}
                     {% endif %}

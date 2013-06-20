@@ -143,8 +143,11 @@ class Result_app(FHGeneric):
             newdict[attr_name] = value
             return newdict
         
-        def get_menu_item(attr_name, cool_name=None,
-                          max_items=app.config["MAX_NUMBER_OF_MENU_ELEMENTS"]):
+        def get_menu_item(
+            attr_name,
+            cool_name=None,
+            max_items=app.config["SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS"]):
+            
             """
             constructs a menu item
             If the attr_name is present in the parameters, the it's a "remove"
