@@ -283,7 +283,7 @@ class Result_app(FHGeneric):
                     clauses.append(Result.type == value)
                     filter_["result.type"] = value
                     
-                elif name == "message.text":
+                elif name == "message.text" and "generator.name" in keys:
                     clauses.append(Message.text == value)
                     filter_["message.text"] = value
                     
@@ -347,14 +347,22 @@ class Result_app(FHGeneric):
         start = (page - 1) * offset
         end = start + offset
         
-        results = (q_issue.union(q_failure, q_info)
-                   .order_by(Result.id)
-                   .slice(start, end)
-                   .all())
+        query = q_issue.union(q_failure, q_info).order_by(Result.id)
+        results_all = query.all()
+        results_all_count = query.count()
+        results_sliced = query.slice(start, end).all()
         
-        precise_menu = self._get_precise_menu(results, filter_)
+        precise_menu = self._get_precise_menu(results_all, filter_)
 
-        return (to_dict(results), filter_, precise_menu)
+        return dict(
+            results_all_count=results_all_count,
+            results_range = (start+1, start+len(results_sliced)),
+                    # to avoid 1-10 of 5 results
+            page=page,
+            offset=offset,
+            results=to_dict(results_sliced),
+            filter=filter_,
+            precise_menu=precise_menu)
 
     def id(self, id, with_metadata=True):
         if not(with_metadata):

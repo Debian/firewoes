@@ -63,7 +63,8 @@
 </div>
 
 {% if results %}
-  {{ results|length }} results
+  displaying {{ results_range[0] }}-{{ results_range[1] }} of
+  {{ results_all_count }} results
   <ul>
   {% for res in results %}
   <li>
@@ -87,6 +88,9 @@
   </li>
   {% endfor %}
   </ul>
+  <div id="pagination">
+    {{ macros.render_pagination(pagination) }}
+  </div>
 {% endif %}
 
 {% endblock %}

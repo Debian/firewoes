@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, request, Blueprint
+from flask import render_template, jsonify, request, Blueprint, url_for
 from flask.views import View
 
 from app import app
@@ -6,7 +6,20 @@ from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Http404Error, Http500Error
 #from forms import SearchForm
 
+
 mod = Blueprint('firewose', __name__, template_folder='templates')
+
+
+### PAGINATION ###
+from pagination import Pagination
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
+
+
 
 ### ERRORS ###
 
@@ -139,14 +152,23 @@ add_firehose_view('result', Result_app)
 
 class SearchView(GeneralView):
     def get_objects(self):
-        results, filter_, precise_menu = Result_app().filter(request.args)
-        return dict(results=results,
-                    filter=filter_,
-                    precise_menu=precise_menu)
+        # results, filter_, precise_menu = Result_app().filter(request.args)
+        # return dict(results=results,
+        #             filter=filter_,
+        #             precise_menu=precise_menu)
+        return Result_app().filter(request.args)
+
+def render_html_search(templatename, **kwargs):
+    """ adds pagination object before rendering """
+    #kwargs['pagination']
+    pagination = Pagination(kwargs['page'], kwargs['offset'],
+                                    kwargs['results_all_count'])
+    #print(kwargs['pagination'])
+    return html(templatename, pagination=pagination, **kwargs)
 
 mod.add_url_rule('/search/', view_func=SearchView.as_view(
         'search_html',
-        render_func=lambda **kwargs: html('search.html', **kwargs),
+        render_func=lambda **kwargs: render_html_search('search.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
