@@ -20,10 +20,15 @@ from firehose_noslots import *
 
 FH_UNICITY = dict(
     Generator = ("name", "version"),
+    Metadata = ("sut", "file_", "stats"),
+    Stats = ("wallcloktime"),
     #Sut = ("type", "name", "version", "release", "buildarch"),
     SourceRpm = ("name", "version", "release", "buildarch"),
     DebianBinary = ("name", "version", "release", "buildarch"),
     DebianSource = ("name", "version", "release"),
+    #Result = ("analysis_id", "type"),
+    #Issue = ("cwe", "testid", "severity", "message", "notes", "location",
+    #         "trace", "customfields"),
     Message = ("text"),
     Notes = ("text"),
     Location = ("file", "function", "point", "range_"),
@@ -319,7 +324,11 @@ mapper(State, t_state,
 
 mapper(Result, t_result,
        polymorphic_on=t_result.c.type,
-       polymorphic_identity='result')
+       polymorphic_identity='result',
+       properties={
+        'analysis': relationship(Analysis),
+        }
+       )
 
 mapper(Issue, t_issue,
        inherits=Result,
