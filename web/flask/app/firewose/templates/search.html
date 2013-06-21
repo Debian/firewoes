@@ -25,21 +25,22 @@
 <div id="rightmenu">
   <h2>Precise search</h2>
   <ul>
-    {% for name, type, items in precise_menu %}
-        {% if type == "remove" %}
-          <h3>{{ name }}</h3>
+    {% for submenu in precise_menu %}
+        {% if submenu["type"] == "remove" %}
+          <h3>{{ submenu["name"] }}</h3>
           <span class="small">
-            <em>{% if items[0] != "" -%}
-                  {{ items[0] }}
+            <em>{% if submenu["items"][0] != "" -%}
+                  {{ submenu["items"][0] }}
               {%- else -%}
                   (blank)
               {%- endif %}</em>
-            (<a href="{{ url_for('.search_html', **items[1]) }}">remove</a>)
+            (<a href="{{ url_for('.search_html',
+                                 **submenu["items"][1]) }}">remove</a>)
           </span>
-        {% elif (type == "list") and (items|length > 0) %}
-          <h3>{{ name }}</h3>
+        {% elif (submenu["type"] == "list") and (submenu["items"]|length > 0) %}
+          <h3>{{ submenu["name"] }}</h3>
           <ul>
-            {% for item in items %}
+            {% for item in submenu["items"] %}
               <li class="small">
                 <a href="{{ url_for('.search_html', **item[2]) }}">{# link #}
                   {% if item[0] != "" -%}

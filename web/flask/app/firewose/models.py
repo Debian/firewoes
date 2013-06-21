@@ -161,12 +161,12 @@ class Result_app(FHGeneric):
             if cool_name is None:
                 cool_name = attr_name.replace(".", " ").capitalize()
             if attr_name in keys:# and filter_[attr_name] != "":
-                return (
-                    (cool_name,
-                     "remove",
-                     (filter_[attr_name], get_rm_dict(attr_name))
-                     )
+                return dict(
+                    name=cool_name,
+                    type="remove",
+                    items=(filter_[attr_name], get_rm_dict(attr_name))
                     )
+            
             else:
                 # we get the different items corresponding to this parameter
                 # in the results list
@@ -187,13 +187,12 @@ class Result_app(FHGeneric):
                     for elem, nb_occur in sublist.iteritems()
                     ]
                 
-                return (
-                    (cool_name,
-                     "list",
-                     sorted(sublist_with_links,
-                            key=lambda x: x[1],
-                            reverse=True)[:max_items]
-                     )
+                return dict(
+                    name=cool_name,
+                    type="list",
+                    items=sorted(sublist_with_links,
+                                 key=lambda x: x[1],
+                                 reverse=True)[:max_items]
                     )
 
         keys = filter_.keys()
