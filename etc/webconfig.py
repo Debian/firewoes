@@ -20,7 +20,7 @@ CSRF_ENABLED = False
 
 ROOT_FOLDER = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-DATABASE_URI = 'postgresql://matthieu:matthieu@localhost:5432/debcocci'
+DATABASE_URI = "postgresql://matthieu:matthieu@localhost:5432/firewose"
 
 # The css used for the main design
 CSS_FILE = "css/base-debian.css"
