@@ -190,6 +190,7 @@ class Result_app(FHGeneric):
                 return dict(
                     name=cool_name,
                     type="list",
+                    is_sliced=len(sublist_with_links) > max_items,
                     items=sorted(sublist_with_links,
                                  key=lambda x: x[1],
                                  reverse=True)[:max_items]

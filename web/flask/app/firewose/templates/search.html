@@ -56,6 +56,7 @@
                 <span>({{ item[1] }}){# number of items #}</span>
               </li>
             {% endfor %}
+            {% if submenu["is_sliced"] %}...{% endif %}
           </ul>
         {% endif %}
 
