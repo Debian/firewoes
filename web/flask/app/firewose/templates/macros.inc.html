@@ -1,4 +1,4 @@
-{% macro display_table(telems) %}
+{% macro display_table(telems) -%}
   <table class="tableresult">
     {% for (name, content) in telems %}
     <tr>
@@ -7,7 +7,7 @@
     </tr>
     {% endfor %}
   </table>
-{% endmacro %}
+{%- endmacro %}
 
 {% macro display_searchform(form, filter, display="block") -%}
   <form action="{{ url_for('.filterlist_html') }}" name="searchform"
@@ -32,7 +32,7 @@
   </form>
 {%- endmacro %}
 
-{% macro render_pagination(pagination) %}
+{% macro render_pagination(pagination) -%}
   <div class=pagination>
   {% if pagination.has_prev %}
   <a href="{{ url_for_other_page(pagination.page - 1)
@@ -54,23 +54,23 @@
       }}">Next &raquo;</a>
   {% endif %}
   </div>
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_metadata(metadata) %}
+{% macro render_metadata(metadata) -%}
 {{ display_table([
       ("Generator", render_generator(metadata.generator)),
       ("Software under test", render_sut(metadata.sut)),
       ("File", render_file(metadata.file_)),
       ("Stats", render_stats(metadata.stats))]) }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_result(result) %}
+{% macro render_result(result) -%}
 {% if result.type == "issue" %}
 
 {{ display_table([
       ("Type", "Issue"),
-      ("CWE", result.cwe),
-      ("Severity", result.severity),
+      ("CWE", result.cwe or ""),
+      ("Severity", result.severity or ""),
       ("Message", render_message(result.message)),
       ("Notes", render_notes(result.notes)),
       ("Location", render_location(result.location)),
@@ -96,82 +96,72 @@
       render_customfields(result.customfields))]) }}
 {% endif %}
 
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_generator(generator) %}
+{% macro render_generator(generator) -%}
   {{ generator.name }}
   {% if generator.version %}({{ generator.version }}){% endif %}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_stats(stats) %}
+{% macro render_stats(stats) -%}
   Time: {{ stats.wallclocktime }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_sut(sut) %}
+{% macro render_sut(sut) -%}
   ({{ sut.type }}) - {{ sut.name }} ({{ sut.version }})
   {% if sut.release %}({{ sut.release }}){% endif %}
   {% if sut.buildarch %}({{ sut.buildarch }}){% endif %}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_message(message) %}
+{% macro render_message(message) -%}
   {{ message.text }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_notes(notes) %}
+{% macro render_notes(notes) -%}
   {{ notes.text }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_trace(trace) %}
+{% macro render_trace(trace) -%}
   {% for state in trace.states %}
-    {{ render_state(state) }}
+    {{ render_state(state) }}<br />
   {% endfor %}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_state(state) %}
-  <div style="display: none;">
-    <strong>Location:</strong> {{ render_location(state.location) }}
-    <br />
-    <strong>Message:</strong> {{ render_message(state.notes) }}
-  </div>
-{% endmacro %}
+{% macro render_state(state) -%}
+    {{ render_location(state.location) }}
+    {% if state.notes %} : {{ render_message(state.notes) }}{%
+    endif %}
+{%- endmacro %}
 
-{% macro render_location(location) %}
-  <strong>File:</strong> {{ render_file(location.file) }}
-  <br />
-  <strong>Function:</strong> {{ render_function(location.function) }}
-  <br />
-  {% if location.point %}<strong>Point:</strong>
-    {{ render_point(location.point) }}
-  {% elif location.range %}<strong>Range:</strong>
-    {{ render_range(location.range) }}
+{% macro render_location(location) -%}
+  {{ render_file(location.file) }}
+  {% if location.function and location.function.name != "" %}({{ render_function(location.function)
+  }}){% endif %}
+  {% if location.point %} ({{ render_point(location.point) }})
+  {% elif location.range %} ({{ render_range(location.range) }})
   {% endif %}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_file(file) %}
-  {% if file %}
-  {{ file.givenpath }}
-  {% if file.abspath %}- ({{ file.abspath }}){% endif %}
-  <br />
-  <strong>Hash:</strong> {{ render_hash(file.hash_) }}
-  {% endif %}
-{% endmacro %}
+{% macro render_file(file) -%}
+  {% if file %}{{ file.givenpath }}{% endif %}
+{%- endmacro %}
 
-{% macro render_hash(hash) %}
+{% macro render_hash(hash) -%}
   {{ hash.alg }} / {{ hash.hexdigest }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_function(function) %}
+{% macro render_function(function) -%}
   {{ function.name }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_point(point) %}
+{%- macro render_point(point) -%}
   {{ point.line }}:{{ point.column }}
-{% endmacro %}
+{%- endmacro -%}
 
-{% macro render_range(range) %}
+{% macro render_range(range) -%}
   {{ render_point(range.start) }} - {{ render_point(range.end) }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro render_customfields(customfields) %}
+{% macro render_customfields(customfields) -%}
   {% if customfields %}<strong>TODO</strong>{% endif %}
-{% endmacro %}
+{%- endmacro %}
