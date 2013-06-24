@@ -1,5 +1,4 @@
 # TODO: use Firehose __hash__ functions instead of hash
-# TODO: check Firehose objects creation with *args instead of **kwargs
 
 from sqlalchemy import and_
 
