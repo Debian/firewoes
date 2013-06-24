@@ -14,7 +14,7 @@ mod = Blueprint('firewose', __name__, template_folder='templates')
 from pagination import Pagination
 
 def url_for_other_page(page):
-    args = request.view_args.copy()
+    args = request.args.copy()
     args['page'] = page
     return url_for(request.endpoint, **args)
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
