@@ -35,8 +35,12 @@ def insert_analysis(session, xml_file):
     """
     analysis = fhm.Analysis.from_xml(xml_file)
     # unicity:
-    analysis = get_fh_unique(session, analysis)
-    
+    try:
+        analysis = get_fh_unique(session, analysis)
+    except Exception as e:
+        print(e)
+        session.rollback()
+
     session.merge(analysis)
     session.commit()
     
