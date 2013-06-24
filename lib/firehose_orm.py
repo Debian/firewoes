@@ -19,6 +19,7 @@ from firehose_noslots import *
 # this is used by firehose_unique.get_fh_unique()
 
 FH_UNICITY = dict(
+    Analysis = ("metadata", "customfields"),
     Generator = ("name", "version"),
     Metadata = ("sut", "file_", "stats"),
     Stats = ("wallcloktime"),
@@ -27,10 +28,14 @@ FH_UNICITY = dict(
     DebianBinary = ("name", "version", "release", "buildarch"),
     DebianSource = ("name", "version", "release"),
     #Result = ("analysis_id", "type"),
-    #Issue = ("cwe", "testid", "severity", "message", "notes", "location",
-    #         "trace", "customfields"),
+    Issue = ("cwe", "testid", "severity", "message", "notes", "location",
+             "trace", "customfields"),
+    Failure = ("failureid", "location", "message", "customfields"),
+    Info = ("infoid", "location", "message", "customfields"),
     Message = ("text"),
     Notes = ("text"),
+    Trace = ("states"),
+    State = ("location", "notes"),
     Location = ("file", "function", "point", "range_"),
     File = ("givenpath", "abspath", "hash_"),
     Hash = ("alg", "hexdigest"),
@@ -120,7 +125,14 @@ t_result = \
     Table('result', metadata,
           Column('id', Integer, primary_key=True), # renamed from result_id
           Column('analysis_id', Integer,
-                 ForeignKey('analysis.id'), nullable=False),
+                 ForeignKey('analysis.id'),),# nullable=False),
+                          # option nullable=False removed, to allow
+                          # firehose_unique to work with unique results
+                          # (the unicity of a result being checked before the
+                          # analysis is inserted; this is due to the difference
+                          # between XML and DB:
+                          # <analysis><results>...</results></analysis>
+                          # {result analysis_id=foo ...}
           Column('type', String(10), nullable=False),
           )
 
