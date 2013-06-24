@@ -18,12 +18,12 @@
 </form>
 
 <form action="" method="get" name="search" style="display: none;">
-  Sut.name: <input type="text" name="sut.name" value="{{
-  filter['sut.name'] }}" />
-  Sut.version: <input type="text" name="sut.version" value="{{
-  filter['sut.version'] }}" />
-  Generator.name: <input type="text" name="generator.name" value="{{
-  filter['generator.name'] }}" />
+  Sut.name: <input type="text" name="sut_name" value="{{
+  filter['sut_name'] }}" />
+  Sut.version: <input type="text" name="sut_version" value="{{
+  filter['sut_version'] }}" />
+  Generator.name: <input type="text" name="generator_name" value="{{
+  filter['generator_name'] }}" />
   <input type="submit" value="search!" />
 </form>
 
@@ -69,15 +69,26 @@
   </ul>
 </div>
 
+
+{% if packages_suggestions %}
+  <p>
+  Try with these packages:
+  {% for package in packages_suggestions %}
+  <a href="{{ url_for(".search_html", sut_name=package.name) }}">{{
+    package.name }}</a> 
+  {% endfor %}
+  </p>
+{% endif %}
+
 {% if results %}
   displaying {{ results_range[0] }}-{{ results_range[1] }} of
   {{ results_all_count }} results
   <ul>
   {% for res in results %}
   <li>
-    <small><span class="color-{{ res["result.type"] }}">[{{ res["result.type"] }}]</span></small>
-    <strong>{{ res["sut.name"] }} ({{ res["sut.version"] }})</strong> in
-    {{ res["location.file"] }}
+    <small><span class="color-{{ res["result_type"] }}">[{{ res["result_type"] }}]</span></small>
+    <strong>{{ res["sut_name"] }} ({{ res["sut_version"] }})</strong> in
+    {{ res["location_file"] }}
     {% if res.Range %}
       range (TODO)
     {% else %}
@@ -85,7 +96,7 @@
     {% endif %}
     :<br />
     {% if res["message.text"] %}
-      {{ res["message.text"] }}
+      {{ res["message_text"] }}
     {% else %}
       (no message)
     {% endif %}

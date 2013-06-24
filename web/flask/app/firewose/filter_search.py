@@ -66,7 +66,7 @@ def get_precise_menu(results, filter_, max_number_of_elements=10):
         max_items: max number of items displayed in a list
         """
         if cool_name is None:
-            cool_name = attr_name.replace(".", " ").capitalize()
+            cool_name = attr_name.replace("_", " ").capitalize()
         if attr_name in keys:# and filter_[attr_name] != "":
             return dict(
                     name=cool_name,
@@ -106,27 +106,27 @@ def get_precise_menu(results, filter_, max_number_of_elements=10):
     keys = filter_.keys()
     menu = []
     
-    menu.append(get_menu_item("result.type"))
+    menu.append(get_menu_item("result_type"))
     
-    menu.append(get_menu_item("sut.name", cool_name="Package name"))
+    menu.append(get_menu_item("sut_name", cool_name="Package name"))
     
-    if "sut.name" in keys:
-        menu.append(get_menu_item("sut.version",
+    if "sut_name" in keys:
+        menu.append(get_menu_item("sut_version",
                                   cool_name="Package version"))
         
-        menu.append(get_menu_item("location.file", cool_name="File"))
-        if "location.file" in keys:
-            menu.append(get_menu_item("location.function",
+        menu.append(get_menu_item("location_file", cool_name="File"))
+        if "location_file" in keys:
+            menu.append(get_menu_item("location_function",
                                       cool_name="Function"))
     
-    menu.append(get_menu_item("sut.type",
+    menu.append(get_menu_item("sut_type",
                               cool_name = "Package type"))
     
-    menu.append(get_menu_item("generator.name"))
+    menu.append(get_menu_item("generator_name"))
     
-    if "generator.name" in keys:
-        menu.append(get_menu_item("generator.version"))
-        menu.append(get_menu_item("message.text", cool_name="Message"))
+    if "generator_name" in keys:
+        menu.append(get_menu_item("generator_version"))
+        menu.append(get_menu_item("message_text", cool_name="Message"))
 
     return menu
 
@@ -161,52 +161,52 @@ def get_filter_clauses_from_clean_args(args):
     # - add it in filter_ for later use
     for (name, value) in args:
         #if value != "":
-        if name == "sut.name":
+        if name == "sut_name":
             clauses.append(Sut.name == value)
-            filter_["sut.name"] = value
+            filter_["sut_name"] = value
         
-        elif name == "sut.version" and "sut.name" in keys:
+        elif name == "sut_version" and "sut_name" in keys:
             # sut.version only avaiblable if sut.name exists
             clauses.append(Sut.version == value)
-            filter_["sut.version"] = value
+            filter_["sut_version"] = value
             
-        elif name == "sut.type":
+        elif name == "sut_type":
             clauses.append(Sut.type == value)
-            filter_["sut.type"] = value
+            filter_["sut_type"] = value
             
-        elif name == "sut.type":
+        elif name == "sut_type":
             clauses.append(Sut.type == value)
-            filter_["sut.type"] = value
+            filter_["sut_type"] = value
                     
-        elif name == "generator.name":
+        elif name == "generator_name":
             clauses.append(Generator.name == value)
             clauses.append(Metadata.generator_id == Generator.id)
-            filter_["generator.name"] = value
+            filter_["generator_name"] = value
                     
-        elif (name == "generator.version"
-              and "generator.name" in keys):
+        elif (name == "generator_version"
+              and "generator_name" in keys):
             # generator.version only avaiblable if generator.name
             clauses.append(Generator.version == value)
-            filter_["generator.version"] = value
+            filter_["generator_version"] = value
             
-        elif name == "result.type":
+        elif name == "result_type":
             clauses.append(Result.type == value)
-            filter_["result.type"] = value
+            filter_["result_type"] = value
             
-        elif name == "message.text" and "generator.name" in keys:
+        elif name == "message_text" and "generator_name" in keys:
             clauses.append(Message.text == value)
-            filter_["message.text"] = value
+            filter_["message_text"] = value
                     
           # TODO: issue.cwe
-        elif name == "location.file" and "sut.name" in keys:
+        elif name == "location_file" and "sut_name" in keys:
             clauses.append(Location.file_id == File.id)
             clauses.append(File.givenpath == value)
-            filter_["location.file"] = value
+            filter_["location_file"] = value
 
-        elif name == "location.function" and "location.file" in keys:
+        elif name == "location_function" and "location_file" in keys:
             clauses.append(Location.function_id == Function.id)
             clauses.append(Function.name == value)
-            filter_["location.function"] = value
+            filter_["location_function"] = value
                     
     return filter_, clauses
 
@@ -214,17 +214,17 @@ def make_q(session, class_, clauses):
     """ returns a request for a result (issue/failure/info) """
     return (session.query(
                 class_.id,
-                Result.type.label("result.type"),
-                File.givenpath.label("location.file"),
-                Function.name.label("location.function"),
-                Message.text.label("message.text"),
-                Message.id.label("message.id"),
+                Result.type.label("result_type"),
+                File.givenpath.label("location_file"),
+                Function.name.label("location_function"),
+                Message.text.label("message_text"),
+                Message.id.label("message_id"),
                 Point, Range,
-                Sut.name.label("sut.name"),
-                Sut.version.label("sut.version"),
-                Sut.type.label("sut.type"),
-                Generator.name.label("generator.name"),
-                Generator.version.label("generator.version"))
+                Sut.name.label("sut_name"),
+                Sut.version.label("sut_version"),
+                Sut.type.label("sut_type"),
+                Generator.name.label("generator_name"),
+                Generator.version.label("generator_version"))
             .outerjoin(Location, File, Function, Point, Analysis,
                        Metadata, Generator, Sut, Message)
             .outerjoin(Range, and_( # TOTEST

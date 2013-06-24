@@ -125,6 +125,14 @@ class Sut_app(FHGeneric):
         elem = session.query(Sut.version).filter(
             Sut.name==name).order_by(Sut.version).all()
         return to_dict(elem)
+    
+    def name_contains(self, name):
+        """ returns the packages whose name contains name """
+        elem = session.query(Sut.name).filter(
+            Sut.name.contains(name)).distinct().all()
+        # we remove 'name' if it's here
+        elem = [e for e in elem if e.name != name]
+        return to_dict(elem)
 
 class Result_app(FHGeneric):
     def __init__(self):
@@ -146,6 +154,12 @@ class Result_app(FHGeneric):
                           in request_args.iteritems()]
 
         filter_, clauses = get_filter_clauses_from_clean_args(clean_args)
+        
+        # if only sut.name is in filter, we suggest similar packages:
+        if "sut_name" in filter_ and len(filter_) == 1:
+            packages_suggestions = Sut_app().name_contains(filter_["sut_name"])
+        else:
+            packages_suggestions = None
         
         # TODO: polymorphism?
         q_issue = make_q(session, Issue, clauses)
@@ -181,7 +195,8 @@ class Result_app(FHGeneric):
             offset=offset,
             results=to_dict(results_sliced),
             filter=filter_,
-            precise_menu=precise_menu)
+            precise_menu=precise_menu,
+            packages_suggestions=packages_suggestions)
 
     def id(self, id, with_metadata=True):
         if not(with_metadata):
