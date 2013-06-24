@@ -3,7 +3,7 @@ python
 python-flask
 python-six (required by Firehose)
 postgresql (dev fast configuration: http://doc.ubuntu-fr.org/postgresql)
-python-sqlalchemy
+python-sqlalchemy > 0.8.1
 python-psycopg2 (required by SQLAlchemy)
 python-jinja2 > 2.7-3 [1]
 
