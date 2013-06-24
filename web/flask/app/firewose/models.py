@@ -206,11 +206,15 @@ class Result_app(FHGeneric):
         if "sut.name" in keys:
             menu.append(get_menu_item("sut.version",
                                       cool_name="Package version"))
+
             menu.append(get_menu_item("location.file", cool_name="File"))
             if "location.file" in keys:
                 menu.append(get_menu_item("location.function",
                                           cool_name="Function"))
         
+        menu.append(get_menu_item("sut.type",
+                                  cool_name = "Package type"))
+
         menu.append(get_menu_item("generator.name"))
         
         if "generator.name" in keys:
@@ -260,9 +264,9 @@ class Result_app(FHGeneric):
                     clauses.append(Sut.version == value)
                     filter_["sut.version"] = value
                     
-                elif name == "sut.release":
-                    clauses.append(Sut.release == value)
-                    filter_["sut.release"] = value
+                elif name == "sut.type":
+                    clauses.append(Sut.type == value)
+                    filter_["sut.type"] = value
                     
                 elif name == "sut.type":
                     clauses.append(Sut.type == value)
@@ -313,6 +317,7 @@ class Result_app(FHGeneric):
                     Point, Range,
                     Sut.name.label("sut.name"),
                     Sut.version.label("sut.version"),
+                    Sut.type.label("sut.type"),
                     Generator.name.label("generator.name"),
                     Generator.version.label("generator.version"))
                     .outerjoin(Location, File, Function, Point, Analysis,
