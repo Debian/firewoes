@@ -8,3 +8,7 @@
   DB: {result analysis_id=42 ...}
 
 * TODO CustomFields mapping
+* TODO Filter: better performances
+  Filter queries all the corresponding results to extract the relevant
+  information, this is expensive.
+  Try: do this db-side, with multiple queries?
