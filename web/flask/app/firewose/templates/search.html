@@ -29,13 +29,13 @@
         {% if submenu["type"] == "remove" %}
           <h3>{{ submenu["name"] }}</h3>
           <span class="small">
-            <em>{% if submenu["items"][0] != "" -%}
-                  {{ submenu["items"][0] }}
+            <em>{% if submenu["item"][0] != "" -%}
+                  {{ submenu["item"][0] }}
               {%- else -%}
                   (blank)
               {%- endif %}</em>
             (<a href="{{ url_for('.search_html',
-                                 **submenu["items"][1]) }}">remove</a>)
+                                 **submenu["item"][1]) }}">remove</a>)
           </span>
         {% elif (submenu["type"] == "list") and (submenu["items"]|length > 0) %}
           <h3>{{ submenu["name"] }}</h3>

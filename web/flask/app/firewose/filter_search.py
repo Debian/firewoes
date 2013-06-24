@@ -12,11 +12,11 @@ def get_precise_menu(results, filter_, max_number_of_elements=10):
     The structure is the following:
     
     [
-    (attr_name1, "list", [
+    (name=attr_name1, type="list", is_sliced=boolean, items=[
         ("foo", nb_occur_foo, foo_filter),
         ("bar", nb_occur_bar, bar_filter),
        ]),
-    (attr_name2, "remove", ("foo", foo_filter)),
+    (name=attr_name2, type="remove", item=("foo", foo_filter)),
     ...
     ]
     """
@@ -53,7 +53,7 @@ def get_precise_menu(results, filter_, max_number_of_elements=10):
             return dict(
                     name=cool_name,
                     type="remove",
-                    items=(filter_[attr_name], get_rm_dict(attr_name))
+                    item=(filter_[attr_name], get_rm_dict(attr_name))
                     )
         
         else:
