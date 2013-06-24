@@ -39,7 +39,7 @@ def insert_analysis(session, xml_file):
         analysis = get_fh_unique(session, analysis)
     except Exception as e:
         print(e)
-        session.rollback()
+        import sys; sys.exit()
 
     session.merge(analysis)
     session.commit()
