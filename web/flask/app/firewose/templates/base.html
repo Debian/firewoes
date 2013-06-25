@@ -63,6 +63,14 @@
 
       {#{ macros.display_searchform(searchform, filter) }#}
       
+      <h2>Reports</h2>
+      View report for package:<br />
+      <form name="report" action="{{ url_for(".search_report_html")}}"
+            method="get">
+        <input type="text" name="package" />
+        <input type="submit" value="search!" />
+      </form>
+      
       <h2>Other</h2>
       <ul>
         <li><a href="{{ url_for('.analysis_list_html') }}">

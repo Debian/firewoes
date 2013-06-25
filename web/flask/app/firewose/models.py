@@ -18,7 +18,7 @@
 
 from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata
-from sqlalchemy import and_
+from sqlalchemy import and_, func, desc
 
 from app import session, app
 from filter_search import FilterArgs, create_menu,make_q
@@ -40,7 +40,7 @@ def to_dict(elem):
     """
     if elem is None:
         return None
-    elif type(elem) in [int, float, str, unicode, bool]:#_string_type]
+    elif type(elem) in [int, float, str, unicode, bool, long]:#_string_type]
         return elem
     
     elif isinstance(elem, list):
@@ -122,7 +122,7 @@ class Sut_app(FHGeneric):
         self.fh_class = Sut
         
     def versions(self, name):
-        elems = session.query(Sut.version).filter(
+        elems = session.query(Sut).filter(
             Sut.name==name).order_by(Sut.version).all()
         return to_dict(elems)
     
@@ -140,6 +140,32 @@ class Result_app(FHGeneric):
         
     def all(self):
         elems = session.query(Result.id).all()
+        return to_dict(elems)
+    
+    def count_per_generator(self, for_package_id):
+        # elems = (
+        #     session.query(Generator.name, func.count(Result.id).label("count"))
+        #     .filter(
+        #         Sut.id == for_package_id,
+        #         Result.analysis_id == Analysis.id,
+        #         Analysis.metadata_id == Metadata.id,
+        #         Metadata.sut_id == Sut.id,
+        #         Metadata.generator_id == Generator.id)
+        #     .group_by(Generator.name)
+        #     .order_by(desc("count"))
+        #     .all())
+        
+        elems = (
+            session.query(Generator.name, func.count(Result.id).label("count"))
+            .join(Sut, Sut.id == for_package_id)
+            .join(Metadata, and_(Sut.id == Metadata.sut_id,
+                                 Metadata.generator_id==Generator.id))
+            .join(Analysis, Analysis.metadata_id == Metadata.id)
+            .outerjoin(Result, Result.analysis_id == Analysis.id)
+            .group_by(Generator.name)
+            .order_by(desc("count"))
+            .all())
+
         return to_dict(elems)
     
     def filter(self, request_args, offset=None):

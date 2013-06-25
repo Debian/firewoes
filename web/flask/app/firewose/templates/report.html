@@ -1,0 +1,31 @@
+{#
+  Copyright (C) 2013  Matthieu Caneill <matthieu.caneill@gmail.com>
+  License: GNU Affero General Public License, version 3 or above.
+#}
+
+{% extends "base.html" %}
+{% import "macros.inc.html" as macros %}
+
+{% block title %}Report for {% endblock %}
+
+{% block content %}
+
+<h2>{{ self.title() }}</h2>
+
+<table>
+  <tr>
+    <th></th>
+    <th>Generator</th>
+    <th>Number of results</th>
+  </tr>
+  {% for res in results %}
+  <tr>
+    <td>{% if res.count == 0 %}&#x2713;{% else %}&#x2717;{% endif %}
+    <td>{{ res.name }}</td>
+    <td>{{ res.count }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+
+{% endblock %}

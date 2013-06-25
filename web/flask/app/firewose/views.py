@@ -195,3 +195,48 @@ mod.add_url_rule('/api/search/', view_func=SearchView.as_view(
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
         ))
+
+### REPORT ###
+
+class SearchReportView(GeneralView):
+    def get_objects(self):
+        try:
+            name = request.args["package"]
+        except:
+            raise Http404Error
+        return dict(packagename=name,
+                    versions=Sut_app().versions(name))
+
+# SEARCH REPORT (HTML)
+mod.add_url_rule('/report/', view_func=SearchReportView.as_view(
+        'search_report_html',
+        render_func=lambda **kwargs: html('search_report.html',
+                                                        **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+# SEARCH REPORT (JSON)
+mod.add_url_rule('/api/report/', view_func=SearchReportView.as_view(
+        'search_report_json',
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
+
+class ReportView(GeneralView):
+    def get_objects(self, packageid):
+        return dict(
+            results=Result_app().count_per_generator(packageid))
+
+# REPORT (HTML)
+mod.add_url_rule('/report/<packageid>', view_func=ReportView.as_view(
+        'report_html',
+        render_func=lambda **kwargs: html('report.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
+
+# REPORT (JSON)
+mod.add_url_rule('/api/report/<packageid>', view_func=ReportView.as_view(
+        'report_json',
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
