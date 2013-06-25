@@ -50,8 +50,8 @@
         <li>
           <form name="search_gen" action="{{ url_for('.search_html') }}"
                 method="get">
-            <label for="generator.name">By <em>generator</em></label>
-            <select name="generator.name" id="generator.name">
+            <label for="generator_name">By <em>generator</em></label>
+            <select name="generator_name" id="generator_name">
               {% for gen in generators_by_name %}
                 <option name="{{ gen.name }}">{{ gen.name }}</option>
               {% endfor %}
