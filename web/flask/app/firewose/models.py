@@ -16,7 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
+from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
+    Generator, Sut, Metadata, \
+    to_json
 from sqlalchemy import and_
 
 from app import session, app
