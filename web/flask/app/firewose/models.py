@@ -89,28 +89,28 @@ class Generator_app(FHGeneric):
         self.fh_class = Generator
 
     def all(self):
-        elem = session.query(self.fh_class).order_by(Generator.name).all()
-        return to_dict(elem)
+        elems = session.query(self.fh_class).order_by(Generator.name).all()
+        return to_dict(elems)
     
     def unique_by_name(self):
-        elem = session.query(Generator.name).distinct().all()
-        return to_dict(elem)
+        elems = session.query(Generator.name).distinct().all()
+        return to_dict(elems)
     
     def versions(self, name):
-        elem = session.query(Generator.version).filter(
+        elems = session.query(Generator.version).filter(
             Generator.name == name).all()
-        return to_dict(elem)
+        return to_dict(elems)
 
 class Analysis_app(FHGeneric):
     def __init__(self):
         self.fh_class = Analysis
 
     def all(self):
-        elem = session.query(Analysis.id,
+        elems = session.query(Analysis.id,
                              Generator.name.label("generator_name")).filter(
             and_(Analysis.metadata_id == Metadata.id,
                  Metadata.generator_id == Generator.id)).all()
-        return to_dict(elem)
+        return to_dict(elems)
 
     def id(self, id):
         elem = session.query(Analysis).filter(Analysis.id == id).first()
@@ -124,27 +124,25 @@ class Sut_app(FHGeneric):
         self.fh_class = Sut
         
     def versions(self, name):
-        elem = session.query(Sut.version).filter(
+        elems = session.query(Sut.version).filter(
             Sut.name==name).order_by(Sut.version).all()
-        return to_dict(elem)
+        return to_dict(elems)
     
     def name_contains(self, name):
         """ returns the packages whose name contains name """
-        elem = session.query(Sut.name).filter(
+        elems = session.query(Sut.name).filter(
             Sut.name.contains(name)).distinct().all()
         # we remove 'name' if it's here
-        elem = [e for e in elem if e.name != name]
-        return to_dict(elem)
+        elems = [e for e in elems if e.name != name]
+        return to_dict(elems)
 
 class Result_app(FHGeneric):
     def __init__(self):
         self.fh_class = Result
         
     def all(self):
-        elem = session.query(Result.id).all()
-        return to_dict(elem)
-    
-   
+        elems = session.query(Result.id).all()
+        return to_dict(elems)
     
     def filter(self, request_args):      
         if "q" in request_args.keys():
