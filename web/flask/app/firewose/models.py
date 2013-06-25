@@ -144,7 +144,14 @@ class Result_app(FHGeneric):
         elems = session.query(Result.id).all()
         return to_dict(elems)
     
-    def filter(self, request_args):      
+    def filter(self, request_args, offset=None):
+        """
+        returns the results corresponding to the args in request_args,
+        along with a drill down menu
+        
+        offset: number of results (if not set, this value is read in config)
+        """
+        
         if "q" in request_args.keys():
             # /search?q=sut.name:hello%20sut.version:blabla...
             clean_args = get_clean_args_from_query(request_args["q"])
@@ -171,7 +178,7 @@ class Result_app(FHGeneric):
         except: page = 1
         
         try: offset = int(request_args["offset"])
-        except: offset = app.config["SEARCH_RESULTS_OFFSET"]
+        except: offset = offset or app.config["SEARCH_RESULTS_OFFSET"]
         
         # we calculate the range of results
         start = (page - 1) * offset
