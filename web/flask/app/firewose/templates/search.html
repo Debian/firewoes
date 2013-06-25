@@ -30,35 +30,35 @@
 <div id="rightmenu">
   <h2>Refine search</h2>
   <ul>
-    {% for submenu in precise_menu %}
-        {% if submenu["type"] == "remove" %}
+    {% for submenu in menu %}
+        {% if submenu["active"] %}
           <h3>{{ submenu["name"] }}</h3>
           <span class="small">
-            <em>{% if submenu["item"][0] != "" -%}
-                  {{ submenu["item"][0] }}
+            <em>{% if submenu["value"] != "" -%}
+                  {{ submenu["value"] }}
               {%- else -%}
                   (blank)
               {%- endif %}</em>
             (<a href="{{ url_for('.search_html',
-                                 **submenu["item"][1]) }}">remove</a>)
+                                 **submenu["remove_filter"]) }}">remove</a>)
           </span>
-        {% elif (submenu["type"] == "list") and (submenu["items"]|length > 0) %}
+        {% elif not(submenu["active"]) and (submenu["items"]|length > 0) %}
           <h3>{{ submenu["name"] }}</h3>
           <ul>
             {% for item in submenu["items"] %}
               <li class="small">
-                <a href="{{ url_for('.search_html', **item[2]) }}">{# link #}
-                  {% if item[0] != "" -%}
-                    {% if item[0]|length >
+                <a href="{{ url_for('.search_html', **item["add_filter"]) }}">
+                  {% if item["name"] -%}
+                    {% if item["name"]|length >
                   config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"] -%}{# long name #}
-                    {{ item[0][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}...
+                    {{ item["name"][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}...
                     {%- else -%}
-                      {{ item[0] }}{# short name #}
+                      {{ item["name"] }}{# short name #}
                     {%- endif %}
                   {%- else -%}
                     (blank)
                   {%- endif %}</a>
-                <span>({{ item[1] }}){# number of items #}</span>
+                <span>({{ item["count"] }}){# number of items #}</span>
               </li>
             {% endfor %}
             {% if submenu["is_sliced"] %}...{% endif %}

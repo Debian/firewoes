@@ -17,13 +17,11 @@
 
 
 from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
-    Generator, Sut, Metadata, \
-    to_json
+    Generator, Sut, Metadata
 from sqlalchemy import and_
 
 from app import session, app
-from filter_search import get_precise_menu, get_filter_clauses_from_clean_args,\
-    make_q
+from filter_search import FilterArgs, create_menu,make_q
 
 
 ### EXCEPTIONS ###
@@ -152,21 +150,9 @@ class Result_app(FHGeneric):
         offset: number of results (if not set, this value is read in config)
         """
         
-        if "q" in request_args.keys():
-            # /search?q=sut.name:hello%20sut.version:blabla...
-            clean_args = get_clean_args_from_query(request_args["q"])
-        else:
-            # /search?sut.name=hello&sut.version=blabla...
-            clean_args = [(name, value) for name, value
-                          in request_args.iteritems()]
-
-        filter_, clauses = get_filter_clauses_from_clean_args(clean_args)
-        
-        # if only sut.name is in filter, we suggest similar packages:
-        if "sut_name" in filter_ and len(filter_) == 1:
-            packages_suggestions = Sut_app().name_contains(filter_["sut_name"])
-        else:
-            packages_suggestions = None
+        filter_ = FilterArgs(request_args)
+        menu = create_menu(filter_)
+        clauses = menu.get_clauses()
         
         # TODO: polymorphism?
         q_issue = make_q(session, Issue, clauses)
@@ -188,12 +174,21 @@ class Result_app(FHGeneric):
         results_all = query.all()
         results_all_count = query.count()
         results_sliced = query.slice(start, end).all()
-        
-        precise_menu = get_precise_menu(
-            results_all, filter_,
-            max_number_of_elements=app.config[
-                "SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS"])
 
+        menu = menu.get_menu_items(
+            results=to_dict(results_all),
+            limit=app.config["SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS"])
+        
+        # if only sut.name is in filter, we suggest similar packages:
+        try:
+            sutname = filter_.get("sut_name")
+            if len(filter_.get_all()) == 1:
+                packages_suggestions = Sut_app().name_contains(sutname)
+            else:
+                packages_suggestions = None
+        except:
+            packages_suggestions = None
+            
         return dict(
             results_all_count=results_all_count,
             results_range = (start+1, start+len(results_sliced)),
@@ -201,8 +196,8 @@ class Result_app(FHGeneric):
             page=page,
             offset=offset,
             results=to_dict(results_sliced),
-            filter=filter_,
-            precise_menu=precise_menu,
+            filter=filter_.get_all(),
+            menu=menu,
             packages_suggestions=packages_suggestions)
 
     def id(self, id, with_metadata=True):
