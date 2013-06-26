@@ -215,6 +215,10 @@ class Report(object):
     def __init__(self, package_id):
         self.package_id = package_id
         
+    def package_infos(self):
+        elems = Sut_app().id(self.package_id)
+        return elems
+    
     def count_per_generator(self):
         elems = (
             session.query(Generator.name,
@@ -232,5 +236,6 @@ class Report(object):
     
     def all(self):
         return dict(
+            package_infos = self.package_infos(),
             count_per_generator = to_dict(self.count_per_generator())
             )

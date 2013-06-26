@@ -29,6 +29,20 @@
       {% endif %}
     <td>{{ res.name }}</td>
     <td>{{ res.count }}</td>
+    <td>
+      {% if res.count > 0 %}
+        <small>
+        <a href="{{ url_for('.search_html', generator_name=res.name,
+                 sut_name=package_infos.name,
+                 sut_version=package_infos.version,
+                 sut_type=package_infos.type,
+                 sut_release=package_infos.release,
+                 sut_buildarch=package_infos.buildarch
+                                            ) }}">view results</a>
+        </small>
+      {% else %}<small>no results</small>
+      {% endif %}
+    </td>
   </tr>
   {% endfor %}
 </table>
