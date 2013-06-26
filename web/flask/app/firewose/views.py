@@ -210,7 +210,7 @@ class SearchReportView(GeneralView):
 # SEARCH REPORT (HTML)
 mod.add_url_rule('/report/', view_func=SearchReportView.as_view(
         'search_report_html',
-        render_func=lambda **kwargs: html('search_report.html',
+        render_func=lambda **kwargs: html('report_search.html',
                                                         **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
