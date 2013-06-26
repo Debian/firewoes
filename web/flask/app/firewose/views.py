@@ -21,6 +21,7 @@ from flask.views import View
 
 from app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
+from models import Report
 from models import Http404Error, Http500Error
 #from forms import SearchForm
 
@@ -223,19 +224,18 @@ mod.add_url_rule('/api/report/', view_func=SearchReportView.as_view(
         ))
 
 class ReportView(GeneralView):
-    def get_objects(self, packageid):
-        return dict(
-            results=Result_app().count_per_generator(packageid))
+    def get_objects(self, package_id):
+        return Report(package_id).all()
 
 # REPORT (HTML)
-mod.add_url_rule('/report/<packageid>', view_func=ReportView.as_view(
+mod.add_url_rule('/report/<package_id>', view_func=ReportView.as_view(
         'report_html',
         render_func=lambda **kwargs: html('report.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
 # REPORT (JSON)
-mod.add_url_rule('/api/report/<packageid>', view_func=ReportView.as_view(
+mod.add_url_rule('/api/report/<package_id>', view_func=ReportView.as_view(
         'report_json',
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
