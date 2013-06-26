@@ -6,7 +6,9 @@
 {% extends "base.html" %}
 {% import "macros.inc.html" as macros %}
 
-{% block title %}Report for {% endblock %}
+{% block title %}Report for {{ package_infos.name }} {{
+  package_infos.version }} {{ package_infos.release }} {{
+  package_infos.buildarch }}{% endblock %}
 
 {% block content %}
 
