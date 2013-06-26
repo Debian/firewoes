@@ -20,11 +20,18 @@ from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
 from sqlalchemy import and_
 
+# To add an item in the menu:
+# - add its dependencies (if relevant) in filter_dependencies
+# - add the item in create_menu()
+# - add the attribute in make_q()
+
 
 # Dependencies for the filter arguments
 # e.g. sut_version is only displayed when sut_name is chosen
 filter_dependencies = dict(
     sut_version = ["sut_name"],
+    sut_release = ["sut_name"],
+    sut_buildarch = ["sut_name"],
     location_file = ["sut_name"],
     location_function = ["location_file", "sut_name"],
     generator_version = ["generator_name"],
@@ -244,6 +251,9 @@ def create_menu(filter_):
     menu.add_submenu("sut_type", Sut.type, cool_name="Package type")
     menu.add_submenu("sut_name", Sut.name, cool_name="Package name")
     menu.add_submenu("sut_version", Sut.version, cool_name="Package version")
+    menu.add_submenu("sut_release", Sut.release, cool_name="Package release")
+    menu.add_submenu("sut_buildarch", Sut.buildarch,
+                     cool_name="Package build arch")
     menu.add_submenu("location_file", File.givenpath, cool_name="File",
                      add_clauses=[Location.file_id == File.id])
     menu.add_submenu("location_function", Function.name, cool_name="Function",
@@ -268,6 +278,8 @@ def make_q(session, class_, clauses):
                 Sut.name.label("sut_name"),
                 Sut.version.label("sut_version"),
                 Sut.type.label("sut_type"),
+                Sut.release.label("sut_release"),
+                Sut.buildarch.label("sut_buildarch"),
                 Generator.name.label("generator_name"),
                 Generator.version.label("generator_version"))
             .outerjoin(Location, File, Function, Point, Analysis,
