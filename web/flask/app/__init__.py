@@ -34,6 +34,11 @@ app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     '../../../etc/webconfig.py'))
 app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     '../../../etc/webconfig_local.py'))
+# loads testing configuration if FIREWOSE_TESTING environment variable is set
+if os.environ.get("FIREWOSE_TESTING") == "testing":
+    app.config.from_pyfile(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     '../../../etc/webconfig_testing.py'))
 
 sys.path.insert(0, app.config['ROOT_FOLDER'])
 
