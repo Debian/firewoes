@@ -20,7 +20,12 @@
   </tr>
   {% for res in results %}
   <tr>
-    <td>{% if res.count == 0 %}&#x2713;{% else %}&#x2717;{% endif %}
+    <td>
+      {% if res.count == 0 %}
+        <span class="color-check">&#x2713;</span>
+      {% else %}
+        <span class="color-error">&#x2717;</span>
+      {% endif %}
     <td>{{ res.name }}</td>
     <td>{{ res.count }}</td>
   </tr>

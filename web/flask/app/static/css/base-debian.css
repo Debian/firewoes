@@ -80,6 +80,14 @@ License: GNU Affero General Public License, version 3 or above.
     background-color: #E6413E;
 }
 
+.color-error {
+    color: red;
+}
+
+.color-check {
+    color: green;
+}
+
 .color-issue {
     color: grey;
 }
