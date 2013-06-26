@@ -36,7 +36,7 @@ sys.path.insert(0, app.config['ROOT_FOLDER'])
 
 # SQLAlchemy
 engine = create_engine(app.config['DATABASE_URI'],
-                       echo=app.config['DEBUG'])
+                       echo=app.config['SQLALCHEMY_ECHO'])
 Session = sessionmaker(bind=engine, autoflush=True)
 session = Session()
 
