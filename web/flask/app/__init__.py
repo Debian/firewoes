@@ -29,8 +29,11 @@ class CustomFlask(Flask):
 
 app = CustomFlask(__name__)
 
+# loads global and local configurations
 app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     '../../../etc/webconfig.py'))
+app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    '../../../etc/webconfig_local.py'))
 
 sys.path.insert(0, app.config['ROOT_FOLDER'])
 
