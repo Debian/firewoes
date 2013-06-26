@@ -22,7 +22,6 @@ from sqlalchemy import and_, func, desc
 
 from app import session, app
 from filter_search import FilterArgs, create_menu,make_q
-from package_report import Report
 
 
 ### EXCEPTIONS ###
