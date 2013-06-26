@@ -15,7 +15,7 @@
 <ul>
   {% for version in versions %}
   <li>
-      <a href="{{ url_for('.report_html', packageid=version.id) }}">
+      <a href="{{ url_for('.report_html', package_id=version.id) }}">
         {{ version.version }}</a> {{ version.release }} {{
         version.buildarch }}
   </li>
