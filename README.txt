@@ -1,0 +1,29 @@
+========
+Firewose
+========
+
+Firewose is intended to be a web user interface for Firehose.
+
+Dependencies
+============
+
+Debian dependencies
+-------------------
+
+* python
+* python-flask
+* python-six (required by Firehose)
+* postgresql (dev fast configuration: http://doc.ubuntu-fr.org/postgresql)
+* python-sqlalchemy >= 0.8.1
+* python-psycopg2 (required by SQLAlchemy)
+* python-jinja2 >= 2.7-3 [1]
+
+Python packages
+---------------
+
+* firehose (currently lib/firehose_noslots because of __slots__)
+
+
+
+[1] to use the option lstrip_block=True, for better whitespace dealing
+    in templates

@@ -1,1 +1,4 @@
 *.pyc
+firewose/cache
+dist
+firewose.egg-info

@@ -1,0 +1,8 @@
+include README.txt
+include AUTHORS
+include COPYING
+include requirements.txt
+recursive-include firewose/etc *
+recursive-include firewose/web/app/templates *
+recursive-include firewose/web/app/static *
+recursive-include firewose/web/app/firewose/templates *

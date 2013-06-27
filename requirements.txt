@@ -1,0 +1,5 @@
+firehose
+flask
+sqlalchemy >= 0.8.1
+psycopg
+jinja2 >= 2.7
