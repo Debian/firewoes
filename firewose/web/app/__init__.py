@@ -40,6 +40,9 @@ if os.environ.get("FIREWOSE_TESTING") == "testing":
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      '../../etc/webconfig_testing.py'))
 
+#from firewose.etc import webconfig
+#app.config.from_object(webconfig)
+
 # FIXME
 sys.path.insert(0, app.config['ROOT_FOLDER'])
 sys.path.insert(0, os.path.join(app.config['ROOT_FOLDER'], 'web'))
@@ -50,8 +53,8 @@ engine = create_engine(app.config['DATABASE_URI'],
 Session = sessionmaker(bind=engine, autoflush=True)
 session = Session()
 
-from app.firewose.views import mod as firewose_module
-app.register_blueprint(firewose_module)
+from app.frontend.views import mod as frontend_module
+app.register_blueprint(frontend_module)
 
 # 404 / 500 errors
 
