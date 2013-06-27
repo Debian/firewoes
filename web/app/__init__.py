@@ -31,23 +31,24 @@ app = CustomFlask(__name__)
 
 # loads global and local configurations
 app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    '../../../etc/webconfig.py'))
+                                    '../../etc/webconfig.py'))
 app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    '../../../etc/webconfig_local.py'))
+                                    '../../etc/webconfig_local.py'))
 # loads testing configuration if FIREWOSE_TESTING environment variable is set
 if os.environ.get("FIREWOSE_TESTING") == "testing":
     app.config.from_pyfile(
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     '../../../etc/webconfig_testing.py'))
+                     '../../etc/webconfig_testing.py'))
 
+# FIXME
 sys.path.insert(0, app.config['ROOT_FOLDER'])
+sys.path.insert(0, os.path.join(app.config['ROOT_FOLDER'], 'web'))
 
 # SQLAlchemy
 engine = create_engine(app.config['DATABASE_URI'],
                        echo=app.config['SQLALCHEMY_ECHO'])
 Session = sessionmaker(bind=engine, autoflush=True)
 session = Session()
-
 
 from app.firewose.views import mod as firewose_module
 app.register_blueprint(firewose_module)

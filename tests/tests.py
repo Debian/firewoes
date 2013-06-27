@@ -5,15 +5,16 @@ import unittest
 import json
 from glob import glob
 
-os.environ["FIREWOSE_TESTING"] = "testing"
-from app import app
-os.environ["FIREWOSE_TESTING"] = ""
+testsdir = os.path.dirname(os.path.abspath(__file__))
+parentdir = os.path.dirname(testsdir)
+sys.path.insert(0, parentdir)
 
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0,parentdir)
 from lib import firehose_orm
 from bin import fill_db
 
+os.environ["FIREWOSE_TESTING"] = "testing"
+from web.app import app
+os.environ["FIREWOSE_TESTING"] = ""
 
 class FirewoseTestCase(unittest.TestCase):
     ClassIsSetup = False
@@ -34,9 +35,9 @@ class FirewoseTestCase(unittest.TestCase):
         
         # we fill firewose_test with our testing data:
         print("Filling db...")
-        xml_files = glob("tests/*.xml")
-        #fill_db.read_and_create(app.config['DATABASE_URI'],
-        #                        xml_files, drop=True, echo=False)
+        xml_files = glob(testsdir + "/data/*.xml")
+        fill_db.read_and_create(app.config['DATABASE_URI'],
+                                xml_files, drop=True, echo=False)
 
         self.__class__.app = app.test_client()
         
