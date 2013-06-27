@@ -78,7 +78,7 @@ class FHGeneric(object):
         try:
             id = elem.id # raises error if the element doesn't exist
         except:
-            raise Http404Error("This element (%s, %i) doesn't exist."
+            raise Http404Error("This element (%s, %s) doesn't exist."
                                % (self.fh_class.__name__, id))
         return to_dict(elem)
 
