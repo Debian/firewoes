@@ -52,13 +52,17 @@ class FirewoseTestCase(unittest.TestCase):
         assert rv['packages_suggestions'][0]["name"] == "python-ethtool"
         
     def test_search_list(self):
-        rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&location_file=python-ethtool%2Fethtool.c').data)
+        rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
+                                     'ation_file=python-ethtool%2Fethtool.c')
+                        .data)
         assert rv["results"][0]["sut_name"] == "python-ethtool"
         assert rv["results"][0]["location_file"] == "python-ethtool/ethtool.c"
         assert rv["page"] == 1
         
     def test_drilldown_menu(self):
-        rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&location_file=python-ethtool%2Fethtool.c').data)
+        rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loca'
+                                     'tion_file=python-ethtool%2Fethtool.c')
+                        .data)
         
         assert rv["menu"][2]["active"] is True
         assert rv["menu"][2]["value"] == "python-ethtool"
@@ -68,6 +72,13 @@ class FirewoseTestCase(unittest.TestCase):
         assert rv["menu"][0]["items"][0]["add_filter"].keys() == [
             "sut_name", "result_type", "location_file"]
         assert rv["menu"][0]["items"][0]["name"] == "issue"
+        
+    def test_reports(self):
+        rv = json.loads(self.app.get('/api/report/1').data)
+        assert rv["count_per_generator"] ==  [
+            dict(count=18, name="cpychecker"),
+            dict(count=0, name="gcc")
+            ]
 
 if __name__ == '__main__':
     unittest.main()
