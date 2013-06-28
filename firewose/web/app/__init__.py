@@ -29,18 +29,7 @@ class CustomFlask(Flask):
 
 app = CustomFlask(__name__)
 
-# loads global and local configurations
-# app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-#                                     '../../etc/webconfig.py'))
-# app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-#                                     '../../etc/webconfig_local.py'))
-# # loads testing configuration if FIREWOSE_TESTING environment variable is set
-# if os.environ.get("FIREWOSE_TESTING") == "testing":
-#     app.config.from_pyfile(
-#         os.path.join(os.path.dirname(os.path.abspath(__file__)),
-#                      '../../etc/webconfig_testing.py'))
-
-# FIXME
+# Configuration
 from firewose.web import webconfig_default
 app.config.from_object(webconfig_default)
 
