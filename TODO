@@ -12,3 +12,4 @@
   Filter queries all the corresponding results to extract the relevant
   information, this is expensive.
   Try: do this db-side, with multiple queries?
+* TODO Themes configuration (templates/, static/, ...)
