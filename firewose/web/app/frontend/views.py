@@ -26,7 +26,14 @@ from models import Http404Error, Http500Error
 #from forms import SearchForm
 
 
-mod = Blueprint('firewose', __name__, template_folder='templates')
+mod = Blueprint('frontend', __name__,
+                static_folder="themes/debian/static",
+                template_folder="themes/debian/templates",
+                static_url_path="/frontend/static")
+# we have to provide static_url_path to avoid a bug in Flask
+# When a blueprint is registered without an url_prefix, its static folder
+# remains the one from the app, unless we choose another name (eg /foo/static)
+# see https://github.com/mitsuhiko/flask/issues/348
 
 
 ### PAGINATION ###
