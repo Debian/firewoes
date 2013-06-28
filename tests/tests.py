@@ -8,11 +8,7 @@ testsdir = os.path.dirname(os.path.abspath(__file__))
 
 from firewose.lib import firehose_orm
 from firewose.bin import fill_db
-from firewose.etc import webconfig_testing
-
-os.environ["FIREWOSE_TESTING"] = "testing"
 from firewose.web.app import app
-os.environ["FIREWOSE_TESTING"] = ""
 
 class FirewoseTestCase(unittest.TestCase):
     ClassIsSetup = False
@@ -34,8 +30,8 @@ class FirewoseTestCase(unittest.TestCase):
         # we fill firewose_test with our testing data:
         print("Filling db...")
         xml_files = glob(testsdir + "/data/*.xml")
-        fill_db.read_and_create(app.config['DATABASE_URI'],
-                                xml_files, drop=True, echo=False)
+        #fill_db.read_and_create(app.config['DATABASE_URI'],
+        #                        xml_files, drop=True, echo=False)
 
         self.__class__.app = app.test_client()
         

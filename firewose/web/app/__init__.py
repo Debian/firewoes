@@ -41,16 +41,11 @@ app = CustomFlask(__name__)
 #                      '../../etc/webconfig_testing.py'))
 
 # FIXME
-from firewose.etc import webconfig, webconfig_local, webconfig_testing
-app.config.from_object(webconfig)
-app.config.from_object(webconfig_local)
-if os.environ.get("FIREWOSE_TESTING") == "testing":
-    app.config.from_object(webconfig_testing)
+from firewose.web import webconfig_default
+app.config.from_object(webconfig_default)
 
-try:
+if "FIREWOSE_CONFIG" in os.environ:
     app.config.from_envvar('FIREWOSE_CONFIG')
-except Exception as e:
-    pass
 
 # SQLAlchemy
 engine = create_engine(app.config['DATABASE_URI'],

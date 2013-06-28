@@ -36,9 +36,9 @@ CSRF_ENABLED = False
 
 #SQLALCHEMY_ECHO = True
 
-ROOT_FOLDER = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+#ROOT_FOLDER = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-DATABASE_URI = "postgresql://matthieu:matthieu@localhost:5432/firewose"
+DATABASE_URI = ""
 
 # echoes SQLAlchemy requests in standard output
 SQLALCHEMY_ECHO = True
