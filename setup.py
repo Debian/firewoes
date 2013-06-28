@@ -21,6 +21,6 @@ setup(
     long_description=long_description,
     description='tool to navigate between Firehose results',
     license="AGPL",
-    url="",
+    url="http://git.upsilon.cc/?p=firewose.git;a=summary",
     platforms=['any']
 )
