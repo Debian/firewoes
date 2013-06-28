@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 
 from flask import render_template, jsonify, request, Blueprint, url_for
 from flask.views import View
@@ -25,10 +26,15 @@ from models import Report
 from models import Http404Error, Http500Error
 #from forms import SearchForm
 
+# Theme configuration
+theme = app.config["THEME"]
+static_folder = os.path.join("themes", theme, "static")
+template_folder = os.path.join("themes", theme, "templates")
 
+# Blueprint creation
 mod = Blueprint('frontend', __name__,
-                static_folder="themes/debian/static",
-                template_folder="themes/debian/templates",
+                static_folder=static_folder,
+                template_folder=template_folder,
                 static_url_path="/frontend/static")
 # we have to provide static_url_path to avoid a bug in Flask
 # When a blueprint is registered without an url_prefix, its static folder
