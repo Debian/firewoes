@@ -1,19 +1,17 @@
 import os
 import sys
 import unittest
-#import tempfile
 import json
 from glob import glob
 
 testsdir = os.path.dirname(os.path.abspath(__file__))
-parentdir = os.path.dirname(testsdir)
-sys.path.insert(0, parentdir)
 
-from lib import firehose_orm
-from bin import fill_db
+from firewose.lib import firehose_orm
+from firewose.bin import fill_db
+from firewose.etc import webconfig_testing
 
 os.environ["FIREWOSE_TESTING"] = "testing"
-from web.app import app
+from firewose.web.app import app
 os.environ["FIREWOSE_TESTING"] = ""
 
 class FirewoseTestCase(unittest.TestCase):

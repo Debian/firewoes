@@ -16,11 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
+from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata
 from sqlalchemy import and_, func, desc
 
-from app import session, app
+from firewose.web.app import session, app
 from filter_search import FilterArgs, create_menu,make_q
 
 

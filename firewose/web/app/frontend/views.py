@@ -19,7 +19,7 @@
 from flask import render_template, jsonify, request, Blueprint, url_for
 from flask.views import View
 
-from app import app
+from firewose.web.app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Report
 from models import Http404Error, Http500Error

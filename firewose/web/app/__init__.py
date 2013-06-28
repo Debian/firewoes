@@ -30,22 +30,27 @@ class CustomFlask(Flask):
 app = CustomFlask(__name__)
 
 # loads global and local configurations
-app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    '../../etc/webconfig.py'))
-app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    '../../etc/webconfig_local.py'))
-# loads testing configuration if FIREWOSE_TESTING environment variable is set
-if os.environ.get("FIREWOSE_TESTING") == "testing":
-    app.config.from_pyfile(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     '../../etc/webconfig_testing.py'))
-
-#from firewose.etc import webconfig
-#app.config.from_object(webconfig)
+# app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+#                                     '../../etc/webconfig.py'))
+# app.config.from_pyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+#                                     '../../etc/webconfig_local.py'))
+# # loads testing configuration if FIREWOSE_TESTING environment variable is set
+# if os.environ.get("FIREWOSE_TESTING") == "testing":
+#     app.config.from_pyfile(
+#         os.path.join(os.path.dirname(os.path.abspath(__file__)),
+#                      '../../etc/webconfig_testing.py'))
 
 # FIXME
-sys.path.insert(0, app.config['ROOT_FOLDER'])
-sys.path.insert(0, os.path.join(app.config['ROOT_FOLDER'], 'web'))
+from firewose.etc import webconfig, webconfig_local, webconfig_testing
+app.config.from_object(webconfig)
+app.config.from_object(webconfig_local)
+if os.environ.get("FIREWOSE_TESTING") == "testing":
+    app.config.from_object(webconfig_testing)
+
+try:
+    app.config.from_envvar('FIREWOSE_CONFIG')
+except Exception as e:
+    pass
 
 # SQLAlchemy
 engine = create_engine(app.config['DATABASE_URI'],
@@ -53,7 +58,7 @@ engine = create_engine(app.config['DATABASE_URI'],
 Session = sessionmaker(bind=engine, autoflush=True)
 session = Session()
 
-from app.frontend.views import mod as frontend_module
+from frontend.views import mod as frontend_module
 app.register_blueprint(frontend_module)
 
 # 404 / 500 errors

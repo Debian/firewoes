@@ -5,8 +5,8 @@ import rlcompleter
 readline.parse_and_bind("tab: complete")
 
 
-from app import *
-from app.firewose.models import *
-from lib.firehose_noslots import *
+from firewose.web.app import *
+from app.frontend.models import *
+from firewose.lib.firehose_noslots import *
 
 os.environ['PYTHONINSPECT'] = 'True'

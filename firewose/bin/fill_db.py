@@ -21,16 +21,11 @@
 import os, sys
 import argparse
 
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from firewose.lib.firehose_unique import get_fh_unique
 
-sys.path.insert(0, parentdir) 
-
-from lib.firehose_unique import get_fh_unique
-#from lib.firehose_orm import metadata
-import lib.firehose_orm as fhm
+import firewose.lib.firehose_orm as fhm
 metadata = fhm.metadata
 
-#import firehose_noslots as fhm
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

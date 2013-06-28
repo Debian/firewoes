@@ -20,8 +20,8 @@
 
 from sqlalchemy import and_
 
-from lib.firehose_orm import FH_UNICITY
-from lib.firehose_noslots import _string_type # FIXME
+from firewose.lib.firehose_orm import FH_UNICITY
+from firewose.lib.firehose_noslots import _string_type # FIXME
 
 
 def _unique(session, cls, unique_attrs, hashfunc, queryfunc, constructor,

@@ -1,4 +1,4 @@
 if __name__ == "__main__":
-    from app import app
+    from firewose.web.app import app
     app.run(debug=True)
 
