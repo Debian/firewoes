@@ -16,28 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os
-
-# _basedir = os.path.abspath(os.path.dirname(__file__))
-
+# unless for testing/dev, always set this to false
 DEBUG = False
 
-# SECRET_KEY = 'SecretKeyForSessionSigning'
-
-# SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'app.db')
-# SQLALCHEMY_DATABASE_URI = 'postgresql://matthieu:matthieu@localhost:5432/debcocci'
-#SQLALCHEMY_MIGRATE_REPO = os.path.join(_basedir, 'db_repository')
-#DATABASE_CONNECT_OPTIONS = {}
-
-#THREADS_PER_PAGE = 8
-
+# we don't need csrf, currently there's no form which writes data somewhere
 CSRF_ENABLED = False
-#CSRF_SESSION_KEY = "somethingimpossibletoguess"
 
-#SQLALCHEMY_ECHO = True
-
-#ROOT_FOLDER = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-
+# this sould be configured later, in a local configuration file
 DATABASE_URI = ""
 
 # echoes SQLAlchemy requests in standard output
