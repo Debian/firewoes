@@ -18,12 +18,23 @@ Debian dependencies
 * python-psycopg2 (required by SQLAlchemy)
 * python-jinja2 >= 2.7-3 [1]
 
+[1] to use the option lstrip_block=True, for better whitespace dealing
+    in templates
+
 Python packages
 ---------------
 
 * firehose (currently lib/firehose_noslots because of __slots__)
 
+Installation
+============
 
+* Production: $ python setup.py install
+* Development: $ python setup.py develop
 
-[1] to use the option lstrip_block=True, for better whitespace dealing
-    in templates
+Ruuning
+=======
+
+* With the development Flask server:
+  $ export FIREWOSE_CONFIG=path/to/yout/local/config.py
+  $ python firewose/web/run.py
