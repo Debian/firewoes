@@ -24,6 +24,7 @@ from firewose.web.app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Report
 from models import Http404Error, Http500Error
+from sources_link import get_source_url
 #from forms import SearchForm
 
 # Theme configuration
@@ -41,6 +42,16 @@ mod = Blueprint('frontend', __name__,
 # remains the one from the app, unless we choose another name (eg /foo/static)
 # see https://github.com/mitsuhiko/flask/issues/348
 
+# JINJA2 CUSTOM FILTERS
+@app.context_processor
+def url_for_source():
+    def url_for_source(package, version, release, path,
+                       start_line, end_line=None,
+                       message=None):
+        return get_source_url(app.config["SOURCE_CODE_URL"],
+                              package, version, release, path,
+                              start_line, end_line, message)
+    return dict(url_for_source=url_for_source)
 
 ### PAGINATION ###
 from pagination import Pagination

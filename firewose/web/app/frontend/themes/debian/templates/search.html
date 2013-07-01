@@ -77,8 +77,12 @@
     {% if res.Range %}
       ({{ res.Range.start.line }}:{{ res.Range.start.column }}-{{
     res.Range.end.line }}:{{ res.Range.end.column }})
+      {% set startline = res.Range.start.line %}
+      {% set endline = res.Range.end.line %}
     {% else %}
       ({{ res.Point.line }}:{{ res.Point.column }})
+      {% set startline = res.Point.line %}
+      {% set endline = None %}
     {% endif %}
     :<br />
     {% if res["message_text"] %}
@@ -87,7 +91,12 @@
       (no message)
     {% endif %}
     <small>
-      <a href="{{ url_for('.result_elem_html', id=res.id) }}">details</a>
+      <a href="{{ url_for('.result_elem_html', id=res.id)
+      }}">details</a> |
+      <a href="{{ url_for_source(res["sut_name"], res["sut_version"],
+                                 res["sut_release"],
+                                 res["location_file"], startline, endline,
+                                 res["message_text"]) }}">view code</a>
     </small>
   </li>
   {% endfor %}
