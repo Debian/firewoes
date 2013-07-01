@@ -29,6 +29,8 @@ Python packages
 Installation
 ============
 
+* At least on Debian, libpq-dev is needed to install psycopg2 via pip
+
 * Production: $ python setup.py install
 * Development: $ python setup.py develop
 
