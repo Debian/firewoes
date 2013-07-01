@@ -15,6 +15,7 @@ setup(
     version=__version__,
     packages=find_packages(),
     include_package_data=True,
+    scripts=["firewose/bin/firewose_fill_db.py"],
     install_requires=install_requires,
     author="Matthieu Caneill",
     author_email="matthieu.caneill@gmail.com",
