@@ -90,7 +90,8 @@
     <strong>{{ res["sut_name"] }} ({{ res["sut_version"] }})</strong> in
     {{ res["location_file"] }}
     {% if res.Range %}
-      range (TODO)
+      ({{ res.Range.start.line }}:{{ res.Range.start.column }}-{{
+    res.Range.end.line }}:{{ res.Range.end.column }})
     {% else %}
       ({{ res.Point.line }}:{{ res.Point.column }})
     {% endif %}
