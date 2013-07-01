@@ -12,21 +12,6 @@
 
 <h2>{{ self.title() }}</h2>
 
-<form action="" method="get" name="directsearch" style="display: none;">
-  <input type="text" name="q" value="{{ q }}" style="width: 300px;" />
-  <input type="submit" value="search!" />
-</form>
-
-<form action="" method="get" name="search" style="display: none;">
-  Sut.name: <input type="text" name="sut_name" value="{{
-  filter['sut_name'] }}" />
-  Sut.version: <input type="text" name="sut_version" value="{{
-  filter['sut_version'] }}" />
-  Generator.name: <input type="text" name="generator_name" value="{{
-  filter['generator_name'] }}" />
-  <input type="submit" value="search!" />
-</form>
-
 <div id="rightmenu">
   <h2>Refine search</h2>
   <ul>
