@@ -150,7 +150,15 @@ class Result_app(FHGeneric):
         offset: number of results (if not set, this value is read in config)
         """
         
-        filter_ = FilterArgs(request_args)
+        # we need the arguments without "page" for the menu
+        # ("page" would add page=foo on the menu links, which we don't want)
+        args_without_page = request_args.copy()
+        try:
+            del(args_without_page["page"])
+        except:
+            pass
+        
+        filter_ = FilterArgs(args_without_page)
         menu = create_menu(filter_)
         clauses = menu.get_clauses()
         
