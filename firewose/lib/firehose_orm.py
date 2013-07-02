@@ -113,33 +113,6 @@ t_sut = \
           Column('buildarch', String),
           )
 
-# t_sourcerpm = \
-#     Table('sourcerpm', metadata,
-#           Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
-#           Column('name', String),
-#           Column('version', String),
-#           Column('release', String),
-#           Column('buildarch', String),
-#           )
-
-# t_debianbinary = \
-#     Table('debianbinary', metadata,
-#           Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
-#           Column('name', String),
-#           Column('version', String),
-#           Column('release', String),
-#           Column('buildarch', String),
-#           )
-
-# t_debiansource = \
-#     Table('debiansource', metadata,
-#           Column('sut_id', Integer, ForeignKey('sut.id'), primary_key=True),
-#           Column('name', String),
-#           Column('version', String),
-#           Column('release', String),
-#           )
-
-
 # For the Result hierarchy we use joined-table inheritance
 t_result = \
     Table('result', metadata,
@@ -242,7 +215,6 @@ t_function = \
     Table('function', metadata,
           Column('id', Integer, primary_key=True),
           Column('name', String, nullable=False),
-            # in firehose: can be None
           )
 
 t_point = \
@@ -264,8 +236,6 @@ t_range = \
 t_customfields = \
     Table('customfields', metadata,
           Column('id', Integer, primary_key=True))
-
-# inheritance here?
 
 t_intfield = \
     Table('intfield', metadata,
@@ -292,7 +262,6 @@ t_strfield = \
 mapper(Analysis, t_analysis,
        properties={
         'metadata': relationship(Metadata, lazy='joined'),
-        # FIXME: should do both issues *and* failures
         'results': relationship(
             Result, order_by=t_result.c.id, lazy='noload'),
         'customfields': relationship(CustomFields),
@@ -315,15 +284,15 @@ sut_mapper = mapper(Sut, t_sut,
                     polymorphic_on=t_sut.c.type,
                     polymorphic_identity='sut')
 
-mapper(SourceRpm, #t_sourcerpm,
+mapper(SourceRpm,
        inherits=sut_mapper,
        polymorphic_identity='source-rpm')
 
-mapper(DebianBinary, #t_debianbinary,
+mapper(DebianBinary,
        inherits=sut_mapper,
        polymorphic_identity='debian-binary')
 
-mapper(DebianSource, #t_debiansource,
+mapper(DebianSource,
        inherits=sut_mapper,
        polymorphic_identity='debian-source')
 
@@ -346,7 +315,6 @@ mapper(State, t_state,
        )
 
 # Map the Result hierarchy using Joined Table Inheritance:
-
 mapper(Result, t_result,
        polymorphic_on=t_result.c.type,
        polymorphic_identity='result',
