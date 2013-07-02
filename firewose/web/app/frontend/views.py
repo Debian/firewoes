@@ -193,10 +193,6 @@ add_firehose_view('result', Result_app)
 
 class SearchView(GeneralView):
     def get_objects(self):
-        # results, filter_, precise_menu = Result_app().filter(request.args)
-        # return dict(results=results,
-        #             filter=filter_,
-        #             precise_menu=precise_menu)
         return Result_app().filter(request.args)
 
 def render_html_search(templatename, **kwargs):
