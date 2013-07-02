@@ -36,7 +36,7 @@
                   {% if item["name"] -%}
                     {% if item["name"]|length >
                   config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"] -%}{# long name #}
-                    {{ item["name"][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}...
+                    {{ item["name"][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}…
                     {%- else -%}
                       {{ item["name"] }}{# short name #}
                     {%- endif %}
@@ -46,7 +46,7 @@
                 <span>({{ item["count"] }}){# number of items #}</span>
               </li>
             {% endfor %}
-            {% if submenu["is_sliced"] %}...{% endif %}
+            {% if submenu["is_sliced"] %}…{% endif %}
           </ul>
         {% endif %}
 
