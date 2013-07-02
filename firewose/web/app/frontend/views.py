@@ -197,10 +197,8 @@ class SearchView(GeneralView):
 
 def render_html_search(templatename, **kwargs):
     """ adds pagination object before rendering """
-    #kwargs['pagination']
     pagination = Pagination(kwargs['page'], kwargs['offset'],
                                     kwargs['results_all_count'])
-    #print(kwargs['pagination'])
     return html(templatename, pagination=pagination, **kwargs)
 
 mod.add_url_rule('/search/', view_func=SearchView.as_view(
