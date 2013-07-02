@@ -284,6 +284,6 @@ def make_q(session, class_, clauses):
                 Generator.version.label("generator_version"))
             .outerjoin(Location, File, Function, Point, Analysis,
                        Metadata, Generator, Sut, Message)
-            .outerjoin(Range, and_( # TOTEST
-                            Range.start_id==Point.id, Range.end_id==Point.id))
+            .outerjoin(Range, Location.range_id==Range.id)
+            # we specify the Range JOIN to avoid ambiguity
             .filter(*clauses))
