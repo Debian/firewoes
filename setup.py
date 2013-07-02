@@ -20,7 +20,7 @@ setup(
     author="Matthieu Caneill",
     author_email="matthieu.caneill@gmail.com",
     long_description=long_description,
-    description='tool to navigate between Firehose results',
+    description='Web application to navigate between Firehose results',
     license="AGPL",
     url="http://git.upsilon.cc/?p=firewose.git;a=summary",
     platforms=['any']
