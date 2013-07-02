@@ -119,22 +119,9 @@ class GeneralView(View):
 
 ### INDEX ###
 
-class IndexView(GeneralView):
-    def get_objects(self):
-        return dict()
-
-mod.add_url_rule('/', view_func=IndexView.as_view(
-        'index_html',
-        render_func=lambda **kwargs: html('index.html', **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-mod.add_url_rule('/api/', view_func=IndexView.as_view(
-        'index_json',
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
+@mod.route('/')
+def index():
+    return render_template("index.html")
 
 ### FIREHOSE ELEMENT/LIST ###
 
