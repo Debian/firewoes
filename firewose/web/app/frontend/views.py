@@ -187,7 +187,6 @@ def add_firehose_view(name, class_):
     add_(name, class_, api="api") # JSON
 
 add_firehose_view('analysis', Analysis_app)
-add_firehose_view('sut', Sut_app)
 add_firehose_view('result', Result_app)
 
 ### SEARCH ###
