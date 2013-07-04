@@ -35,6 +35,7 @@
       <h3>Metadata</h3>
       {{ macros.render_metadata(result.analysis.metadata) }}
     </td>
+    {% if result.analysis.metadata.sut.type == "debian-source" %}
     <td id="results_code">
       <object data="{{ url_for_source(result.analysis.metadata.sut.name,
 	            result.analysis.metadata.sut.version,
@@ -45,6 +46,7 @@
                     ) }}"
 	      class="embedded-code"></object>
     </td>
+    {% endif %}
   </tr>
 </table>
 
