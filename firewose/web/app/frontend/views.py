@@ -125,7 +125,7 @@ class GeneralView(View):
 
 @mod.route('/')
 def index():
-    return render_template("index.html") # TODO: html()
+    return html("index.html")
 
 ### FIREHOSE ELEMENT/LIST ###
 
