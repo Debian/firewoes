@@ -49,9 +49,9 @@ def url_for_source():
                        start_line, end_line=None,
                        message=None, embedded=False):
         if embedded:
-            url_pattern = app.config["EMBEDDED_SOURCE_CODE_URL"]
+            url_pattern = app.config["DEBIAN_EMBEDDED_SOURCES_URL"]
         else:
-            url_pattern = app.config["SOURCE_CODE_URL"]
+            url_pattern = app.config["DEBIAN_SOURCES_URL"]
         return get_source_url(url_pattern,
                               package, version, release, path,
                               start_line, end_line, message)
