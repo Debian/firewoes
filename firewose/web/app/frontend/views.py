@@ -47,8 +47,12 @@ mod = Blueprint('frontend', __name__,
 def url_for_source():
     def url_for_source(package, version, release, path,
                        start_line, end_line=None,
-                       message=None):
-        return get_source_url(app.config["SOURCE_CODE_URL"],
+                       message=None, embedded=False):
+        if embedded:
+            url_pattern = app.config["EMBEDDED_SOURCE_CODE_URL"]
+        else:
+            url_pattern = app.config["SOURCE_CODE_URL"]
+        return get_source_url(url_pattern,
                               package, version, release, path,
                               start_line, end_line, message)
     return dict(url_for_source=url_for_source)
@@ -121,7 +125,7 @@ class GeneralView(View):
 
 @mod.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("index.html") # TODO: html()
 
 ### FIREHOSE ELEMENT/LIST ###
 

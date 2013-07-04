@@ -60,7 +60,9 @@ def get_source_url(url,
     url = url.replace("{lines_range}", lines_range)
         
     if message is not None:
-        url = url.replace("{message}", url_quote(message))
+        url = url.replace("{message}", "%d:error:%s" % (start_line, url_quote(message)))
+    else:
+        url = url.replace("{message}", "") # we don't want {message} of course
     
     return url
     

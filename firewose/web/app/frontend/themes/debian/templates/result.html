@@ -6,16 +6,46 @@
 {% extends "base.html" %}
 {% import "macros.inc.html" as macros %}
 
-{% block title %}Result #{{ result.Result.id }}{% endblock %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('.static', filename='css/view_result.css') }}" />
+{% endblock %}
+
+{% block title %}Result #{{ result.id }}{% endblock %}
 
 {% block content %}
 
 <h2>{{ self.title() }}</h2>
 
-<h3>Result</h3>
-{{ macros.render_result(result.Result) }}
+{% if result.location.point %}
+{% set startline = result.location.point.line %}
+{% set endline = None %}
+{% else %}
+{% set startline = result.location.range.start.line %}
+{% set endline = result.location.range.end.line %}
+{% endif %}
 
-<h3>Metadata</h3>
-{{ macros.render_metadata(result.Metadata) }}
+<table>
+  <tr>
+    <td id="results_var">
+      <h3>Result</h3>
+      {{ macros.render_result(result) }}
+      
+      <h3>Metadata</h3>
+      {{ macros.render_metadata(result.analysis.metadata) }}
+    </td>
+    <td id="results_code">
+      <object data="{{ url_for_source(result.analysis.metadata.sut.name,
+	            result.analysis.metadata.sut.version,
+                    result.analysis.metadata.sut.release,
+                    result.location.file.givenpath,
+		    startline, endline,
+		    embedded=True
+                    ) }}"
+	      class="embedded-code"></object>
+    </td>
+  </tr>
+</table>
 
 {% endblock %}
