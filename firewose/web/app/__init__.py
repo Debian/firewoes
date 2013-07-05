@@ -21,6 +21,8 @@ import os, sys
 from flask import Flask, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import logging
+from logging import Formatter, StreamHandler
 
 class CustomFlask(Flask):
     # we deal with jinja2 options to remove whitespace
