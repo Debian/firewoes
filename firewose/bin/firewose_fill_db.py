@@ -71,7 +71,8 @@ def read_and_create(url, xml_files, drop=False, echo=False):
             print("Error in file %s, it maybe contains "
                   "invalid characters" % file_)
             print(e)
-            
+    
+    session.close()
 
 if __name__ == "__main__":
     
