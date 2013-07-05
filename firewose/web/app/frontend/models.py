@@ -126,10 +126,14 @@ class Sut_app(FHGeneric):
             Sut.name==name).order_by(Sut.version).all()
         return to_dict(elems)
     
-    def name_contains(self, name):
+    def name_contains(self, name, limit=None):
         """ returns the packages whose name contains name """
         elems = session.query(Sut.name).filter(
-            Sut.name.contains(name)).distinct().all()
+            Sut.name.contains(name)).distinct()
+        if limit is None:
+            elems = elems.all()
+        else:
+            elems = elems.limit(limit)
         # we remove 'name' if it's here
         elems = [e for e in elems if e.name != name]
         return to_dict(elems)
@@ -191,7 +195,7 @@ class Result_app(FHGeneric):
         try:
             sutname = filter_.get("sut_name")
             if len(filter_.get_all()) == 1:
-                packages_suggestions = Sut_app().name_contains(sutname)
+                packages_suggestions = Sut_app().name_contains(sutname, limit=5)
             else:
                 packages_suggestions = None
         except:
