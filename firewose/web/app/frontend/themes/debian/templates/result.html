@@ -22,8 +22,8 @@
 {% set startline = result.location.point.line %}
 {% set endline = None %}
 {% else %}
-{% set startline = result.location.range.start.line %}
-{% set endline = result.location.range.end.line %}
+{% set startline = result.location.range_.start.line %}
+{% set endline = result.location.range_.end.line %}
 {% endif %}
 
 <table>

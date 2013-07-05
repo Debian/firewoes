@@ -41,7 +41,7 @@ from firehose_noslots import *
 FH_UNICITY = dict(
     #Analysis = ("metadata", "customfields"),
     Generator = ("name", "version"),
-    Metadata = ("sut", "file", "stats"),
+    Metadata = ("sut", "file_", "stats"),
     Stats = ("wallcloktime"),
     #Sut = ("type", "name", "version", "release", "buildarch"),
     SourceRpm = ("name", "version", "release", "buildarch"),
@@ -56,8 +56,8 @@ FH_UNICITY = dict(
     Notes = ("text"),
     #Trace = ("states"),
     State = ("location", "notes"),
-    Location = ("file", "function", "point", "range"),
-    File = ("givenpath", "abspath", "hash"),
+    Location = ("file", "function", "point", "range_"),
+    File = ("givenpath", "abspath", "hash_"),
     Hash = ("alg", "hexdigest"),
     Function = ("name"),
     Point = ("line", "column"),
@@ -272,7 +272,7 @@ mapper(Metadata, t_metadata,
        properties={
         'generator': relationship(Generator, lazy='joined'),
         'sut': relationship(Sut, lazy='joined'),
-        'file': relationship(File, lazy='joined'),
+        'file_': relationship(File, lazy='joined'),
         'stats': relationship(Stats, lazy='joined'),
         }
        )
@@ -361,13 +361,13 @@ mapper(Location, t_location,
         #, backref='locations', order_by=t_file.c.abspath)
         'function': relationship(Function, lazy='joined'),
         'point': relationship(Point, lazy='joined'),
-        'range': relationship(Range, lazy='joined'),
+        'range_': relationship(Range, lazy='joined'),
         }
        )
 
 mapper(File, t_file,
        properties={
-        'hash': relationship(Hash, lazy='joined'),
+        'hash_': relationship(Hash, lazy='joined'),
         }
        )
 
