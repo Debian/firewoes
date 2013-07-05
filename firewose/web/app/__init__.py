@@ -55,3 +55,13 @@ def page_not_found(e):
 def server_error(e):
     app.logger.error(e)
     return render_template('500.html'), 500
+
+
+# logging
+handler = StreamHandler()
+handler.setFormatter(Formatter(
+        '%(asctime)s %(levelname)s: %(message)s '
+        '[in %(pathname)s:%(lineno)d]'
+        ))
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
