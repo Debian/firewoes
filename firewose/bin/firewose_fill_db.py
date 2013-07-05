@@ -27,7 +27,7 @@ import firewose.lib.firehose_orm as fhm
 metadata = fhm.metadata
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 def _get_engine(url, echo):
     return create_engine(url, echo=echo)
@@ -37,8 +37,7 @@ def get_engine_session(url, echo=False):
     Given a database URL, returns an SQLAlchemy engine/session
     """
     engine = _get_engine(url, echo=echo)
-    Session = sessionmaker(bind=engine, autoflush=True)
-    session = Session()
+    session = scoped_session(sessionmaker(bind=engine, autoflush=True))
     return engine, session
 
 def insert_analysis(session, xml_file):
@@ -72,7 +71,7 @@ def read_and_create(url, xml_files, drop=False, echo=False):
                   "invalid characters" % file_)
             print(e)
     
-    session.close()
+    session.remove()
 
 if __name__ == "__main__":
     
