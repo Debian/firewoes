@@ -20,7 +20,7 @@ import os, sys
 
 from flask import Flask, render_template
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 import logging
 from logging import Formatter, StreamHandler
 
@@ -41,8 +41,8 @@ if "FIREWOSE_CONFIG" in os.environ:
 # SQLAlchemy
 engine = create_engine(app.config['DATABASE_URI'],
                        echo=app.config['SQLALCHEMY_ECHO'])
-Session = sessionmaker(bind=engine, autoflush=True)
-session = Session()
+session = scoped_session(sessionmaker(bind=engine, autoflush=True))
+#session = Session()
 
 from frontend.views import mod as frontend_module
 app.register_blueprint(frontend_module)
@@ -57,6 +57,10 @@ def page_not_found(e):
 def server_error(e):
     app.logger.error(e)
     return render_template('500.html'), 500
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    session.remove()
 
 
 # logging
