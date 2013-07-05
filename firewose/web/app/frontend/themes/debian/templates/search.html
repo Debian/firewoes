@@ -71,7 +71,8 @@
   <ul>
   {% for res in results %}
   <li>
-    <small><span class="color-{{ res["result_type"] }}">[{{ res["result_type"] }}]</span></small>
+    <small><span class="color-{{ res["result_type"] }}">[{{
+    res["result_type"] }}]</span> [{{ res["generator_name"] }}]</small>
     <strong>{{ res["sut_name"] }} ({{ res["sut_version"] }})</strong> in
     {{ res["location_file"] }}
     {% if res.Range %}
@@ -83,7 +84,7 @@
       ({{ res.Point.line }}:{{ res.Point.column }})
       {% set startline = res.Point.line %}
       {% set endline = None %}
-    {% endif %} with <strong>{{ res["generator_name"] }}</strong>
+    {% endif %}
     :<br />
     {% if res["message_text"] %}
       {{ res["message_text"] }}
