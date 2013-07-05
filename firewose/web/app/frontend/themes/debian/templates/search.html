@@ -83,7 +83,7 @@
       ({{ res.Point.line }}:{{ res.Point.column }})
       {% set startline = res.Point.line %}
       {% set endline = None %}
-    {% endif %}
+    {% endif %} with <strong>{{ res["generator_name"] }}</strong>
     :<br />
     {% if res["message_text"] %}
       {{ res["message_text"] }}
