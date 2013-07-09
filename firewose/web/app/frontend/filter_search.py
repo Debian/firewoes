@@ -36,6 +36,7 @@ filter_dependencies = dict(
     location_function = ["location_file", "sut_name"],
     generator_version = ["generator_name"],
     message_text = ["generator_name"],
+    testid = ["generator_name"],
     )
 
 def check_dependency(arg, args):
@@ -261,6 +262,7 @@ def create_menu(filter_):
     menu.add_submenu("generator_name", Generator.name,
                      add_clauses=[Metadata.generator_id == Generator.id])
     menu.add_submenu("generator_version", Generator.version)
+    menu.add_submenu("testid", Issue.testid, cool_name="Test type")
     menu.add_submenu("message_text", Message.text, cool_name="Message")
     
     return menu
@@ -281,7 +283,8 @@ def make_q(session, class_, clauses):
                 Sut.release.label("sut_release"),
                 Sut.buildarch.label("sut_buildarch"),
                 Generator.name.label("generator_name"),
-                Generator.version.label("generator_version"))
+                Generator.version.label("generator_version"),
+                Issue.testid.label("testid"))
             .outerjoin(Location, File, Function, Point, Analysis,
                        Metadata, Generator, Sut, Message)
             .outerjoin(Range, Location.range_id==Range.id)
