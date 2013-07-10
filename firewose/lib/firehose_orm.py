@@ -20,7 +20,7 @@
 
 from sqlalchemy import Table, MetaData, Column, \
     ForeignKey, Integer, String, Float, ForeignKeyConstraint, \
-    event, DDL
+    event, DDL, Index
 from sqlalchemy.orm import mapper, relationship, polymorphic_union, \
     sessionmaker
 from sqlalchemy.schema import Sequence
@@ -85,6 +85,7 @@ t_generator = \
           Column('name', String),
           Column('version', String), # optional in RNG
           )
+Index('ix_generator_name_version', t_generator.c.name, t_generator.c.version)
 
 t_metadata = \
     Table('metadata', metadata,
@@ -101,6 +102,7 @@ t_stats = \
           Column('id', Integer, primary_key=True),
           Column('wallclocktime', Float, nullable=False),
           )
+Index('ix_metadata_wallclocktime', t_stats.c.wallclocktime)
 
 # For the Sut hierarchy we use joined-table inheritance
 t_sut = \
@@ -112,6 +114,11 @@ t_sut = \
           Column('release', String),
           Column('buildarch', String),
           )
+Index('ix_sut_name_version_release_buildarch',
+      t_sut.c.name,
+      t_sut.c.version,
+      t_sut.c.release,
+      t_sut.c.buildarch)
 
 # For the Result hierarchy we use joined-table inheritance
 t_result = \
@@ -121,6 +128,7 @@ t_result = \
                  ForeignKey('analysis.id'), nullable=False),
           Column('type', String(10), nullable=False),
           )
+Index('ix_result_type', t_result.c.type)
 
 t_issue = \
     Table('issue', metadata,
@@ -138,6 +146,9 @@ t_issue = \
           Column('customfields_id', Integer,
                  ForeignKey('customfields.id')),
           )
+Index('ix_issue_testid', t_issue.c.testid)
+Index('ix_issue_message_id', t_issue.c.message_id)
+Index('ix_issue_location_id', t_issue.c.location_id)
 
 t_failure = \
     Table('failure', metadata,
@@ -148,6 +159,9 @@ t_failure = \
           Column('message_id', Integer, ForeignKey('message.id')),
           Column('customfields_id', Integer, ForeignKey('customfields.id')),
           )
+Index('ix_failure_failureid', t_failure.c.failureid)
+Index('ix_failure_location_id', t_failure.c.location_id)
+Index('ix_failure_message_id', t_failure.c.message_id)
 
 t_info = \
     Table('info', metadata,
@@ -158,18 +172,23 @@ t_info = \
           Column('message_id', Integer, ForeignKey('message.id')),
           Column('customfields_id', Integer, ForeignKey('customfields.id')),
           )
+Index('ix_info_infoid', t_info.c.infoid)
+Index('ix_info_location_id', t_info.c.location_id)
+Index('ix_info_message_id', t_info.c.message_id)
 
 t_message = \
     Table('message', metadata,
           Column('id', Integer, primary_key=True),
           Column('text', String),
           )
+Index('ix_message_text', t_message.c.text)
 
 t_notes = \
     Table('notes', metadata,
           Column('id', Integer, primary_key=True),
           Column('text', String),
           )
+Index('ix_notes_text', t_notes.c.text)
 
 t_trace = \
     Table('trace', metadata,
@@ -185,6 +204,7 @@ t_state = \
           Column('notes_id', Integer, ForeignKey('notes.id')),
           # annotation (key/value) pairs -> why not CustomFields here?
           )
+Index('ix_state_trace_id', t_state.c.trace_id)
 
 t_location = \
     Table('location', metadata,
@@ -195,6 +215,9 @@ t_location = \
           Column('point_id', Integer, ForeignKey('point.id')),
           Column('range_id', Integer, ForeignKey('range.id')),
           )
+Index('ix_location_file_id_function_id',
+      t_location.c.file_id,
+      t_location.c.function_id)
 
 t_file = \
     Table('file', metadata,
@@ -203,6 +226,7 @@ t_file = \
           Column('abspath', String),
           Column('hash_id', Integer, ForeignKey('hash.id')),
           )
+Index('ix_file_givenpath', t_file.c.givenpath)
 
 t_hash = \
     Table('hash', metadata,
@@ -210,12 +234,14 @@ t_hash = \
           Column('alg', String, nullable=False),
           Column('hexdigest', String, nullable=False),
           )
+Index('ix_hash_hexdigest', t_hash.c.hexdigest)
 
 t_function = \
     Table('function', metadata,
           Column('id', Integer, primary_key=True),
           Column('name', String, nullable=False),
           )
+Index('ix_function_name', t_function.c.name)
 
 t_point = \
     Table('point', metadata,
@@ -223,6 +249,7 @@ t_point = \
           Column('line', Integer, nullable=False),
           Column('column', Integer, nullable=False),
           )
+Index('ix_point_line_column', t_point.c.line, t_point.c.column)
 
 t_range = \
     Table('range', metadata,
@@ -232,6 +259,7 @@ t_range = \
           Column('end_id', Integer,
                  ForeignKey('point.id'), nullable=False),
           )
+Index('ix_range_start_id_end_id', t_range.c.start_id, t_range.c.end_id)
 
 t_customfields = \
     Table('customfields', metadata,
@@ -245,6 +273,7 @@ t_intfield = \
           Column('name', String, nullable=False),
           Column('value', Integer, nullable=False),
           )
+Index('ix_intfield_name', t_intfield.c.name)
 
 t_strfield = \
     Table('strfield', metadata,
@@ -254,6 +283,7 @@ t_strfield = \
           Column('name', String, nullable=False),
           Column('value', String, nullable=False),
           )
+Index('ix_strfield_name', t_strfield.c.name)
 
 ############################################################################
 # Mappers
