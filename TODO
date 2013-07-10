@@ -16,3 +16,7 @@
 * TODO Set correctly the height of source-code in details.html
   Iceweasel doesn't like the 100% (parent <td> height is not set)
   However it works fine with Chromium
+* TODO social
+  thumbs up/down
+  comments on results
+  authentication: http://wiki.debian.org/DebianSingleSignOn
