@@ -21,9 +21,9 @@
 import os, sys
 import argparse
 
-from firewose.lib.firehose_unique import get_fh_unique
-
 import firewose.lib.firehose_orm as fhm
+from firewose.lib.hash import idify, uniquify
+
 metadata = fhm.metadata
 
 from sqlalchemy import create_engine
@@ -45,12 +45,23 @@ def insert_analysis(session, xml_file):
     Given a file object and a session, creates a Firehose Analysis() object
     and inserts it to the db linked to session
     """
-    analysis = fhm.Analysis.from_xml(xml_file)
+    try:
+        analysis = fhm.Analysis.from_xml(xml_file)
+    except Exception as e:
+        print("ERROR while parsing xml: %s" % e)
+    
+    #idify:
+    try:
+        (analysis, analysishash) = idify(analysis)
+    except Exception as e:
+        print("ERROR while idify Analysis: %s" % e)
+        import sys; sys.exit()
+    
     # unicity:
     try:
-        analysis = get_fh_unique(session, analysis)
+        analysis = uniquify(session, analysis)
     except Exception as e:
-        print(e)
+        print("ERROR while unify Analysis: %s" % e)
         import sys; sys.exit()
 
     session.merge(analysis)
@@ -67,8 +78,7 @@ def read_and_create(url, xml_files, drop=False, echo=False):
         try:
             insert_analysis(session, file_)
         except Exception as e:
-            print("Error in file %s, it maybe contains "
-                  "invalid characters" % file_)
+            print("Error in file %s" % file_)
             print(e)
     
     session.remove()
