@@ -127,59 +127,6 @@ class GeneralView(View):
 def index():
     return html("index.html")
 
-### FIREHOSE ELEMENT/LIST ###
-
-# class ElemView(GeneralView):
-#     def get_objects(self, id=None):
-#         obj = self.class_()
-#         result = obj.id(id)
-#         return dict(result=result)#dict(result=result)
-
-# class ListView(GeneralView):
-#     def get_objects(self):
-#         obj = self.class_()
-#         result = obj.all()
-#         return dict(list=result)#dict(result=result)
-#
-# def add_firehose_view(name, class_):
-#     def add_(name, class_, api=""):
-#         if api == "":
-#             mode = 'html'
-#         else:
-#             mode = 'json'
-#             api = '/'+api
-        
-#         # LIST VIEW
-#         if mode == "html":
-#             render_func = lambda **kwargs:html('%s_list.html' %name, **kwargs)
-#         else:
-#             render_func = jsonify
-#         mod.add_url_rule('%s/view/%s/' % (api, name),
-#                          view_func=ListView.as_view(
-#                 '%s_list_%s' % (name, mode),
-#                 class_=class_,
-#                 render_func=render_func,
-#                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
-#                 ))
-#         # ELEM VIEW
-#         if mode == "html":
-#             render_func = lambda **kwargs:html('%s.html' %name, **kwargs)
-#         else:
-#             render_func = jsonify
-#         mod.add_url_rule('%s/view/%s/<int:id>/' % (api, name),
-#                          view_func=ElemView.as_view(
-#                 '%s_elem_%s' % (name, mode),
-#                 class_=class_,
-#                 render_func=render_func,
-#                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
-#                 ))
-        
-#     add_(name, class_) # HTML
-#     add_(name, class_, api="api") # JSON
-
-# add_firehose_view('analysis', Analysis_app)
-# add_firehose_view('result', Result_app)
-
 ### RESULT DETAILS ###
 
 class ResultView(GeneralView):
