@@ -39,7 +39,19 @@ def idify(obj, debug=False):
     object its id, which is its cryptographic hash.
     Acts recursively.
     Returns a tuple: (object_with_id, object_id(=object_hash))
+    
+    The hash is calculated with the concatenation of node's children, e.g.:
+        hash(Generator) =
+        hash("name [Generator.name.hash] version [Generator.version.hash]")
     """
+    def hashtoken(attr_name, obj_tuple):
+        """
+        Returns the string chunk used to hash a tree node, e.g.:
+        hashtoken("Generator", (Generator(foobar), "54fd24ec..."))
+             = "Generator 54fd24ec"
+        """
+        return attr_name + " " + obj_tuple[1] + " "
+    
     if debug:
         print("ENTERING " + str(obj)[:60])
     
@@ -65,13 +77,13 @@ def idify(obj, debug=False):
                 items_without_hashes = [item[0] for item in res]
                 # we add their hashes:
                 for item in res:
-                    objhash += item[1]
+                    objhash += hashtoken(attr_name, item)
                 
                 # and we update the attribute:
                 setattr(obj, attr_name, items_without_hashes)
             else:
                 # we add the hash:
-                objhash += res[1]
+                objhash += hashtoken(attr_name, res)
                 
                 # and update the attribute:
                 setattr(obj, attr_name, res[0])
