@@ -49,6 +49,7 @@ def insert_analysis(session, xml_file):
         analysis = fhm.Analysis.from_xml(xml_file)
     except Exception as e:
         print("ERROR while parsing xml: %s" % e)
+        return
     
     #idify:
     try:
