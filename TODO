@@ -22,3 +22,4 @@
   authentication: http://wiki.debian.org/DebianSingleSignOn
 * TODO search by people
   ftp://ftp.debian.org/debian/indices/Uploaders
+* TODO firewose_fill_db: correctly handle empty files
