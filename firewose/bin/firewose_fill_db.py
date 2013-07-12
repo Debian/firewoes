@@ -62,7 +62,7 @@ def insert_analysis(session, xml_file):
     try:
         analysis = uniquify(session, analysis)
     except Exception as e:
-        print("ERROR while unify Analysis: %s" % e)
+        print("ERROR while uniquify Analysis: %s" % e)
         import sys; sys.exit()
 
     session.merge(analysis)
