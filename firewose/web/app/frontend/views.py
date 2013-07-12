@@ -129,56 +129,75 @@ def index():
 
 ### FIREHOSE ELEMENT/LIST ###
 
-class ElemView(GeneralView):
+# class ElemView(GeneralView):
+#     def get_objects(self, id=None):
+#         obj = self.class_()
+#         result = obj.id(id)
+#         return dict(result=result)#dict(result=result)
+
+# class ListView(GeneralView):
+#     def get_objects(self):
+#         obj = self.class_()
+#         result = obj.all()
+#         return dict(list=result)#dict(result=result)
+#
+# def add_firehose_view(name, class_):
+#     def add_(name, class_, api=""):
+#         if api == "":
+#             mode = 'html'
+#         else:
+#             mode = 'json'
+#             api = '/'+api
+        
+#         # LIST VIEW
+#         if mode == "html":
+#             render_func = lambda **kwargs:html('%s_list.html' %name, **kwargs)
+#         else:
+#             render_func = jsonify
+#         mod.add_url_rule('%s/view/%s/' % (api, name),
+#                          view_func=ListView.as_view(
+#                 '%s_list_%s' % (name, mode),
+#                 class_=class_,
+#                 render_func=render_func,
+#                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
+#                 ))
+#         # ELEM VIEW
+#         if mode == "html":
+#             render_func = lambda **kwargs:html('%s.html' %name, **kwargs)
+#         else:
+#             render_func = jsonify
+#         mod.add_url_rule('%s/view/%s/<int:id>/' % (api, name),
+#                          view_func=ElemView.as_view(
+#                 '%s_elem_%s' % (name, mode),
+#                 class_=class_,
+#                 render_func=render_func,
+#                 err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
+#                 ))
+        
+#     add_(name, class_) # HTML
+#     add_(name, class_, api="api") # JSON
+
+# add_firehose_view('analysis', Analysis_app)
+# add_firehose_view('result', Result_app)
+
+### RESULT DETAILS ###
+
+class ResultView(GeneralView):
     def get_objects(self, id=None):
-        obj = self.class_()
-        result = obj.id(id)
-        return dict(result=result)#dict(result=result)
+        result = Result_app().id(id)
+        return dict(result=result)
 
-class ListView(GeneralView):
-    def get_objects(self):
-        obj = self.class_()
-        result = obj.all()
-        return dict(list=result)#dict(result=result)
+mod.add_url_rule('/result/<id>/', view_func=ResultView.as_view(
+        'result_elem_html',
+        render_func=lambda **kwargs: html('result.html', **kwargs),
+        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
+        ))
 
-def add_firehose_view(name, class_):
-    def add_(name, class_, api=""):
-        if api == "":
-            mode = 'html'
-        else:
-            mode = 'json'
-            api = '/'+api
-        
-        # LIST VIEW
-        if mode == "html":
-            render_func = lambda **kwargs:html('%s_list.html' %name, **kwargs)
-        else:
-            render_func = jsonify
-        mod.add_url_rule('%s/view/%s/' % (api, name),
-                         view_func=ListView.as_view(
-                '%s_list_%s' % (name, mode),
-                class_=class_,
-                render_func=render_func,
-                err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
-                ))
-        # ELEM VIEW
-        if mode == "html":
-            render_func = lambda **kwargs:html('%s.html' %name, **kwargs)
-        else:
-            render_func = jsonify
-        mod.add_url_rule('%s/view/%s/<int:id>/' % (api, name),
-                         view_func=ElemView.as_view(
-                '%s_elem_%s' % (name, mode),
-                class_=class_,
-                render_func=render_func,
-                err_func=lambda e, **kwargs: deal_error(e, mode=mode, **kwargs)
-                ))
-        
-    add_(name, class_) # HTML
-    add_(name, class_, api="api") # JSON
-
-add_firehose_view('analysis', Analysis_app)
-add_firehose_view('result', Result_app)
+mod.add_url_rule('/api/result/<id>/', view_func=ResultView.as_view(
+        'result_elem_json',
+        render_func=jsonify,
+        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
+        ))
 
 ### SEARCH ###
 
