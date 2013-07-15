@@ -23,3 +23,11 @@
 * TODO search by people
   ftp://ftp.debian.org/debian/indices/Uploaders
 * TODO firewose_fill_db: correctly handle empty files
+* TODO bug: uniquify
+  when trying to uniquify a list of results:
+  <failure>
+  <issue1>
+  <issue2>
+  with issue1 == issue2,
+  SQLAlchemy tries to compare an issue with a failure (??), which fails
+  
