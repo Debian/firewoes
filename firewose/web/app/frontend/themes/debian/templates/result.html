@@ -21,7 +21,7 @@
 {% if result.location.point %}
 {% set startline = result.location.point.line %}
 {% set endline = None %}
-{% elif result.location.range %}
+{% elif result.location.range_ %}
 {% set startline = result.location.range_.start.line %}
 {% set endline = result.location.range_.end.line %}
 {% else %}
