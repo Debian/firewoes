@@ -69,11 +69,13 @@ class FirewoseTestCase(unittest.TestCase):
         assert rv["menu"][0]["items"][0]["name"] == "issue"
         
     def test_reports(self):
-        rv = json.loads(self.app.get('/api/report/1').data)
-        assert rv["count_per_generator"] ==  [
+        rv = json.loads(self.app.get('/api/report/python-ethtool/').data)
+        
+        assert rv["results"][1]["report"]["count_per_generator"] ==  [
             dict(count=18, name="cpychecker"),
             dict(count=0, name="gcc")
             ]
+        assert rv["results"][0]["package"]["name"] == "python-ethtool"
 
 if __name__ == '__main__':
     unittest.main()
