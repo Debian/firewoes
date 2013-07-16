@@ -44,6 +44,7 @@ t_analysis = \
           Column('customfields_id', String,
                  ForeignKey('customfields.id')),
           )
+Index('ix_analysis_metadata_id', t_analysis.c.metadata_id)
 
 t_generator = \
     Table('generator', metadata,
@@ -62,6 +63,8 @@ t_metadata = \
           Column('file_id', String, ForeignKey('file.id')),
           Column('stats_id', String, ForeignKey('stats.id')),
           )
+Index('ix_metadata_generator_id', t_metadata.c.generator_id)
+Index('ix_metadata_sut_id', t_metadata.c.sut_id)
 
 t_stats = \
     Table('stats', metadata,
@@ -94,6 +97,7 @@ t_result = \
                  ForeignKey('analysis.id'), nullable=False),
           Column('type', String(10), nullable=False),
           )
+Index('ix_result_analysis_id', t_result.c.analysis_id)
 Index('ix_result_type', t_result.c.type)
 
 t_issue = \
@@ -112,6 +116,7 @@ t_issue = \
           Column('customfields_id', String,
                  ForeignKey('customfields.id')),
           )
+Index('ix_issue_result_id', t_issue.c.result_id)
 Index('ix_issue_testid', t_issue.c.testid)
 Index('ix_issue_message_id', t_issue.c.message_id)
 Index('ix_issue_location_id', t_issue.c.location_id)
@@ -125,6 +130,7 @@ t_failure = \
           Column('message_id', String, ForeignKey('message.id')),
           Column('customfields_id', String, ForeignKey('customfields.id')),
           )
+Index('ix_failure_result_id', t_failure.c.result_id)
 Index('ix_failure_failureid', t_failure.c.failureid)
 Index('ix_failure_location_id', t_failure.c.location_id)
 Index('ix_failure_message_id', t_failure.c.message_id)
@@ -138,6 +144,7 @@ t_info = \
           Column('message_id', String, ForeignKey('message.id')),
           Column('customfields_id', String, ForeignKey('customfields.id')),
           )
+Index('ix_info_result_id', t_info.c.result_id)
 Index('ix_info_infoid', t_info.c.infoid)
 Index('ix_info_location_id', t_info.c.location_id)
 Index('ix_info_message_id', t_info.c.message_id)
