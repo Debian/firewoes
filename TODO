@@ -1,12 +1,5 @@
 #    -*- mode: org -*-
 
-* TODO unicity for Issue, Failure, Info
-  when they are checked by get_fh_unique, the attribute analysis_id is
-  not set yet, so the session.add() fails.
-  This is due to the difference between XML and DB:
-  XML: <analysis><results>...</results>
-  DB: {result analysis_id=42 ...}
-
 * TODO CustomFields mapping
 * TODO Filter: better performances
   Filter queries all the corresponding results to extract the relevant
