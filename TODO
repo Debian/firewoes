@@ -23,3 +23,5 @@
   with issue1 == issue2,
   SQLAlchemy tries to compare an issue with a failure (??), which fails
   
+* TODO performances: replace UNION by something else
+  requests with both failures and issues are incredibly slow
