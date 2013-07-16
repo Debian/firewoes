@@ -25,3 +25,5 @@
   
 * TODO performances: replace UNION by something else
   requests with both failures and issues are incredibly slow
+* TODO debian.py: order packages (for package reports ordering and comparison)
+* TODO macro for sources_url (with point/range_ testing, etc)
