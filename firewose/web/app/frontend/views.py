@@ -17,7 +17,8 @@
 
 import os
 
-from flask import render_template, jsonify, request, Blueprint, url_for
+from flask import render_template, jsonify, request, Blueprint, url_for, \
+    redirect
 from flask.views import View
 
 from firewose.web.app import app
@@ -86,7 +87,7 @@ def deal_404_error(error, mode='html'):
 
 def deal_500_error(error, mode='html'):
     """ logs a 500 error and returns the correct template """
-    app.logger.error(error)
+    app.logger.exception(error)
     
     if mode == 'json':
         return jsonify(dict(error=500))
@@ -172,43 +173,37 @@ mod.add_url_rule('/api/search/', view_func=SearchView.as_view(
 
 ### REPORT ###
 
-class SearchReportView(GeneralView):
-    def get_objects(self):
-        try:
-            name = request.args["package"]
-        except:
-            raise Http404Error
-        return dict(packagename=name,
-                    versions=Sut_app().versions(name))
+# redirects the searches
+@mod.route("/report/")
+def search_report_html():
+    try:
+        name = request.args["package"]
+    except:
+        raise Http404Error
+    return redirect(url_for('.report_html', package_name=name))
 
-# SEARCH REPORT (HTML)
-mod.add_url_rule('/report/', view_func=SearchReportView.as_view(
-        'search_report_html',
-        render_func=lambda **kwargs: html('report_search.html',
-                                                        **kwargs),
-        err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
-        ))
-
-# SEARCH REPORT (JSON)
-mod.add_url_rule('/api/report/', view_func=SearchReportView.as_view(
-        'search_report_json',
-        render_func=jsonify,
-        err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)
-        ))
-
+# returns the reports for each version of package_name
 class ReportView(GeneralView):
-    def get_objects(self, package_id):
-        return Report(package_id).all()
-
+    def get_objects(self, package_name):
+        results = []
+        for package in Sut_app().versions(package_name):
+            results.append(
+                dict(
+                    package=package,
+                    report=Report(package["id"]).all()))
+        return dict(results=results,
+                    package_name=package_name)
+            
+    
 # REPORT (HTML)
-mod.add_url_rule('/report/<package_id>', view_func=ReportView.as_view(
+mod.add_url_rule('/report/<package_name>/', view_func=ReportView.as_view(
         'report_html',
         render_func=lambda **kwargs: html('report.html', **kwargs),
         err_func=lambda e, **kwargs: deal_error(e, mode='html', **kwargs)
         ))
 
 # REPORT (JSON)
-mod.add_url_rule('/api/report/<package_id>', view_func=ReportView.as_view(
+mod.add_url_rule('/api/report/<package_name>/', view_func=ReportView.as_view(
         'report_json',
         render_func=jsonify,
         err_func=lambda e, **kwargs: deal_error(e, mode='json', **kwargs)

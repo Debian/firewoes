@@ -6,48 +6,50 @@
 {% extends "base.html" %}
 {% import "macros.inc.html" as macros %}
 
-{% block title %}Report for {{ package_infos.name }} {{
-  package_infos.version }} {{ package_infos.release }} {{
-  package_infos.buildarch }}{% endblock %}
+{% block title %}Report for {{ package_name }}{% endblock %}
 
 {% block content %}
 
 <h2>{{ self.title() }}</h2>
 
-<table>
-  <tr>
-    <th></th>
-    <th>Generator</th>
-    <th>Number of results</th>
-    <th>Link</th>
-  </tr>
-  {% for res in count_per_generator %}
-  <tr>
-    <td>
-      {% if res.count == 0 %}
+{% for res in results %}
+<h3>{{ res.package.version }} {{ res.package.release or "" }} {{
+res.package.buildarch or "" }}</h3>
+  <table>
+    <tr>
+      <th></th>
+      <th>Generator</th>
+      <th>Number of results</th>
+      <th>Link</th>
+    </tr>
+    {% for gen in res.report.count_per_generator %}
+    <tr>
+      <td>
+	{% if gen.count == 0 %}
         <span class="color-check">&#x2713;</span>
-      {% else %}
+	{% else %}
         <span class="color-error">&#x2717;</span>
-      {% endif %}
-    <td>{{ res.name }}</td>
-    <td>{{ res.count }}</td>
-    <td>
-      {% if res.count > 0 %}
+	{% endif %}
+      <td>{{ gen.name }}</td>
+      <td>{{ gen.count }}</td>
+      <td>
+	{% if gen.count > 0 %}
         <small>
-        <a href="{{ url_for('.search_html', generator_name=res.name,
-                 sut_name=package_infos.name,
-                 sut_version=package_infos.version,
-                 sut_type=package_infos.type,
-                 sut_release=package_infos.release,
-                 sut_buildarch=package_infos.buildarch
-                                            ) }}">view results</a>
+          <a href="{{ url_for('.search_html', generator_name=gen.name,
+                   sut_name=package_name,
+                   sut_version=res.package.version,
+                   sut_type=res.package.type,
+                   sut_release=res.package.release,
+                   sut_buildarch=res.package.buildarch
+                   ) }}">view results</a>
         </small>
-      {% else %}<small>no results</small>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-
+	{% else %}<small>no results</small>
+	{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <hr />
+{% endfor %}
 
 {% endblock %}
