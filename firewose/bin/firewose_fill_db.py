@@ -24,6 +24,8 @@ import argparse
 import firewose.lib.firehose_orm as fhm
 from firewose.lib.hash import idify, uniquify
 
+from xml.etree.ElementTree import ParseError as XmlParseError
+
 metadata = fhm.metadata
 
 from sqlalchemy import create_engine
@@ -47,6 +49,8 @@ def insert_analysis(session, xml_file):
     """
     try:
         analysis = fhm.Analysis.from_xml(xml_file)
+    except XmlParseError:
+        return # if file is empty for example
     except Exception as e:
         print("ERROR while parsing xml: %s" % e)
         return
