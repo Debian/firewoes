@@ -25,7 +25,7 @@ from firewose.web.app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Report
 from models import Http404Error, Http500Error
-from debian import get_source_url
+from debianutils import get_source_url
 #from forms import SearchForm
 
 # Theme configuration
