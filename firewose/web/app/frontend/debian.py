@@ -22,6 +22,7 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
+from debian.debian_support import version_compare
 
 """
 This module is intented to generate links to point on code listing,
