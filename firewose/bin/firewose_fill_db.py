@@ -79,12 +79,20 @@ def read_and_create(url, xml_files, drop=False, echo=False):
         metadata.drop_all(bind=engine) # cleans the table (for debugging)
         metadata.create_all(bind=engine)
     
-    for file_ in xml_files:
+    number_of_files = len(xml_files)
+    for (counter, file_) in enumerate(xml_files):
         try:
             insert_analysis(session, file_)
         except Exception as e:
             print("Error in file %s" % file_)
             print(e)
+        
+        # % counter:
+        sys.stdout.write(str(int(float(counter + 1)
+                                 / float(number_of_files) * 100)))
+        sys.stdout.write(" %")
+        sys.stdout.write("\r")
+        sys.stdout.flush()
     
     session.remove()
 
