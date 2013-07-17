@@ -48,6 +48,14 @@
 		    embedded=True
                     ) }}"
 	      class="embedded-code"></object>
+      <br />
+      <a href="{{ url_for_source(result.analysis.metadata.sut.name,
+	            result.analysis.metadata.sut.version,
+                    result.analysis.metadata.sut.release,
+                    result.location.file.givenpath,
+		    startline, endline,
+		    embedded=False
+                    ) }}">go to source code page</a>
     </td>
     {% endif %}
   </tr>
