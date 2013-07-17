@@ -17,6 +17,7 @@ Debian dependencies
 * python-sqlalchemy >= 0.8.1
 * python-psycopg2 (required by SQLAlchemy)
 * python-jinja2 >= 2.7-3 [1]
+* python-debian
 
 [1] to use the option lstrip_block=True, for better whitespace dealing
     in templates

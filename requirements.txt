@@ -3,3 +3,4 @@ flask
 sqlalchemy >= 0.8.1
 psycopg2
 jinja2 >= 2.7
+debian
