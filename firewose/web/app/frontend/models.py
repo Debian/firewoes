@@ -182,7 +182,7 @@ class Result_app(FHGeneric):
         start = (page - 1) * offset
         end = start + offset
         
-        query = q_issue.union(q_failure, q_info).order_by(Result.id)
+        query = q_issue.union_all(q_failure, q_info).order_by(Result.id)
         results_all = query.all()
         results_all_count = query.count()
         results_sliced = query.slice(start, end).all()
