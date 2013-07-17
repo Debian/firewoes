@@ -202,7 +202,9 @@ class ReportView(GeneralView):
                 version_compare = debianutils.version_compare
         
             results = sorted(results, cmp=version_compare,
-                             key=lambda x: x["package"]["version"])
+                             key=lambda x: x["package"]["version"] +
+                                           "-" + x["package"]["release"])
+                                            # TODO: fedora?
         
         return dict(results=results,
                     package_name=package_name)
