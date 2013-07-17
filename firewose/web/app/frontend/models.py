@@ -212,16 +212,6 @@ class Result_app(FHGeneric):
             menu=menu,
             packages_suggestions=packages_suggestions)
 
-    # def id(self, id, with_metadata=True):
-    #     if not(with_metadata):
-    #         return super(Result_app, self).id(id)
-    #     else:
-    #         elem = session.query(Result, Metadata).filter(and_(
-    #                 Result.id == id,
-    #                 Result.analysis_id == Analysis.id,
-    #                 Analysis.metadata_id == Metadata.id)).first()
-    #         return to_dict(elem)
-
 class Report(object):
     def __init__(self, package_id):
         self.package_id = package_id
