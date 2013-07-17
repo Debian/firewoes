@@ -25,6 +25,9 @@ from firewose.web.app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Report
 from models import Http404Error, Http500Error
+
+import fedorautils
+import debianutils
 from debianutils import get_source_url
 
 # Theme configuration
@@ -190,6 +193,17 @@ class ReportView(GeneralView):
                 dict(
                     package=package,
                     report=Report(package["id"]).all()))
+        # we assume here all the versions for one package have the same type
+        # (debiansrc/binary or fedora), because we can't order a mix
+        if len(results) >= 1:
+            if results[0]["package"]["type"] == "source-rpm":
+                version_compare = fedorautils.version_compare
+            else:
+                version_compare = debianutils.version_compare
+        
+            results = sorted(results, cmp=version_compare,
+                             key=lambda x: x["package"]["version"])
+        
         return dict(results=results,
                     package_name=package_name)
             
