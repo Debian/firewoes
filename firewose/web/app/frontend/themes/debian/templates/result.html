@@ -38,14 +38,18 @@
       <h3>Metadata</h3>
       {{ macros.render_metadata(result.analysis.metadata) }}
     </td>
-    {% if result.analysis.metadata.sut.type == "debian-source" %}
+    {% if result.analysis.metadata.sut.type == "source-rpm" %}
+      {% set type = "fedora" %}
+    {% else %}
+      {% set type = "debian" %}
+    {% endif %}
     <td id="results_code">
       <object data="{{ url_for_source(result.analysis.metadata.sut.name,
 	            result.analysis.metadata.sut.version,
                     result.analysis.metadata.sut.release,
                     result.location.file.givenpath,
 		    startline, endline,
-		    embedded=True
+		    embedded=True, type=type
                     ) }}"
 	      class="embedded-code"></object>
       <br />
@@ -54,10 +58,9 @@
                     result.analysis.metadata.sut.release,
                     result.location.file.givenpath,
 		    startline, endline,
-		    embedded=False
+		    embedded=False, type=type
                     ) }}">go to source code page</a>
     </td>
-    {% endif %}
   </tr>
 </table>
 

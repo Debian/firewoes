@@ -94,12 +94,18 @@
     <small>
       <a href="{{ url_for('.result_elem_html', id=res.id)
       }}">details</a>
-      {% if res["sut_type"] == "debian-source" %} |
+      {% if res["sut_type"] == "source-rpm" %}
+        {% set type = "fedora" %}
+      {% else %}
+        {% set type = "debian" %}
+      {% endif %}
+      |
       <a href="{{ url_for_source(res["sut_name"], res["sut_version"],
                                  res["sut_release"],
                                  res["location_file"], startline, endline,
-                                 res["message_text"]) }}">view code</a>
-    {% endif %}</small>
+                                 res["message_text"],
+                                 type=type) }}">view code</a>
+    </small>
   </li>
   {% endfor %}
   </ul>

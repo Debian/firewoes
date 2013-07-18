@@ -28,7 +28,6 @@ from models import Http404Error, Http500Error
 
 import fedorautils
 import debianutils
-from debianutils import get_source_url
 
 # Theme configuration
 theme = app.config["THEME"]
@@ -50,14 +49,23 @@ mod = Blueprint('frontend', __name__,
 def url_for_source():
     def url_for_source(package, version, release, path,
                        start_line, end_line=None,
-                       message=None, embedded=False):
-        if embedded:
-            url_pattern = app.config["DEBIAN_EMBEDDED_SOURCES_URL"]
-        else:
-            url_pattern = app.config["DEBIAN_SOURCES_URL"]
-        return get_source_url(url_pattern,
-                              package, version, release, path,
-                              start_line, end_line, message)
+                       message=None, embedded=False, type="debian"):
+        if type == "debian":
+            if embedded:
+                url_pattern = app.config["DEBIAN_EMBEDDED_SOURCES_URL"]
+            else:
+                url_pattern = app.config["DEBIAN_SOURCES_URL"]
+            return debianutils.get_source_url(url_pattern,
+                                              package, version, release, path,
+                                              start_line, end_line, message)
+        elif type == "fedora":
+            if embedded:
+                url_pattern = app.config["FEDORA_EMBEDDED_SOURCES_URL"]
+            else:
+                url_pattern = app.config["FEDORA_SOURCES_URL"]
+            return fedorautils.get_source_url(url_pattern,
+                                              package, version, release, path,
+                                              start_line, end_line, message)
     return dict(url_for_source=url_for_source)
 
 ### PAGINATION ###
