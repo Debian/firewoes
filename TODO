@@ -5,7 +5,6 @@
   Filter queries all the corresponding results to extract the relevant
   information, this is expensive.
   Try: do this db-side, with multiple queries?
-* TODO Theme option could be a path too
 * TODO Set correctly the height of source-code in details.html
   Iceweasel doesn't like the 100% (parent <td> height is not set)
   However it works fine with Chromium
