@@ -29,10 +29,8 @@ from models import Http404Error, Http500Error
 import fedorautils
 import debianutils
 
-# Theme configuration
-theme = app.config["THEME"]
-static_folder = os.path.join("themes", theme, "static")
-template_folder = os.path.join("themes", theme, "templates")
+static_folder = "static"
+template_folder = "templates"
 
 # Blueprint creation
 mod = Blueprint('frontend', __name__,

@@ -39,6 +39,3 @@ SEARCH_MENU_MAX_NUMBER_OF_CHARS = 28
 
 # The number of results to display (per default) on a search results page
 SEARCH_RESULTS_OFFSET = 10
-
-# The default theme used for rendering html
-THEME = "debian"
