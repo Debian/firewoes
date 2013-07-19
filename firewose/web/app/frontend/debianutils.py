@@ -24,6 +24,9 @@ except ImportError:
 
 from debian.debian_support import version_compare
 
+from firewose.lib.firehose_orm import *
+from sqlalchemy import and_
+
 """
 This module is intented to generate links to point on code listing,
 e.g. the one used with Debian on http://sources.debian.net
@@ -68,3 +71,30 @@ def get_source_url(url,
     
     return url
     
+def packages_for_person(session, login):
+    """
+    Returns a list of package names, whose responsible is login.
+    """
+    def base_query():
+        return (session.query(DebianPackage.name)
+                .filter(and_(
+                    DebianPackage.name == \
+                        DebianPackagePeopleMapping.debian_package_name)))
+    
+    if "@" in login: # email
+        res = (base_query().filter(
+                DebianPackagePeopleMapping.debian_maintainer_email == login)
+               .all())
+    else: # login or full name
+        res = (base_query().filter(
+                DebianPackagePeopleMapping.debian_maintainer_email == \
+                    DebianMaintainer.email,
+                DebianMaintainer.name == login)
+               .all())
+        if len(res) == 0: # login
+            login = login + "@debian.org"
+            res = (base_query().filter(
+                    DebianPackagePeopleMapping.debian_maintainer_email == login)
+               .all())
+    return res
+
