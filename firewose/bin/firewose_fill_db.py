@@ -23,24 +23,12 @@ import argparse
 
 import firewose.lib.firehose_orm as fhm
 from firewose.lib.hash import idify, uniquify
+from firewose.lib.dbutils import get_engine_session
 
 from xml.etree.ElementTree import ParseError as XmlParseError
 
 metadata = fhm.metadata
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-
-def _get_engine(url, echo):
-    return create_engine(url, echo=echo)
-
-def get_engine_session(url, echo=False):
-    """
-    Given a database URL, returns an SQLAlchemy engine/session
-    """
-    engine = _get_engine(url, echo=echo)
-    session = scoped_session(sessionmaker(bind=engine, autoflush=True))
-    return engine, session
 
 def insert_analysis(session, xml_file):
     """
