@@ -103,7 +103,21 @@ class Filter(object):
         if not self.active:
             res["items"] = self.get_items(session)
         return res
-                    
+    
+    def group_by_firehose(self, session, firehose_attr):
+        """
+        Given a session and a firehose attribute, returns the objects obtained
+        after a group_by and a results count.
+        """
+        return (
+            session.query(firehose_attr,
+                          func.count(Result.id).label("count"))
+            .join(Metadata, Metadata.generator_id==Generator.id)
+            .join(Analysis, Analysis.metadata_id == Metadata.id)
+            .outerjoin(Result, Result.analysis_id == Analysis.id)
+            .group_by(firehose_attr)
+            .order_by(desc("count"))
+            .all())
     
     def is_relevant(self, active_keys=None):
         """
@@ -127,21 +141,13 @@ class Filter(object):
             
         return string
 
+
 class FilterGeneratorName(Filter):
     def sqla_filter(self, query):
         return query.filter(Generator.name == self.value)
     
     def get_items(self, session):
-        res = (
-            session.query(Generator.name,
-                          func.count(Result.id).label("count"))
-            .join(Metadata, Metadata.generator_id==Generator.id)
-            .join(Analysis, Analysis.metadata_id == Metadata.id)
-            .outerjoin(Result, Result.analysis_id == Analysis.id)
-            .group_by(Generator.name)
-            .order_by(desc("count"))
-            .all())
-        
+        res = self.group_by_firehose(session, Generator.name)
         return to_dict(res)
 
 class FilterGeneratorVersion(Filter):
@@ -153,6 +159,10 @@ class FilterGeneratorVersion(Filter):
     
     def sqla_filter(self, query):
         return query.filter(Generator.version == self.value)
+    
+    def get_items(self, session):
+        res = self.group_by_firehose(session, Generator.version)
+        return to_dict(res)
 
 
 
