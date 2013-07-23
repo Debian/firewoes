@@ -48,7 +48,7 @@ class Menu(object):
                     active_keys=active_filters_dict.keys()):
                     self.filters.append(inactive_filter)
     
-    def get_sqla_filter(self, query):
+    def filter_sqla_query(self, query):
         """
         Filters the query by all active filters, and returns a new
         SQLAlchely query.
