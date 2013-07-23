@@ -32,24 +32,17 @@ class Menu(object):
         in the form name=value, e.g. generator_name="coccinelle".
         """
         self.filters = []
-        # we create the active filters
-        for key in active_filters_dict.keys():
-            for filter_ in all_filters:
-                if filter_[0] == key:
-                    active_filter = (filter_[1](
-                            value=active_filters_dict[key], active=True))
-                    if active_filter.is_relevant(
-                        active_keys=active_filters_dict.keys()):
-                        self.filters.append(active_filter)
-                    break
         
-        # and now the inactive filters:
+        # we create the filters:
         for filter_ in all_filters:
-            if filter_[0] not in active_filters_dict.keys():
-                inactive_filter = filter_[1](active=False)
-                if inactive_filter.is_relevant(
-                    active_keys=active_filters_dict.keys()):
-                    self.filters.append(inactive_filter)
+            if filter_[0] in active_filters_dict.keys(): # it's an active filter
+                new_filter = filter_[1](value=active_filters_dict[filter_[0]],
+                                        active=True)
+            else: # it's an inactive one
+                new_filter = filter_[1](active=False)
+            # avoids adding non-relevant filters regarding the context:
+            if new_filter.is_relevant(active_keys=active_filters_dict.keys()):
+                self.filters.append(new_filter)
     
     def filter_sqla_query(self, query):
         """
