@@ -16,8 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from models import to_dict
+
 from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
+
+from sqlalchemy import func, desc
 
 class Menu(object):
     """
@@ -54,6 +58,13 @@ class Menu(object):
                 query = filter_.sqla_filter(query)
         return query
     
+    def get(self, session):
+        """
+        Returns the menu in form of a list of filters.
+        Needs a SQLAlchemy session for the filters, in their items generation.
+        """
+        return [filter_.get(session) for filter_ in self.filters]
+    
     def __repr__(self):
         string = "MENU:\n"
         for filter_ in self.filters:
@@ -78,11 +89,21 @@ class Filter(object):
         # query.filter/filter_by/...
         return query
     
-    def get_items(self, query):
+    def get_items(self, session):
         """
         Returns the subitems of the menu (only for inactive filters).
         """
         return None
+    
+    def get(self, session):
+        """
+        Returns the filter with its attributes.
+        """
+        res = dict(active=self.active, name=self.__class__.__name__)
+        if not self.active:
+            res["items"] = self.get_items(session)
+        return res
+                    
     
     def is_relevant(self, active_keys=None):
         """
@@ -109,6 +130,19 @@ class Filter(object):
 class FilterGeneratorName(Filter):
     def sqla_filter(self, query):
         return query.filter(Generator.name == self.value)
+    
+    def get_items(self, session):
+        res = (
+            session.query(Generator.name,
+                          func.count(Result.id).label("count"))
+            .join(Metadata, Metadata.generator_id==Generator.id)
+            .join(Analysis, Analysis.metadata_id == Metadata.id)
+            .outerjoin(Result, Result.analysis_id == Analysis.id)
+            .group_by(Generator.name)
+            .order_by(desc("count"))
+            .all())
+        
+        return to_dict(res)
 
 class FilterGeneratorVersion(Filter):
     def is_relevant(self, active_keys=None):
