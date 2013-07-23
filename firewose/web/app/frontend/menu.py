@@ -92,7 +92,11 @@ class FilterGeneratorName(Filter):
     pass
 
 class FilterGeneratorVersion(Filter):
-    pass
+    def is_relevant(self, active_keys=None):
+        if isinstance(active_keys, list):
+            if "generator_name" in active_keys:
+                return True
+        return False
 
 
 
