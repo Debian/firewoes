@@ -1,3 +1,6 @@
+from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
+    Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
+
 class Menu(object):
     """
     A menu is a set of active and inactive filters.
