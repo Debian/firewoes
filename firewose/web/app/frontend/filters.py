@@ -36,8 +36,11 @@ class Menu(object):
         for key in active_filters_dict.keys():
             for filter_ in all_filters:
                 if filter_[0] == key:
-                    self.filters.append(filter_[1](
+                    active_filter = (filter_[1](
                             value=active_filters_dict[key], active=True))
+                    if active_filter.is_relevant(
+                        active_keys=active_filters_dict.keys()):
+                        self.filters.append(active_filter)
                     break
         
         # and now the inactive filters:
@@ -56,6 +59,7 @@ class Menu(object):
         for filter_ in self.filters:
             if filter_.is_active():
                 query = filter_.sqla_filter(query)
+        return query
     
     def __repr__(self):
         string = "MENU:\n"
@@ -110,7 +114,8 @@ class Filter(object):
         return string
 
 class FilterGeneratorName(Filter):
-    pass
+    def sqla_filter(self, query):
+        return query.filter(Generator.name == self.value)
 
 class FilterGeneratorVersion(Filter):
     def is_relevant(self, active_keys=None):
@@ -118,6 +123,9 @@ class FilterGeneratorVersion(Filter):
             if "generator_name" in active_keys:
                 return True
         return False
+    
+    def sqla_filter(self, query):
+        return query.filter(Generator.version == self.value)
 
 
 
