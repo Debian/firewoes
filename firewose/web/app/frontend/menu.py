@@ -1,5 +1,15 @@
 class Menu(object):
+    """
+    A menu is a set of active and inactive filters.
+    It permits to obtain a drill-down menu, as long as an SQLAlchemy
+    filter to query the results.
+    """
     def __init__(self, active_filters_dict):
+        """
+        Creates a menu.
+        The active_filter_dict contains the already activated filters,
+        in the form name=value, e.g. generator_name="coccinelle".
+        """
         self.filters = []
         # we create the active filters
         for key in active_filters_dict.keys():
@@ -18,6 +28,10 @@ class Menu(object):
                     self.filters.append(inactive_filter)
     
     def get_sqla_filter(self, query):
+        """
+        Filters the query by all active filters, and returns a new
+        SQLAlchely query.
+        """
         for filter_ in self.filters:
             if filter_.is_active():
                 query = filter_.sqla_filter(query)
@@ -45,6 +59,12 @@ class Filter(object):
         """
         # query.filter/filter_by/...
         return query
+    
+    def get_items(self, query):
+        """
+        Returns the subitems of the menu (only for inactive filters).
+        """
+        return None
     
     def is_relevant(self, active_keys=None):
         """
