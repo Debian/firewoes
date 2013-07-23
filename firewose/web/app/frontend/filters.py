@@ -21,7 +21,7 @@ from models import to_dict
 from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
 
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, and_
 
 class Menu(object):
     """
@@ -36,6 +36,7 @@ class Menu(object):
         in the form name=value, e.g. generator_name="coccinelle".
         """
         self.filters = []
+        self.clauses = []
         
         # we create the filters:
         for filter_ in all_filters:
@@ -47,15 +48,18 @@ class Menu(object):
             # avoids adding non-relevant filters regarding the context:
             if new_filter.is_relevant(active_keys=active_filters_dict.keys()):
                 self.filters.append(new_filter)
+                if new_filter.is_active():
+                    self.clauses.append(new_filter.get_clauses())
     
     def filter_sqla_query(self, query):
         """
         Filters the query by all active filters, and returns a new
         SQLAlchely query.
         """
-        for filter_ in self.filters:
-            if filter_.is_active():
-                query = filter_.sqla_filter(query)
+        # for filter_ in self.filters:
+        #     if filter_.is_active():
+        #         query = filter_.sqla_filter(query)
+        query = query.filter(and_(*self.clauses))
         return query
     
     def get(self, session):
@@ -63,7 +67,8 @@ class Menu(object):
         Returns the menu in form of a list of filters.
         Needs a SQLAlchemy session for the filters, in their items generation.
         """
-        return [filter_.get(session) for filter_ in self.filters]
+        return [filter_.get(session, clauses=self.clauses)
+                for filter_ in self.filters]
     
     def __repr__(self):
         string = "MENU:\n"
@@ -82,42 +87,48 @@ class Filter(object):
         if not active:
             self.items = []
     
-    def sqla_filter(self, query):
+    def get_clauses(self):
         """
-        Filters the SQLAlchemy query.
+        Returns the SQLAlchemy clauses for this filter.
         """
         # query.filter/filter_by/...
         return query
     
-    def get_items(self, session):
+    def get_items(self, session, clauses=None):
         """
         Returns the subitems of the menu (only for inactive filters).
         """
         return None
     
-    def get(self, session):
+    def get(self, session, clauses=None):
         """
         Returns the filter with its attributes.
         """
         res = dict(active=self.active, name=self.__class__.__name__)
         if not self.active:
-            res["items"] = self.get_items(session)
+            res["items"] = self.get_items(session, clauses=clauses)
         return res
     
-    def group_by_firehose(self, session, firehose_attr):
+    def group_by_firehose(self, session, firehose_attr, clauses=None):
         """
         Given a session and a firehose attribute, returns the objects obtained
         after a group_by and a results count.
         """
-        return (
+        res = (
             session.query(firehose_attr,
                           func.count(Result.id).label("count"))
             .join(Metadata, Metadata.generator_id==Generator.id)
             .join(Analysis, Analysis.metadata_id == Metadata.id)
             .outerjoin(Result, Result.analysis_id == Analysis.id)
-            .group_by(firehose_attr)
-            .order_by(desc("count"))
-            .all())
+            )
+        if clauses is not None:
+            res = res.filter(and_(*clauses))
+        res = (res
+               .group_by(firehose_attr)
+               .order_by(desc("count"))
+               .all())
+        
+        return res
     
     def is_relevant(self, active_keys=None):
         """
@@ -143,11 +154,11 @@ class Filter(object):
 
 
 class FilterGeneratorName(Filter):
-    def sqla_filter(self, query):
-        return query.filter(Generator.name == self.value)
+    def get_clauses(self):
+        return (Generator.name == self.value)
     
-    def get_items(self, session):
-        res = self.group_by_firehose(session, Generator.name)
+    def get_items(self, session, clauses=None):
+        res = self.group_by_firehose(session, Generator.name, clauses=clauses)
         return to_dict(res)
 
 class FilterGeneratorVersion(Filter):
@@ -157,11 +168,11 @@ class FilterGeneratorVersion(Filter):
                 return True
         return False
     
-    def sqla_filter(self, query):
-        return query.filter(Generator.version == self.value)
+    def get_clauses(self):
+        return (Generator.version == self.value)
     
-    def get_items(self, session):
-        res = self.group_by_firehose(session, Generator.version)
+    def get_items(self, session, clauses=None):
+        res = self.group_by_firehose(session, Generator.version, clauses=clauses)
         return to_dict(res)
 
 
