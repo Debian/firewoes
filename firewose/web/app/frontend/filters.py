@@ -49,7 +49,7 @@ class Menu(object):
             if new_filter.is_relevant(active_keys=active_filters_dict.keys()):
                 self.filters.append(new_filter)
                 if new_filter.is_active():
-                    self.clauses.append(new_filter.get_clauses())
+                    self.clauses += new_filter.get_clauses()
     
     def filter_sqla_query(self, query):
         """
@@ -169,7 +169,7 @@ class FilterGeneratorName(FilterGenerator):
     _dependencies = []
     
     def get_clauses(self):
-        return (Generator.name == self.value)
+        return [(Generator.name == self.value)]
     
     def get_items(self, session, clauses=None):
         res = self.get_items_generator(session, Generator.name, clauses=clauses)
@@ -179,7 +179,7 @@ class FilterGeneratorVersion(FilterGenerator):
     _dependencies = ["generator_name"]
     
     def get_clauses(self):
-        return (Generator.version == self.value)
+        return [(Generator.version == self.value)]
     
     def get_items(self, session, clauses=None):
         res = self.get_items_generator(session, Generator.version,
@@ -209,7 +209,7 @@ class FilterSutType(FilterSut):
     _dependencies = []
     
     def get_clauses(self):
-        return (Sut.type == self.value)
+        return [(Sut.type == self.value)]
     
     def get_items(self, session, clauses=None):
         res = self.get_items_sut(session, Sut.type, clauses=clauses)
@@ -220,7 +220,7 @@ class FilterSutName(FilterSut):
     _dependencies = []
     
     def get_clauses(self):
-        return (Sut.name == self.value)
+        return [(Sut.name == self.value)]
     
     def get_items(self, session, clauses=None):
         res = self.get_items_sut(session, Sut.name, clauses=clauses)
@@ -230,7 +230,7 @@ class FilterSutVersion(FilterSut):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
-        return (Sut.version == self.value)
+        return [(Sut.version == self.value)]
     
     def get_items(self, session, clauses=None):
         res = self.get_items_sut(session, Sut.version, clauses=clauses)
@@ -240,7 +240,7 @@ class FilterSutRelease(FilterSut):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
-        return (Sut.release == self.value)
+        return [(Sut.release == self.value)]
     
     def get_items(self, session, clauses=None):
         res = self.get_items_sut(session, Sut.release, clauses=clauses)
@@ -250,11 +250,13 @@ class FilterSutBuildarch(FilterSut):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
-        return (Sut.buildarch == self.value)
+        return [(Sut.buildarch == self.value)]
     
     def get_items(self, session, clauses=None):
         res = self.get_items_sut(session, Sut.buildarch, clauses=clauses)
         return to_dict(res)
+
+
 
 all_filters = [
     ("generator_name", FilterGeneratorName),
