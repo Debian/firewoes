@@ -128,7 +128,8 @@ class Filter(object):
             res = (res.join(Metadata, Metadata.generator_id==Generator.id)
                    .join(Sut, Metadata.sut_id==Sut.id)
                    )
-        elif firehose_attr in [Sut.type, Sut.name, Sut.version]:
+        elif firehose_attr in [Sut.type, Sut.name, Sut.version,
+                               Sut.release, Sut.buildarch]:
             res = (res.join(Metadata, Metadata.sut_id==Sut.id)
                    .join(Generator, Metadata.generator_id==Generator.id)
                    )
@@ -223,12 +224,40 @@ class FilterSutVersion(Filter):
         res = self.group_by_firehose(session, Sut.version, clauses=clauses)
         return to_dict(res)
 
+class FilterSutRelease(Filter):
+    def is_relevant(self, active_keys=None):
+        if isinstance(active_keys, list):
+            if "sut_name" in active_keys:
+                return True
+        return False
+    def get_clauses(self):
+        return (Sut.release == self.value)
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by_firehose(session, Sut.release, clauses=clauses)
+        return to_dict(res)
+
+class FilterSutBuildarch(Filter):
+    def is_relevant(self, active_keys=None):
+        if isinstance(active_keys, list):
+            if "sut_name" in active_keys:
+                return True
+        return False
+    def get_clauses(self):
+        return (Sut.buildarch == self.value)
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by_firehose(session, Sut.buildarch, clauses=clauses)
+        return to_dict(res)
+
 all_filters = [
     ("generator_name", FilterGeneratorName),
     ("generator_version", FilterGeneratorVersion),
     ("sut_type", FilterSutType),
     ("sut_name", FilterSutName),
     ("sut_version", FilterSutVersion),
+    ("sut_release", FilterSutRelease),
+    ("sut_buildarch", FilterSutBuildarch),
     ]
 
 
