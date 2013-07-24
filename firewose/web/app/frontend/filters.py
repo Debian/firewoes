@@ -129,10 +129,22 @@ class Filter(object):
         res = (
             session.query(firehose_attr,
                           func.count(Result.id).label("count"))
-            .join(Metadata, metadata_clause)
-            .join(Analysis, Analysis.metadata_id == Metadata.id)
-            .join(Result, Result.analysis_id == Analysis.id)
             )
+        
+        if firehose_attr in [Generator.name, Generator.version]:
+            res = (res.join(Metadata, Metadata.generator_id==Generator.id)
+                   .join(Sut, Metadata.sut_id==Sut.id)
+                   )
+        elif firehose_attr in [Sut.type, Sut.name]:
+            res = (res.join(Metadata, Metadata.sut_id==Sut.id)
+                   .join(Generator, Metadata.generator_id==Generator.id)
+                   )
+        else:
+            raise NotImplementedError
+        
+        res = (res.join(Analysis, Analysis.metadata_id == Metadata.id)
+               .join(Result, Result.analysis_id == Analysis.id)
+               )
         if clauses is not None:
             res = res.filter(and_(*clauses))
         res = (res
