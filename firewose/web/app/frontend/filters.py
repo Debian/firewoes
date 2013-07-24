@@ -113,6 +113,35 @@ class Filter(object):
             res["value"] = self.value
         return res
     
+    def is_relevant(self, active_keys=None):
+        """
+        Returns True if the filter must be used in this context.
+        For filters which implement this, should return False if a
+        dependency is not satisfied (e.g. generator_version depends on
+        generator_name)
+        """
+        return True
+    
+    def is_active(self):
+        return self.active
+    
+    def __repr__(self):
+        string = self.__class__.__name__ + ":\n"
+        string += "    active: " + str(self.active) + "\n"
+        if not self.active:
+            string += "    items: "
+            for item in self.items:
+                string += item
+            
+        return string
+
+class FilterFirehoseAttribute(Filter):
+    def is_relevant(self, active_keys=None):
+        for dep in self._dependencies:
+            if dep not in active_keys:
+                return False
+        return True
+    
     def group_by_firehose(self, session, firehose_attr, clauses=None):
         """
         Given a session and a firehose attribute, returns the objects obtained
@@ -147,32 +176,12 @@ class Filter(object):
                .all())
         
         return res
-    
-    def is_relevant(self, active_keys=None):
-        """
-        Returns True if the filter must be used in this context.
-        For filters which implement this, should return False if a
-        dependency is not satisfied (e.g. generator_version depends on
-        generator_name)
-        """
-        return True
-    
-    def is_active(self):
-        return self.active
-    
-    def __repr__(self):
-        string = self.__class__.__name__ + ":\n"
-        string += "    active: " + str(self.active) + "\n"
-        if not self.active:
-            string += "    items: "
-            for item in self.items:
-                string += item
-            
-        return string
 
 # real world filters:
 
-class FilterGeneratorName(Filter):
+class FilterGeneratorName(FilterFirehoseAttribute):
+    _dependencies = []
+    
     def get_clauses(self):
         return (Generator.name == self.value)
     
@@ -180,12 +189,8 @@ class FilterGeneratorName(Filter):
         res = self.group_by_firehose(session, Generator.name, clauses=clauses)
         return to_dict(res)
 
-class FilterGeneratorVersion(Filter):
-    def is_relevant(self, active_keys=None):
-        if isinstance(active_keys, list):
-            if "generator_name" in active_keys:
-                return True
-        return False
+class FilterGeneratorVersion(FilterFirehoseAttribute):
+    _dependencies = ["generator_name"]
     
     def get_clauses(self):
         return (Generator.version == self.value)
@@ -194,7 +199,9 @@ class FilterGeneratorVersion(Filter):
         res = self.group_by_firehose(session, Generator.version, clauses=clauses)
         return to_dict(res)
 
-class FilterSutType(Filter):
+class FilterSutType(FilterFirehoseAttribute):
+    _dependencies = []
+    
     def get_clauses(self):
         return (Sut.type == self.value)
     
@@ -203,7 +210,9 @@ class FilterSutType(Filter):
         return to_dict(res)
 
 
-class FilterSutName(Filter):
+class FilterSutName(FilterFirehoseAttribute):
+    _dependencies = []
+    
     def get_clauses(self):
         return (Sut.name == self.value)
     
@@ -211,12 +220,9 @@ class FilterSutName(Filter):
         res = self.group_by_firehose(session, Sut.name, clauses=clauses)
         return to_dict(res)
 
-class FilterSutVersion(Filter):
-    def is_relevant(self, active_keys=None):
-        if isinstance(active_keys, list):
-            if "sut_name" in active_keys:
-                return True
-        return False
+class FilterSutVersion(FilterFirehoseAttribute):
+    _dependencies = ["sut_name"]
+    
     def get_clauses(self):
         return (Sut.version == self.value)
     
@@ -224,12 +230,9 @@ class FilterSutVersion(Filter):
         res = self.group_by_firehose(session, Sut.version, clauses=clauses)
         return to_dict(res)
 
-class FilterSutRelease(Filter):
-    def is_relevant(self, active_keys=None):
-        if isinstance(active_keys, list):
-            if "sut_name" in active_keys:
-                return True
-        return False
+class FilterSutRelease(FilterFirehoseAttribute):
+    _dependencies = ["sut_name"]
+    
     def get_clauses(self):
         return (Sut.release == self.value)
     
@@ -237,12 +240,9 @@ class FilterSutRelease(Filter):
         res = self.group_by_firehose(session, Sut.release, clauses=clauses)
         return to_dict(res)
 
-class FilterSutBuildarch(Filter):
-    def is_relevant(self, active_keys=None):
-        if isinstance(active_keys, list):
-            if "sut_name" in active_keys:
-                return True
-        return False
+class FilterSutBuildarch(FilterFirehoseAttribute):
+    _dependencies = ["sut_name"]
+    
     def get_clauses(self):
         return (Sut.buildarch == self.value)
     
