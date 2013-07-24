@@ -114,12 +114,20 @@ class Filter(object):
         Given a session and a firehose attribute, returns the objects obtained
         after a group_by and a results count.
         """
+        # TODO: better solution
+        if firehose_attr in [Generator.name, Generator.version]:
+            metadata_clause = (Metadata.generator_id==Generator.id)
+        elif firehose_attr in [Sut.type]:
+            metadata_clause = (Metadata.sut_id==Sut.id)
+        else:
+            raise NotImplementedError
+        
         res = (
             session.query(firehose_attr,
                           func.count(Result.id).label("count"))
-            .join(Metadata, Metadata.generator_id==Generator.id)
+            .join(Metadata, metadata_clause)
             .join(Analysis, Analysis.metadata_id == Metadata.id)
-            .outerjoin(Result, Result.analysis_id == Analysis.id)
+            .join(Result, Result.analysis_id == Analysis.id)
             )
         if clauses is not None:
             res = res.filter(and_(*clauses))
@@ -152,6 +160,7 @@ class Filter(object):
             
         return string
 
+# real world filters:
 
 class FilterGeneratorName(Filter):
     def get_clauses(self):
@@ -175,11 +184,18 @@ class FilterGeneratorVersion(Filter):
         res = self.group_by_firehose(session, Generator.version, clauses=clauses)
         return to_dict(res)
 
-
+class FilterSutType(Filter):
+    def get_clauses(self):
+        return (Sut.type == self.value)
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by_firehose(session, Sut.type, clauses=clauses)
+        return to_dict(res)
 
 all_filters = [
     ("generator_name", FilterGeneratorName),
     ("generator_version", FilterGeneratorVersion),
+    ("sut_type", FilterSutType),
     ]
 
 
