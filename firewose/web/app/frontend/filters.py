@@ -104,9 +104,13 @@ class Filter(object):
         """
         Returns the filter with its attributes.
         """
-        res = dict(active=self.active, name=self.__class__.__name__)
+        res = dict(active=self.active,
+                   name=self.__class__.__name__)
+        
         if not self.active:
             res["items"] = self.get_items(session, clauses=clauses)
+        else:
+            res["value"] = self.value
         return res
     
     def group_by_firehose(self, session, firehose_attr, clauses=None):
