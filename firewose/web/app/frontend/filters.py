@@ -121,7 +121,7 @@ class Filter(object):
         # TODO: better solution
         if firehose_attr in [Generator.name, Generator.version]:
             metadata_clause = (Metadata.generator_id==Generator.id)
-        elif firehose_attr in [Sut.type]:
+        elif firehose_attr in [Sut.type, Sut.name]:
             metadata_clause = (Metadata.sut_id==Sut.id)
         else:
             raise NotImplementedError
@@ -196,10 +196,20 @@ class FilterSutType(Filter):
         res = self.group_by_firehose(session, Sut.type, clauses=clauses)
         return to_dict(res)
 
+
+class FilterSutName(Filter):
+    def get_clauses(self):
+        return (Sut.name == self.value)
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by_firehose(session, Sut.name, clauses=clauses)
+        return to_dict(res)
+
 all_filters = [
     ("generator_name", FilterGeneratorName),
     ("generator_version", FilterGeneratorVersion),
     ("sut_type", FilterSutType),
+    ("sut_name", FilterSutName),
     ]
 
 
