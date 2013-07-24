@@ -119,13 +119,6 @@ class Filter(object):
         after a group_by and a results count.
         """
         # TODO: better solution
-        if firehose_attr in [Generator.name, Generator.version]:
-            metadata_clause = (Metadata.generator_id==Generator.id)
-        elif firehose_attr in [Sut.type, Sut.name]:
-            metadata_clause = (Metadata.sut_id==Sut.id)
-        else:
-            raise NotImplementedError
-        
         res = (
             session.query(firehose_attr,
                           func.count(Result.id).label("count"))
@@ -135,7 +128,7 @@ class Filter(object):
             res = (res.join(Metadata, Metadata.generator_id==Generator.id)
                    .join(Sut, Metadata.sut_id==Sut.id)
                    )
-        elif firehose_attr in [Sut.type, Sut.name]:
+        elif firehose_attr in [Sut.type, Sut.name, Sut.version]:
             res = (res.join(Metadata, Metadata.sut_id==Sut.id)
                    .join(Generator, Metadata.generator_id==Generator.id)
                    )
@@ -217,11 +210,25 @@ class FilterSutName(Filter):
         res = self.group_by_firehose(session, Sut.name, clauses=clauses)
         return to_dict(res)
 
+class FilterSutVersion(Filter):
+    def is_relevant(self, active_keys=None):
+        if isinstance(active_keys, list):
+            if "sut_name" in active_keys:
+                return True
+        return False
+    def get_clauses(self):
+        return (Sut.version == self.value)
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by_firehose(session, Sut.version, clauses=clauses)
+        return to_dict(res)
+
 all_filters = [
     ("generator_name", FilterGeneratorName),
     ("generator_version", FilterGeneratorVersion),
     ("sut_type", FilterSutType),
     ("sut_name", FilterSutName),
+    ("sut_version", FilterSutVersion),
     ]
 
 
