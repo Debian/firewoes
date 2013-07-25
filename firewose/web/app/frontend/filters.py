@@ -339,7 +339,7 @@ class FilterLocationFile(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         res = self.group_by(session, File.givenpath, clauses=clauses)
-        return to_dict(res)    
+        return to_dict(res)
 
 class FilterLocationFunction(FilterFirehoseAttribute):
     _dependencies = ["sut_name", "location_file"]
@@ -350,7 +350,7 @@ class FilterLocationFunction(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         res = self.group_by(session, Function.name, clauses=clauses)
-        return to_dict(res)    
+        return to_dict(res)
     
 
 all_filters = [
