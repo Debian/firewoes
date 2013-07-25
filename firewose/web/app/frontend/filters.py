@@ -141,6 +141,47 @@ class FilterFirehoseAttribute(Filter):
             if dep not in active_keys:
                 return False
         return True
+    
+    def joins(self, query):
+        raise NotImplementedError
+    
+    def group_by(self, session, attribute, clauses=None):
+        query = session.query(attribute.label("value"),
+                              func.count(Result.id).label("count"))
+        
+        # here we describe the path from 'attribute' to Result,
+        # in order for SQLA to create the correct joins
+        # it would be great to can put all things in same query, though
+        
+        if attribute in [Generator.name, Generator.version]:
+            query = (query.join(Metadata, Metadata.generator_id==Generator.id)
+                     .join(Sut, Metadata.sut_id==Sut.id)
+                     .join(Location, Result.location_id==Location.id)
+                     .join(File, Location.file_id==File.id))
+            
+        elif attribute in [Sut.type, Sut.name, Sut.version, Sut.release,
+                           Sut.buildarch]:
+            query = (query.join(Metadata, Metadata.sut_id==Sut.id)
+                     .join(Generator, Metadata.generator_id==Generator.id)
+                     .join(Location, Result.location_id==Location.id)
+                     .join(File, Location.file_id==File.id))
+            
+        elif attribute in [Location.file]:
+            query = (query.join(Metadata, Metadata.sut_id==Sut.id)
+                     .join(Generator, Metadata.generator_id==Generator.id)
+                     .join(Location, Result.location_id==Location.id))
+        
+        query = (query.join(Analysis, Analysis.metadata_id == Metadata.id)
+                 .join(Result, Result.analysis_id == Analysis.id)
+                 )
+        
+        if clauses is not None:
+            query = query.filter(and_(*clauses))
+        query = (query
+               .group_by(attribute)
+               .order_by(desc("count"))
+               .all())
+        return query
 
 ##################################################
 # real world filters:
@@ -148,115 +189,140 @@ class FilterFirehoseAttribute(Filter):
 
 ### GENERATOR ###
 
-class FilterGenerator(FilterFirehoseAttribute):
-    def get_items_generator(self, session, attribute, clauses=None):
-        res = (session.query(attribute,
-                             func.count(Result.id).label("count"))
-               .join(Metadata, Metadata.generator_id==Generator.id)
-               .join(Sut, Metadata.sut_id==Sut.id)
-               .join(Analysis, Analysis.metadata_id == Metadata.id)
-               .join(Result, Result.analysis_id == Analysis.id)
-               )
-        if clauses is not None:
-            res = res.filter(and_(*clauses))
-        res = (res
-               .group_by(attribute)
-               .order_by(desc("count"))
-               .all())
-        return res
+# class FilterGenerator(FilterFirehoseAttribute):
+#     def get_items_generator(self, session, attribute, clauses=None):
+#         res = (session.query(attribute,
+#                              func.count(Result.id).label("count"))
+#                .join(Metadata, Metadata.generator_id==Generator.id)
+#                .join(Sut, Metadata.sut_id==Sut.id)
+#                .join(Analysis, Analysis.metadata_id == Metadata.id)
+#                .join(Result, Result.analysis_id == Analysis.id)
+#                )
+#         if clauses is not None:
+#             res = res.filter(and_(*clauses))
+#         res = (res
+#                .group_by(attribute)
+#                .order_by(desc("count"))
+#                .all())
+#         return res
 
-class FilterGeneratorName(FilterGenerator):
+class FilterGeneratorName(FilterFirehoseAttribute):
     _dependencies = []
     
     def get_clauses(self):
         return [(Generator.name == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.get_items_generator(session, Generator.name, clauses=clauses)
+        #res = self.get_items_generator(session, Generator.name, clauses=clauses)
+        res = self.group_by(session, Generator.name, clauses=clauses)
         return to_dict(res)
+    
+    # def joins(self, query):
+    #     return (query.join(Metadata, Metadata.generator_id==Generator.id)
+    #             .join(Sut, Metadata.sut_id==Sut.id)
+    #             .join(Analysis, Analysis.metadata_id == Metadata.id)
+    #             .join(Result, Result.analysis_id == Analysis.id)
 
-class FilterGeneratorVersion(FilterGenerator):
+class FilterGeneratorVersion(FilterFirehoseAttribute):
     _dependencies = ["generator_name"]
     
     def get_clauses(self):
         return [(Generator.version == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.get_items_generator(session, Generator.version,
-                                       clauses=clauses)
+        #res = self.get_items_generator(session, Generator.version,
+        #                               clauses=clauses)
+        res = self.group_by(session, Generator.version, clauses=clauses)
         return to_dict(res)
 
 ### SUT ###
 
-class FilterSut(FilterFirehoseAttribute):
-    def get_items_sut(self, session, attribute, clauses=None):
-        res = (session.query(attribute,
-                             func.count(Result.id).label("count"))
-               .join(Metadata, Metadata.sut_id==Sut.id)
-               .join(Generator, Metadata.generator_id==Generator.id)
-               .join(Analysis, Analysis.metadata_id == Metadata.id)
-               .join(Result, Result.analysis_id == Analysis.id)
-               )
-        if clauses is not None:
-            res = res.filter(and_(*clauses))
-        res = (res
-               .group_by(attribute)
-               .order_by(desc("count"))
-               .all())
-        return res
+# class FilterSut(FilterFirehoseAttribute):
+#     def get_items_sut(self, session, attribute, clauses=None):
+#         res = (session.query(attribute,
+#                              func.count(Result.id).label("count"))
+#                .join(Metadata, Metadata.sut_id==Sut.id)
+#                .join(Generator, Metadata.generator_id==Generator.id)
+#                .join(Analysis, Analysis.metadata_id == Metadata.id)
+#                .join(Result, Result.analysis_id == Analysis.id)
+#                )
+#         if clauses is not None:
+#             res = res.filter(and_(*clauses))
+#         res = (res
+#                .group_by(attribute)
+#                .order_by(desc("count"))
+#                .all())
+#         return res
 
-class FilterSutType(FilterSut):
+class FilterSutType(FilterFirehoseAttribute):
     _dependencies = []
     
     def get_clauses(self):
         return [(Sut.type == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.get_items_sut(session, Sut.type, clauses=clauses)
+        #res = self.get_items_sut(session, Sut.type, clauses=clauses)
+        res = self.group_by(session, Sut.type, clauses=clauses)
         return to_dict(res)
 
 
-class FilterSutName(FilterSut):
+class FilterSutName(FilterFirehoseAttribute):
     _dependencies = []
     
     def get_clauses(self):
         return [(Sut.name == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.get_items_sut(session, Sut.name, clauses=clauses)
+        #res = self.get_items_sut(session, Sut.name, clauses=clauses)
+        res = self.group_by(session, Sut.name, clauses=clauses)
         return to_dict(res)
 
-class FilterSutVersion(FilterSut):
+class FilterSutVersion(FilterFirehoseAttribute):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
         return [(Sut.version == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.get_items_sut(session, Sut.version, clauses=clauses)
+        #res = self.get_items_sut(session, Sut.version, clauses=clauses)
+        res = self.group_by(session, Sut.version, clauses=clauses)
         return to_dict(res)
 
-class FilterSutRelease(FilterSut):
+class FilterSutRelease(FilterFirehoseAttribute):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
         return [(Sut.release == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.get_items_sut(session, Sut.release, clauses=clauses)
+        #res = self.get_items_sut(session, Sut.release, clauses=clauses)
+        res = self.group_by(session, Sut.release, clauses=clauses)
         return to_dict(res)
 
-class FilterSutBuildarch(FilterSut):
+class FilterSutBuildarch(FilterFirehoseAttribute):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
         return [(Sut.buildarch == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.get_items_sut(session, Sut.buildarch, clauses=clauses)
+        #res = self.get_items_sut(session, Sut.buildarch, clauses=clauses)
+        res = self.group_by(session, Sut.buildarch, clauses=clauses)
         return to_dict(res)
 
+### LOCATION ###
 
+class FilterLocationFile(FilterFirehoseAttribute):
+    _dependencies = ["sut_name"]
+    
+    def get_clauses(self):
+        return [(File.givenpath == self.value),
+                (Location.file_id==File.id)]
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by(session, Location.file, clauses=clauses)
+        return to_dict(res)    
+    
 
 all_filters = [
     ("generator_name", FilterGeneratorName),
