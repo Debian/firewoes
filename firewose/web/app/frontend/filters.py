@@ -193,6 +193,15 @@ class FilterFirehoseAttribute(Filter):
                      .outerjoin(Generator, Metadata.generator_id==Generator.id)
                      )
         
+        elif attribute in [Result.testid]:
+            query = (query.outerjoin(Location, Result.location_id==Location.id)
+                     .outerjoin(File, Location.file_id==File.id)
+                     .outerjoin(Function, Location.function_id==Function.id)
+                     .outerjoin(Analysis, Result.analysis_id == Analysis.id)
+                     .outerjoin(Metadata, Analysis.metadata_id==Metadata.id)
+                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
+                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
+                     )
         
         if clauses is not None:
             query = query.filter(and_(*clauses))
@@ -352,6 +361,18 @@ class FilterLocationFunction(FilterFirehoseAttribute):
     def get_items(self, session, clauses=None):
         res = self.group_by(session, Function.name, clauses=clauses)
         return to_dict(res)
+
+### TESTID ###
+
+class FilterTestId(FilterFirehoseAttribute):
+    _dependencies = ["generator_name"]
+    
+    def get_clauses(self):
+        return [(Result.testid == self.value)]
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by(session, Result.testid, clauses=clauses)
+        return to_dict(res)
     
 
 all_filters = [
@@ -364,6 +385,7 @@ all_filters = [
     ("sut_buildarch", FilterSutBuildarch),
     ("location_file", FilterLocationFile),
     ("location_function", FilterLocationFunction),
+    ("testid", FilterTestId),
     ]
 
 
