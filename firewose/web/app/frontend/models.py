@@ -17,7 +17,8 @@
 
 
 from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
-    Generator, Sut, Metadata
+    Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
+
 from sqlalchemy import and_, func, desc
 
 from firewose.web.app import session, app
@@ -145,6 +146,49 @@ class Result_app(FHGeneric):
     def all(self):
         elems = session.query(Result.id).all()
         return to_dict(elems)
+    
+    def filter2(self, request_args, offset=None):
+        """
+        Lol
+        """
+        
+        import filters
+        
+        # we need the arguments without "page" for the menu
+        # ("page" would add page=foo on the menu links, which we don't want)
+        args_without_page = request_args.copy()
+        try:
+            del(args_without_page["page"])
+        except:
+            pass
+        
+        # TODO: Info + Failure
+        query = (session.query(
+                Issue.id,
+                Result.type.label("result_type"),
+                File.givenpath.label("location_file"),
+                Function.name.label("location_function"),
+                Message.text.label("message_text"),
+                Message.id.label("message_id"),
+                Point, Range,
+                Sut.name.label("sut_name"),
+                Sut.version.label("sut_version"),
+                Sut.type.label("sut_type"),
+                Sut.release.label("sut_release"),
+                Sut.buildarch.label("sut_buildarch"),
+                Generator.name.label("generator_name"),
+                Generator.version.label("generator_version"),
+                Issue.testid.label("testid"))
+            .outerjoin(Location, File, Function, Point, Analysis,
+                       Metadata, Generator, Sut, Message)
+            .outerjoin(Range, Location.range_id==Range.id)
+                 )
+        menu = filters.Menu(args_without_page)
+        query = menu.filter_sqla_query(query)
+        return dict(menu=repr(menu),
+                    res=to_dict(query.all()),
+                    menu2=menu.get(session))
+           
     
     def filter(self, request_args, offset=None):
         """
