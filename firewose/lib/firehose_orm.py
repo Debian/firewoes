@@ -22,7 +22,7 @@ from sqlalchemy import Table, MetaData, Column, \
     ForeignKey, Integer, String, Float, ForeignKeyConstraint, \
     event, DDL, Index
 from sqlalchemy.orm import mapper, relationship, polymorphic_union, \
-    sessionmaker
+    sessionmaker, column_property
 from sqlalchemy.schema import Sequence
 
 metadata = MetaData()
@@ -90,20 +90,22 @@ Index('ix_sut_name_version_release_buildarch',
       t_sut.c.buildarch)
 
 # For the Result hierarchy we use joined-table inheritance
+# t_result = \
+#     Table('result', metadata,
+#           Column('id', String, primary_key=True, autoincrement=False), # renamed from result_id
+#           Column('analysis_id', String,
+#                  ForeignKey('analysis.id'), nullable=False),
+#           Column('type', String(10), nullable=False),
+#           )
+# Index('ix_result_analysis_id', t_result.c.analysis_id)
+# Index('ix_result_type', t_result.c.type)
+
 t_result = \
     Table('result', metadata,
-          Column('id', String, primary_key=True, autoincrement=False), # renamed from result_id
+          Column('id', String, primary_key=True, autoincrement=False),
+          Column('type', String(10), nullable=False),
           Column('analysis_id', String,
                  ForeignKey('analysis.id'), nullable=False),
-          Column('type', String(10), nullable=False),
-          )
-Index('ix_result_analysis_id', t_result.c.analysis_id)
-Index('ix_result_type', t_result.c.type)
-
-t_issue = \
-    Table('issue', metadata,
-          Column('result_id', String,
-                 ForeignKey('result.id'), primary_key=True),
           Column('cwe', Integer),
           Column('testid', String),
           Column('severity', String),
@@ -116,38 +118,37 @@ t_issue = \
           Column('customfields_id', String,
                  ForeignKey('customfields.id')),
           )
-Index('ix_issue_result_id', t_issue.c.result_id)
-Index('ix_issue_testid', t_issue.c.testid)
-Index('ix_issue_message_id', t_issue.c.message_id)
-Index('ix_issue_location_id', t_issue.c.location_id)
+Index('ix_result_testid', t_result.c.testid)
+Index('ix_result_message_id', t_result.c.message_id)
+Index('ix_result_location_id', t_result.c.location_id)
 
-t_failure = \
-    Table('failure', metadata,
-          Column('result_id', String,
-                 ForeignKey('result.id'), primary_key=True),
-          Column('failureid', String),
-          Column('location_id', String, ForeignKey('location.id')),
-          Column('message_id', String, ForeignKey('message.id')),
-          Column('customfields_id', String, ForeignKey('customfields.id')),
-          )
-Index('ix_failure_result_id', t_failure.c.result_id)
-Index('ix_failure_failureid', t_failure.c.failureid)
-Index('ix_failure_location_id', t_failure.c.location_id)
-Index('ix_failure_message_id', t_failure.c.message_id)
+# t_failure = \
+#     Table('failure', metadata,
+#           Column('result_id', String,
+#                  ForeignKey('result.id'), primary_key=True),
+#           Column('failureid', String),
+#           Column('location_id', String, ForeignKey('location.id')),
+#           Column('message_id', String, ForeignKey('message.id')),
+#           Column('customfields_id', String, ForeignKey('customfields.id')),
+#           )
+# Index('ix_failure_result_id', t_failure.c.result_id)
+# Index('ix_failure_failureid', t_failure.c.failureid)
+# Index('ix_failure_location_id', t_failure.c.location_id)
+# Index('ix_failure_message_id', t_failure.c.message_id)
 
-t_info = \
-    Table('info', metadata,
-          Column('result_id', String,
-                 ForeignKey('result.id'), primary_key=True),
-          Column('infoid', String),
-          Column('location_id', String, ForeignKey('location.id')),
-          Column('message_id', String, ForeignKey('message.id')),
-          Column('customfields_id', String, ForeignKey('customfields.id')),
-          )
-Index('ix_info_result_id', t_info.c.result_id)
-Index('ix_info_infoid', t_info.c.infoid)
-Index('ix_info_location_id', t_info.c.location_id)
-Index('ix_info_message_id', t_info.c.message_id)
+# t_info = \
+#     Table('info', metadata,
+#           Column('result_id', String,
+#                  ForeignKey('result.id'), primary_key=True),
+#           Column('infoid', String),
+#           Column('location_id', String, ForeignKey('location.id')),
+#           Column('message_id', String, ForeignKey('message.id')),
+#           Column('customfields_id', String, ForeignKey('customfields.id')),
+#           )
+# Index('ix_info_result_id', t_info.c.result_id)
+# Index('ix_info_infoid', t_info.c.infoid)
+# Index('ix_info_location_id', t_info.c.location_id)
+# Index('ix_info_message_id', t_info.c.message_id)
 
 t_message = \
     Table('message', metadata,
@@ -318,45 +319,37 @@ mapper(State, t_state,
         }
        )
 
-# Map the Result hierarchy using Joined Table Inheritance:
-mapper(Result, t_result,
+#Map the Result hierarchy using Single Table Inheritance:
+result_mapper = mapper(Result, t_result,
        polymorphic_on=t_result.c.type,
        polymorphic_identity='result',
        properties={
         'analysis': relationship(Analysis),
-        }
-       )
-
-mapper(Issue, t_issue,
-       inherits=Result,
-       polymorphic_identity='issue',
-       properties={
         'location': relationship(Location, lazy='joined'),
         'message':  relationship(Message, lazy='joined'),
+        'customfields': relationship(CustomFields),
+        }
+       )
+
+mapper(Issue,
+       polymorphic_on=t_result.c.type,
+       polymorphic_identity='issue',
+       inherits=result_mapper,
+       properties={
         'notes':  relationship(Notes, lazy='joined'),
         'trace': relationship(Trace, lazy='joined'),
-        'customfields': relationship(CustomFields),
         }
        )
 
-mapper(Failure, t_failure,
-       inherits=Result,
+mapper(Failure,
+       inherits=result_mapper,
+       polymorphic_on=t_result.c.type,
        polymorphic_identity='failure',
-       properties={
-        'location': relationship(Location, lazy='joined'),
-        'message': relationship(Message, lazy='joined'),
-        'customfields': relationship(CustomFields),
-        }
        )
 
-mapper(Info, t_info,
-       inherits=Result,
+mapper(Info,
+       inherits=result_mapper,
        polymorphic_identity='info',
-       properties={
-        'location': relationship(Location, lazy='joined'),
-        'message': relationship(Message, lazy='joined'),
-        'customfields': relationship(CustomFields),
-        }
        )
 
 mapper(Location, t_location,
