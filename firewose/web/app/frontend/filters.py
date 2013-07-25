@@ -159,8 +159,9 @@ class FilterFirehoseAttribute(Filter):
                      .join(Analysis, Analysis.metadata_id == Metadata.id)
                      .join(Result, Result.analysis_id == Analysis.id)
                      .join(Location, Result.location_id==Location.id)
+                     .join(Function, Location.function_id==Function.id)
                      .join(File, Location.file_id==File.id))
-            
+        
         elif attribute in [Sut.type, Sut.name, Sut.version, Sut.release,
                            Sut.buildarch]:
             query = (query.join(Metadata, Metadata.sut_id==Sut.id)
@@ -168,10 +169,12 @@ class FilterFirehoseAttribute(Filter):
                      .join(Analysis, Analysis.metadata_id == Metadata.id)
                      .join(Result, Result.analysis_id == Analysis.id)
                      .join(Location, Result.location_id==Location.id)
+                     .join(Function, Location.function_id==Function.id)
                      .join(File, Location.file_id==File.id))
-            
+        
         elif attribute in [File.givenpath]:
             query = (query.join(Location, Location.file_id==File.id)
+                     .join(Function, Location.function_id==Function.id)
                      .join(Result, Result.location_id==Location.id)
                      .join(Analysis, Result.analysis_id == Analysis.id)
                      .join(Metadata, Analysis.metadata_id==Metadata.id)
@@ -179,9 +182,16 @@ class FilterFirehoseAttribute(Filter):
                      .join(Generator, Metadata.generator_id==Generator.id)
                      )
         
-        #query = (query.join(Analysis, Analysis.metadata_id == Metadata.id)
-        #         .join(Result, Result.analysis_id == Analysis.id)
-        #         )
+        elif attribute in [Function.name]:
+            query = (query.join(Location, Location.function_id==Function.id)
+                     .join(File, Location.file_id==File.id)
+                     .join(Result, Result.location_id==Location.id)
+                     .join(Analysis, Result.analysis_id == Analysis.id)
+                     .join(Metadata, Analysis.metadata_id==Metadata.id)
+                     .join(Sut, Metadata.sut_id==Sut.id)
+                     .join(Generator, Metadata.generator_id==Generator.id)
+                     )
+        
         
         if clauses is not None:
             query = query.filter(and_(*clauses))
@@ -330,6 +340,17 @@ class FilterLocationFile(FilterFirehoseAttribute):
     def get_items(self, session, clauses=None):
         res = self.group_by(session, File.givenpath, clauses=clauses)
         return to_dict(res)    
+
+class FilterLocationFunction(FilterFirehoseAttribute):
+    _dependencies = ["sut_name", "location_file"]
+    
+    def get_clauses(self):
+        return [(Function.name == self.value),
+                (Location.function_id == Function.id)]
+    
+    def get_items(self, session, clauses=None):
+        res = self.group_by(session, Function.name, clauses=clauses)
+        return to_dict(res)    
     
 
 all_filters = [
@@ -341,6 +362,7 @@ all_filters = [
     ("sut_release", FilterSutRelease),
     ("sut_buildarch", FilterSutBuildarch),
     ("location_file", FilterLocationFile),
+    ("location_function", FilterLocationFunction),
     ]
 
 
