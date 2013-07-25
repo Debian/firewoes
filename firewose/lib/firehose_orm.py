@@ -110,7 +110,7 @@ t_result = \
           Column('testid', String),
           Column('severity', String),
           Column('message_id', String,
-                 ForeignKey('message.id'), nullable=False),
+                 ForeignKey('message.id')), # not nullable for 'issue' type
           Column('notes_id', String, ForeignKey('notes.id')),
           Column('location_id', String,
                  ForeignKey('location.id'), nullable=False),
