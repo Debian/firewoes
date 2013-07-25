@@ -56,9 +56,6 @@ class Menu(object):
         Filters the query by all active filters, and returns a new
         SQLAlchely query.
         """
-        # for filter_ in self.filters:
-        #     if filter_.is_active():
-        #         query = filter_.sqla_filter(query)
         query = query.filter(and_(*self.clauses))
         return query
     
@@ -166,23 +163,6 @@ class FilterFirehoseAttribute(Filter):
 
 ### GENERATOR ###
 
-# class FilterGenerator(FilterFirehoseAttribute):
-#     def get_items_generator(self, session, attribute, clauses=None):
-#         res = (session.query(attribute,
-#                              func.count(Result.id).label("count"))
-#                .join(Metadata, Metadata.generator_id==Generator.id)
-#                .join(Sut, Metadata.sut_id==Sut.id)
-#                .join(Analysis, Analysis.metadata_id == Metadata.id)
-#                .join(Result, Result.analysis_id == Analysis.id)
-#                )
-#         if clauses is not None:
-#             res = res.filter(and_(*clauses))
-#         res = (res
-#                .group_by(attribute)
-#                .order_by(desc("count"))
-#                .all())
-#         return res
-
 class FilterGenerator(FilterFirehoseAttribute):
     _outerjoins = [
         (Metadata, Metadata.generator_id==Generator.id),
@@ -201,17 +181,10 @@ class FilterGeneratorName(FilterGenerator):
         return [(Generator.name == self.value)]
     
     def get_items(self, session, clauses=None):
-        #res = self.get_items_generator(session, Generator.name, clauses=clauses)
         res = self.group_by(session, Generator.name, self._outerjoins,
                             clauses=clauses)
         return to_dict(res)
     
-    # def joins(self, query):
-    #     return (query.join(Metadata, Metadata.generator_id==Generator.id)
-    #             .join(Sut, Metadata.sut_id==Sut.id)
-    #             .join(Analysis, Analysis.metadata_id == Metadata.id)
-    #             .join(Result, Result.analysis_id == Analysis.id)
-
 class FilterGeneratorVersion(FilterGenerator):
     _dependencies = ["generator_name"]
     
@@ -219,30 +192,11 @@ class FilterGeneratorVersion(FilterGenerator):
         return [(Generator.version == self.value)]
     
     def get_items(self, session, clauses=None):
-        #res = self.get_items_generator(session, Generator.version,
-        #                               clauses=clauses)
         res = self.group_by(session, Generator.version, self._outerjoins,
                             clauses=clauses)
         return to_dict(res)
 
 ### SUT ###
-
-# class FilterSut(FilterFirehoseAttribute):
-#     def get_items_sut(self, session, attribute, clauses=None):
-#         res = (session.query(attribute,
-#                              func.count(Result.id).label("count"))
-#                .join(Metadata, Metadata.sut_id==Sut.id)
-#                .join(Generator, Metadata.generator_id==Generator.id)
-#                .join(Analysis, Analysis.metadata_id == Metadata.id)
-#                .join(Result, Result.analysis_id == Analysis.id)
-#                )
-#         if clauses is not None:
-#             res = res.filter(and_(*clauses))
-#         res = (res
-#                .group_by(attribute)
-#                .order_by(desc("count"))
-#                .all())
-#         return res
 
 class FilterSut(FilterFirehoseAttribute):
     _outerjoins = [
@@ -262,7 +216,6 @@ class FilterSutType(FilterSut):
         return [(Sut.type == self.value)]
     
     def get_items(self, session, clauses=None):
-        #res = self.get_items_sut(session, Sut.type, clauses=clauses)
         res = self.group_by(session, Sut.type, self._outerjoins, clauses=clauses)
         return to_dict(res)
 
@@ -274,7 +227,6 @@ class FilterSutName(FilterSut):
         return [(Sut.name == self.value)]
     
     def get_items(self, session, clauses=None):
-        #res = self.get_items_sut(session, Sut.name, clauses=clauses)
         res = self.group_by(session, Sut.name, self._outerjoins, clauses=clauses)
         return to_dict(res)
 
@@ -285,7 +237,6 @@ class FilterSutVersion(FilterSut):
         return [(Sut.version == self.value)]
     
     def get_items(self, session, clauses=None):
-        #res = self.get_items_sut(session, Sut.version, clauses=clauses)
         res = self.group_by(session, Sut.version, self._outerjoins,
                             clauses=clauses)
         return to_dict(res)
@@ -297,7 +248,6 @@ class FilterSutRelease(FilterSut):
         return [(Sut.release == self.value)]
     
     def get_items(self, session, clauses=None):
-        #res = self.get_items_sut(session, Sut.release, clauses=clauses)
         res = self.group_by(session, Sut.release, self._outerjoins,
                             clauses=clauses)
         return to_dict(res)
@@ -309,7 +259,6 @@ class FilterSutBuildarch(FilterSut):
         return [(Sut.buildarch == self.value)]
     
     def get_items(self, session, clauses=None):
-        #res = self.get_items_sut(session, Sut.buildarch, clauses=clauses)
         res = self.group_by(session, Sut.buildarch, self._outerjoins,
                             clauses=clauses)
         return to_dict(res)
