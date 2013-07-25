@@ -145,63 +145,12 @@ class FilterFirehoseAttribute(Filter):
     def joins(self, query):
         raise NotImplementedError
     
-    def group_by(self, session, attribute, clauses=None):
+    def group_by(self, session, attribute, outerjoins, clauses=None):
         query = session.query(attribute.label("value"),
                               func.count(Result.id).label("count"))
         
-        # here we describe the path from 'attribute' to Result,
-        # in order for SQLA to create the correct joins
-        # it would be great to can put all things in same query, though
-        
-        if attribute in [Generator.name, Generator.version]:
-            query = (query.outerjoin(
-                    Metadata, Metadata.generator_id==Generator.id)
-                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
-                     .outerjoin(Analysis, Analysis.metadata_id == Metadata.id)
-                     .outerjoin(Result, Result.analysis_id == Analysis.id)
-                     .outerjoin(Location, Result.location_id==Location.id)
-                     .outerjoin(Function, Location.function_id==Function.id)
-                     .outerjoin(File, Location.file_id==File.id))
-        
-        elif attribute in [Sut.type, Sut.name, Sut.version, Sut.release,
-                           Sut.buildarch]:
-            query = (query.outerjoin(Metadata, Metadata.sut_id==Sut.id)
-                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
-                     .outerjoin(Analysis, Analysis.metadata_id == Metadata.id)
-                     .outerjoin(Result, Result.analysis_id == Analysis.id)
-                     .outerjoin(Location, Result.location_id==Location.id)
-                     .outerjoin(Function, Location.function_id==Function.id)
-                     .outerjoin(File, Location.file_id==File.id))
-        
-        elif attribute in [File.givenpath]:
-            query = (query.outerjoin(Location, Location.file_id==File.id)
-                     .outerjoin(Function, Location.function_id==Function.id)
-                     .outerjoin(Result, Result.location_id==Location.id)
-                     .outerjoin(Analysis, Result.analysis_id == Analysis.id)
-                     .outerjoin(Metadata, Analysis.metadata_id==Metadata.id)
-                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
-                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
-                     )
-        
-        elif attribute in [Function.name]:
-            query = (query.outerjoin(Location, Location.function_id==Function.id)
-                     .outerjoin(File, Location.file_id==File.id)
-                     .outerjoin(Result, Result.location_id==Location.id)
-                     .outerjoin(Analysis, Result.analysis_id == Analysis.id)
-                     .outerjoin(Metadata, Analysis.metadata_id==Metadata.id)
-                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
-                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
-                     )
-        
-        elif attribute in [Result.testid]:
-            query = (query.outerjoin(Location, Result.location_id==Location.id)
-                     .outerjoin(File, Location.file_id==File.id)
-                     .outerjoin(Function, Location.function_id==Function.id)
-                     .outerjoin(Analysis, Result.analysis_id == Analysis.id)
-                     .outerjoin(Metadata, Analysis.metadata_id==Metadata.id)
-                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
-                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
-                     )
+        for join in outerjoins:
+            query = query.outerjoin(join[0], join[1])
         
         if clauses is not None:
             query = query.filter(and_(*clauses))
@@ -234,7 +183,18 @@ class FilterFirehoseAttribute(Filter):
 #                .all())
 #         return res
 
-class FilterGeneratorName(FilterFirehoseAttribute):
+class FilterGenerator(FilterFirehoseAttribute):
+    _outerjoins = [
+        (Metadata, Metadata.generator_id==Generator.id),
+        (Sut, Metadata.sut_id==Sut.id),
+        (Analysis, Analysis.metadata_id == Metadata.id),
+        (Result, Result.analysis_id == Analysis.id),
+        (Location, Result.location_id==Location.id),
+        (Function, Location.function_id==Function.id),
+        (File, Location.file_id==File.id),
+        ]
+
+class FilterGeneratorName(FilterGenerator):
     _dependencies = []
     
     def get_clauses(self):
@@ -242,7 +202,8 @@ class FilterGeneratorName(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         #res = self.get_items_generator(session, Generator.name, clauses=clauses)
-        res = self.group_by(session, Generator.name, clauses=clauses)
+        res = self.group_by(session, Generator.name, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
     
     # def joins(self, query):
@@ -251,7 +212,7 @@ class FilterGeneratorName(FilterFirehoseAttribute):
     #             .join(Analysis, Analysis.metadata_id == Metadata.id)
     #             .join(Result, Result.analysis_id == Analysis.id)
 
-class FilterGeneratorVersion(FilterFirehoseAttribute):
+class FilterGeneratorVersion(FilterGenerator):
     _dependencies = ["generator_name"]
     
     def get_clauses(self):
@@ -260,7 +221,8 @@ class FilterGeneratorVersion(FilterFirehoseAttribute):
     def get_items(self, session, clauses=None):
         #res = self.get_items_generator(session, Generator.version,
         #                               clauses=clauses)
-        res = self.group_by(session, Generator.version, clauses=clauses)
+        res = self.group_by(session, Generator.version, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
 
 ### SUT ###
@@ -282,7 +244,18 @@ class FilterGeneratorVersion(FilterFirehoseAttribute):
 #                .all())
 #         return res
 
-class FilterSutType(FilterFirehoseAttribute):
+class FilterSut(FilterFirehoseAttribute):
+    _outerjoins = [
+        (Metadata, Metadata.sut_id==Sut.id),
+        (Generator, Metadata.generator_id==Generator.id),
+        (Analysis, Analysis.metadata_id == Metadata.id),
+        (Result, Result.analysis_id == Analysis.id),
+        (Location, Result.location_id==Location.id),
+        (Function, Location.function_id==Function.id),
+        (File, Location.file_id==File.id),
+        ]
+
+class FilterSutType(FilterSut):
     _dependencies = []
     
     def get_clauses(self):
@@ -290,11 +263,11 @@ class FilterSutType(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         #res = self.get_items_sut(session, Sut.type, clauses=clauses)
-        res = self.group_by(session, Sut.type, clauses=clauses)
+        res = self.group_by(session, Sut.type, self._outerjoins, clauses=clauses)
         return to_dict(res)
 
 
-class FilterSutName(FilterFirehoseAttribute):
+class FilterSutName(FilterSut):
     _dependencies = []
     
     def get_clauses(self):
@@ -302,10 +275,10 @@ class FilterSutName(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         #res = self.get_items_sut(session, Sut.name, clauses=clauses)
-        res = self.group_by(session, Sut.name, clauses=clauses)
+        res = self.group_by(session, Sut.name, self._outerjoins, clauses=clauses)
         return to_dict(res)
 
-class FilterSutVersion(FilterFirehoseAttribute):
+class FilterSutVersion(FilterSut):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
@@ -313,10 +286,11 @@ class FilterSutVersion(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         #res = self.get_items_sut(session, Sut.version, clauses=clauses)
-        res = self.group_by(session, Sut.version, clauses=clauses)
+        res = self.group_by(session, Sut.version, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
 
-class FilterSutRelease(FilterFirehoseAttribute):
+class FilterSutRelease(FilterSut):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
@@ -324,10 +298,11 @@ class FilterSutRelease(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         #res = self.get_items_sut(session, Sut.release, clauses=clauses)
-        res = self.group_by(session, Sut.release, clauses=clauses)
+        res = self.group_by(session, Sut.release, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
 
-class FilterSutBuildarch(FilterFirehoseAttribute):
+class FilterSutBuildarch(FilterSut):
     _dependencies = ["sut_name"]
     
     def get_clauses(self):
@@ -335,43 +310,74 @@ class FilterSutBuildarch(FilterFirehoseAttribute):
     
     def get_items(self, session, clauses=None):
         #res = self.get_items_sut(session, Sut.buildarch, clauses=clauses)
-        res = self.group_by(session, Sut.buildarch, clauses=clauses)
+        res = self.group_by(session, Sut.buildarch, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
 
 ### LOCATION ###
 
 class FilterLocationFile(FilterFirehoseAttribute):
     _dependencies = ["sut_name"]
+    _outerjoins = [
+        (Location, Location.file_id==File.id),
+        (Function, Location.function_id==Function.id),
+        (Result, Result.location_id==Location.id),
+        (Analysis, Result.analysis_id == Analysis.id),
+        (Metadata, Analysis.metadata_id==Metadata.id),
+        (Sut, Metadata.sut_id==Sut.id),
+        (Generator, Metadata.generator_id==Generator.id),
+        ]
     
     def get_clauses(self):
         return [(File.givenpath == self.value),
                 (Location.file_id==File.id)]
     
     def get_items(self, session, clauses=None):
-        res = self.group_by(session, File.givenpath, clauses=clauses)
+        res = self.group_by(session, File.givenpath, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
 
 class FilterLocationFunction(FilterFirehoseAttribute):
     _dependencies = ["sut_name", "location_file"]
+    _outerjoins = [
+        (Location, Location.function_id==Function.id),
+        (File, Location.file_id==File.id),
+        (Result, Result.location_id==Location.id),
+        (Analysis, Result.analysis_id == Analysis.id),
+        (Metadata, Analysis.metadata_id==Metadata.id),
+        (Sut, Metadata.sut_id==Sut.id),
+        (Generator, Metadata.generator_id==Generator.id),
+        ]
     
     def get_clauses(self):
         return [(Function.name == self.value),
                 (Location.function_id == Function.id)]
     
     def get_items(self, session, clauses=None):
-        res = self.group_by(session, Function.name, clauses=clauses)
+        res = self.group_by(session, Function.name, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
 
 ### TESTID ###
 
 class FilterTestId(FilterFirehoseAttribute):
     _dependencies = ["generator_name"]
+    _outerjoins = [
+        (Location, Result.location_id==Location.id),
+        (File, Location.file_id==File.id),
+        (Function, Location.function_id==Function.id),
+        (Analysis, Result.analysis_id == Analysis.id),
+        (Metadata, Analysis.metadata_id==Metadata.id),
+        (Sut, Metadata.sut_id==Sut.id),
+        (Generator, Metadata.generator_id==Generator.id),
+        ]
     
     def get_clauses(self):
         return [(Result.testid == self.value)]
     
     def get_items(self, session, clauses=None):
-        res = self.group_by(session, Result.testid, clauses=clauses)
+        res = self.group_by(session, Result.testid, self._outerjoins,
+                            clauses=clauses)
         return to_dict(res)
     
 
