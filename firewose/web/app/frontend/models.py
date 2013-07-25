@@ -164,7 +164,7 @@ class Result_app(FHGeneric):
         
         # TODO: Info + Failure
         query = (session.query(
-                Issue.id,
+                Result.id,
                 Result.type.label("result_type"),
                 File.givenpath.label("location_file"),
                 Function.name.label("location_function"),
@@ -178,7 +178,7 @@ class Result_app(FHGeneric):
                 Sut.buildarch.label("sut_buildarch"),
                 Generator.name.label("generator_name"),
                 Generator.version.label("generator_version"),
-                Issue.testid.label("testid"))
+                Result.testid.label("testid"))
             .outerjoin(Location, File, Function, Point, Analysis,
                        Metadata, Generator, Sut, Message)
             .outerjoin(Range, Location.range_id==Range.id)
