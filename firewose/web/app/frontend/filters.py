@@ -154,42 +154,43 @@ class FilterFirehoseAttribute(Filter):
         # it would be great to can put all things in same query, though
         
         if attribute in [Generator.name, Generator.version]:
-            query = (query.join(Metadata, Metadata.generator_id==Generator.id)
-                     .join(Sut, Metadata.sut_id==Sut.id)
-                     .join(Analysis, Analysis.metadata_id == Metadata.id)
-                     .join(Result, Result.analysis_id == Analysis.id)
-                     .join(Location, Result.location_id==Location.id)
-                     .join(Function, Location.function_id==Function.id)
-                     .join(File, Location.file_id==File.id))
+            query = (query.outerjoin(
+                    Metadata, Metadata.generator_id==Generator.id)
+                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
+                     .outerjoin(Analysis, Analysis.metadata_id == Metadata.id)
+                     .outerjoin(Result, Result.analysis_id == Analysis.id)
+                     .outerjoin(Location, Result.location_id==Location.id)
+                     .outerjoin(Function, Location.function_id==Function.id)
+                     .outerjoin(File, Location.file_id==File.id))
         
         elif attribute in [Sut.type, Sut.name, Sut.version, Sut.release,
                            Sut.buildarch]:
-            query = (query.join(Metadata, Metadata.sut_id==Sut.id)
-                     .join(Generator, Metadata.generator_id==Generator.id)
-                     .join(Analysis, Analysis.metadata_id == Metadata.id)
-                     .join(Result, Result.analysis_id == Analysis.id)
-                     .join(Location, Result.location_id==Location.id)
-                     .join(Function, Location.function_id==Function.id)
-                     .join(File, Location.file_id==File.id))
+            query = (query.outerjoin(Metadata, Metadata.sut_id==Sut.id)
+                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
+                     .outerjoin(Analysis, Analysis.metadata_id == Metadata.id)
+                     .outerjoin(Result, Result.analysis_id == Analysis.id)
+                     .outerjoin(Location, Result.location_id==Location.id)
+                     .outerjoin(Function, Location.function_id==Function.id)
+                     .outerjoin(File, Location.file_id==File.id))
         
         elif attribute in [File.givenpath]:
-            query = (query.join(Location, Location.file_id==File.id)
-                     .join(Function, Location.function_id==Function.id)
-                     .join(Result, Result.location_id==Location.id)
-                     .join(Analysis, Result.analysis_id == Analysis.id)
-                     .join(Metadata, Analysis.metadata_id==Metadata.id)
-                     .join(Sut, Metadata.sut_id==Sut.id)
-                     .join(Generator, Metadata.generator_id==Generator.id)
+            query = (query.outerjoin(Location, Location.file_id==File.id)
+                     .outerjoin(Function, Location.function_id==Function.id)
+                     .outerjoin(Result, Result.location_id==Location.id)
+                     .outerjoin(Analysis, Result.analysis_id == Analysis.id)
+                     .outerjoin(Metadata, Analysis.metadata_id==Metadata.id)
+                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
+                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
                      )
         
         elif attribute in [Function.name]:
-            query = (query.join(Location, Location.function_id==Function.id)
-                     .join(File, Location.file_id==File.id)
-                     .join(Result, Result.location_id==Location.id)
-                     .join(Analysis, Result.analysis_id == Analysis.id)
-                     .join(Metadata, Analysis.metadata_id==Metadata.id)
-                     .join(Sut, Metadata.sut_id==Sut.id)
-                     .join(Generator, Metadata.generator_id==Generator.id)
+            query = (query.outerjoin(Location, Location.function_id==Function.id)
+                     .outerjoin(File, Location.file_id==File.id)
+                     .outerjoin(Result, Result.location_id==Location.id)
+                     .outerjoin(Analysis, Result.analysis_id == Analysis.id)
+                     .outerjoin(Metadata, Analysis.metadata_id==Metadata.id)
+                     .outerjoin(Sut, Metadata.sut_id==Sut.id)
+                     .outerjoin(Generator, Metadata.generator_id==Generator.id)
                      )
         
         
