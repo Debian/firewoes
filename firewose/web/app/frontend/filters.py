@@ -164,18 +164,20 @@ class FilterFirehoseAttribute(Filter):
         elif attribute in [Sut.type, Sut.name, Sut.version, Sut.release,
                            Sut.buildarch]:
             query = (query.join(Metadata, Metadata.sut_id==Sut.id)
+                     .join(Generator, Metadata.generator_id==Generator.id)
                      .join(Analysis, Analysis.metadata_id == Metadata.id)
                      .join(Result, Result.analysis_id == Analysis.id)
-                     .join(Generator, Metadata.generator_id==Generator.id)
                      .join(Location, Result.location_id==Location.id)
                      .join(File, Location.file_id==File.id))
             
-        elif attribute in [Location.file]:
-            query = (query.join(Metadata, Metadata.sut_id==Sut.id)
-                     .join(Analysis, Analysis.metadata_id == Metadata.id)
-                     .join(Result, Result.analysis_id == Analysis.id)
+        elif attribute in [File.givenpath]:
+            query = (query.join(Location, Location.file_id==File.id)
+                     .join(Result, Result.location_id==Location.id)
+                     .join(Analysis, Result.analysis_id == Analysis.id)
+                     .join(Metadata, Analysis.metadata_id==Metadata.id)
+                     .join(Sut, Metadata.sut_id==Sut.id)
                      .join(Generator, Metadata.generator_id==Generator.id)
-                     .join(Location, Result.location_id==Location.id))
+                     )
         
         #query = (query.join(Analysis, Analysis.metadata_id == Metadata.id)
         #         .join(Result, Result.analysis_id == Analysis.id)
@@ -326,7 +328,7 @@ class FilterLocationFile(FilterFirehoseAttribute):
                 (Location.file_id==File.id)]
     
     def get_items(self, session, clauses=None):
-        res = self.group_by(session, Location.file, clauses=clauses)
+        res = self.group_by(session, File.givenpath, clauses=clauses)
         return to_dict(res)    
     
 
@@ -338,6 +340,7 @@ all_filters = [
     ("sut_version", FilterSutVersion),
     ("sut_release", FilterSutRelease),
     ("sut_buildarch", FilterSutBuildarch),
+    ("location_file", FilterLocationFile),
     ]
 
 
