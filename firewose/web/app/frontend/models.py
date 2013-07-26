@@ -185,9 +185,30 @@ class Result_app(FHGeneric):
                  )
         menu = filters.Menu(args_without_page)
         query = menu.filter_sqla_query(query)
-        return dict(menu=repr(menu),
-                    res=to_dict(query.all()),
-                    menu2=menu.get(session))
+        
+        # we get the page number and the offset
+        try:  page = int(request_args["page"])
+        except: page = 1
+        
+        try: offset = int(request_args["offset"])
+        except: offset = offset or app.config["SEARCH_RESULTS_OFFSET"]
+        
+        # we calculate the range of results
+        start = (page - 1) * offset
+        end = start + offset
+        
+        menu=menu.get(session)
+        results_all_count = query.count()
+        results=to_dict(query.all())
+        
+        return dict(results=results,
+                    menu=menu,
+                    page=page,
+                    offset=offset,
+                    results_all_count=results_all_count,
+                    results_range = (start+1, start+len(results)),
+                    # to avoid 1-10 of 5 results
+                    )
            
     
     def filter(self, request_args, offset=None):
