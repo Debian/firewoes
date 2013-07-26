@@ -65,6 +65,23 @@
   </p>
 {% endif %}
 
+<p><small>
+Current filter:
+{% for submenu in menu %}
+  {% if submenu["active"] %}
+    <strong>{{ submenu["name"] }}</strong> = 
+    {% if submenu["value"] != "" -%}
+      {{ submenu["value"] }}
+    {%- else -%}
+      (blank)
+    {%- endif %}</em>
+    (<a href="{{ url_for('.search_html',
+              **submenu["link"]) }}">remove</a>);
+  {% endif %}
+{% endfor %}
+</small></p>
+
+
 {% if results %}
   displaying {{ results_range[0] }}-{{ results_range[1] }} of
   {{ results_all_count }} results
