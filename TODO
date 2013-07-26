@@ -34,5 +34,4 @@
   </failure></results></analysis>
 
 * TODO package suggestions for both report and filter
-* TODO filter: all chosen arguments (active filters) at top of the page
 * TODO filters.py: decorators to activate filters
