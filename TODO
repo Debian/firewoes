@@ -38,3 +38,6 @@
   <results>
   <failure failure-id="CACA"><location><file given-path="LOOOL"/></location>
   </failure></results></analysis>
+
+* TODO package suggestions for both report and filter
+* TODO filter: all chosen arguments (active filters) at top of the page
