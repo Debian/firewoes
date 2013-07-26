@@ -19,9 +19,6 @@
   with issue1 == issue2,
   SQLAlchemy tries to compare an issue with a failure (??), which fails
   
-* TODO performances: replace UNION by something else
-  requests with both failures and issues are incredibly slow
-  idea: all 3 types (issue, failure, info) in the same table
 * TODO views on home (shortcuts for generator, etc)
 * TODO  previews on home (last results, widgets, ...)
 * TODO infra: debuild.me -> sync with Paul & Léo
