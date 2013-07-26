@@ -59,6 +59,7 @@ class Menu(object):
                     del(self.active_filters_dict[new_filter.name])
                 except:
                     pass
+
     
     def filter_sqla_query(self, query):
         """
