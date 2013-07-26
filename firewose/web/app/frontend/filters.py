@@ -193,6 +193,28 @@ class FilterFirehoseAttribute(Filter):
 # real world filters:
 ##################################################
 
+### ERROR TYPE ###
+
+class FilterErrorType(FilterFirehoseAttribute):
+    _dependencies = []
+    _outerjoins = [
+        (Location, Result.location_id==Location.id),
+        (File, Location.file_id==File.id),
+        (Function, Location.function_id==Function.id),
+        (Analysis, Result.analysis_id == Analysis.id),
+        (Metadata, Analysis.metadata_id==Metadata.id),
+        (Sut, Metadata.sut_id==Sut.id),
+        (Generator, Metadata.generator_id==Generator.id),
+        ]
+    
+    def get_clauses(self):
+        return [(Result.type == self.value)]
+    
+    def get_items(self, session, clauses=None, max_items=None):
+        res = self.group_by(session, Result.type, self._outerjoins,
+                            clauses=clauses, max_items=max_items)
+        return to_dict(res)
+
 ### GENERATOR ###
 
 class FilterGenerator(FilterFirehoseAttribute):
@@ -365,6 +387,7 @@ class FilterTestId(FilterFirehoseAttribute):
     
 
 all_filters = [
+    ("type", FilterErrorType),
     ("generator_name", FilterGeneratorName),
     ("generator_version", FilterGeneratorVersion),
     ("sut_type", FilterSutType),
