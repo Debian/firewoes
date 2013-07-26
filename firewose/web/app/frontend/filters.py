@@ -85,6 +85,8 @@ class Menu(object):
         return string
 
 class Filter(object):
+    _cool_name = None
+    
     def __init__(self, value=None, active=False, name=None):
         """
         Creates a new filter.
@@ -114,7 +116,7 @@ class Filter(object):
         Returns the filter with its attributes.
         """
         res = dict(active=self.active,
-                   name=self.name)#.__class__.__name__)
+                   name=self._cool_name or self.name)
         
         if not self.active:
             res["items"] = self.get_items(session, clauses=clauses,
@@ -124,7 +126,7 @@ class Filter(object):
             # for each item we add its link:
             for item in res["items"]:
                 item["link"] = dict(active_filters_dict.items()
-                                + [(res["name"], item["value"])])
+                                + [(self.name, item["value"])])
         else:
             res["value"] = self.value
             # we add the "remove" link:
@@ -205,6 +207,7 @@ class FilterErrorType(FilterFirehoseAttribute):
         (Sut, Metadata.sut_id==Sut.id),
         (Generator, Metadata.generator_id==Generator.id),
         ]
+    _cool_name = "Error type"
     
     def get_clauses(self):
         return [(Result.type == self.value)]
@@ -229,6 +232,7 @@ class FilterGenerator(FilterFirehoseAttribute):
 
 class FilterGeneratorName(FilterGenerator):
     _dependencies = []
+    _cool_name = "Generator"
     
     def get_clauses(self):
         return [(Generator.name == self.value)]
@@ -240,6 +244,7 @@ class FilterGeneratorName(FilterGenerator):
     
 class FilterGeneratorVersion(FilterGenerator):
     _dependencies = ["generator_name"]
+    _cool_name = "Generator version"
     
     def get_clauses(self):
         return [(Generator.version == self.value)]
@@ -264,6 +269,7 @@ class FilterSut(FilterFirehoseAttribute):
 
 class FilterSutType(FilterSut):
     _dependencies = []
+    _cool_name = "Type"
     
     def get_clauses(self):
         return [(Sut.type == self.value)]
@@ -276,6 +282,7 @@ class FilterSutType(FilterSut):
 
 class FilterSutName(FilterSut):
     _dependencies = []
+    _cool_name = "Package"
     
     def get_clauses(self):
         return [(Sut.name == self.value)]
@@ -287,6 +294,7 @@ class FilterSutName(FilterSut):
 
 class FilterSutVersion(FilterSut):
     _dependencies = ["sut_name"]
+    _cool_name = "Package version"
     
     def get_clauses(self):
         return [(Sut.version == self.value)]
@@ -298,6 +306,7 @@ class FilterSutVersion(FilterSut):
 
 class FilterSutRelease(FilterSut):
     _dependencies = ["sut_name"]
+    _cool_name = "Package release"
     
     def get_clauses(self):
         return [(Sut.release == self.value)]
@@ -309,6 +318,7 @@ class FilterSutRelease(FilterSut):
 
 class FilterSutBuildarch(FilterSut):
     _dependencies = ["sut_name"]
+    _cool_name = "Package buildarch"
     
     def get_clauses(self):
         return [(Sut.buildarch == self.value)]
@@ -331,6 +341,7 @@ class FilterLocationFile(FilterFirehoseAttribute):
         (Sut, Metadata.sut_id==Sut.id),
         (Generator, Metadata.generator_id==Generator.id),
         ]
+    _cool_name = "File"
     
     def get_clauses(self):
         return [(File.givenpath == self.value),
@@ -352,6 +363,7 @@ class FilterLocationFunction(FilterFirehoseAttribute):
         (Sut, Metadata.sut_id==Sut.id),
         (Generator, Metadata.generator_id==Generator.id),
         ]
+    _cool_name = "Function"
     
     def get_clauses(self):
         return [(Function.name == self.value),
@@ -375,6 +387,7 @@ class FilterTestId(FilterFirehoseAttribute):
         (Sut, Metadata.sut_id==Sut.id),
         (Generator, Metadata.generator_id==Generator.id),
         ]
+    _cool_name = "Test id"
     
     def get_clauses(self):
         return [(Result.testid == self.value)]
