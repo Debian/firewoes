@@ -32,9 +32,10 @@ class Menu(object):
     def __init__(self, active_filters_dict):
         """
         Creates a menu.
-        The active_filter_dict contains the already activated filters,
+        The active_filters_dict contains the already activated filters,
         in the form name=value, e.g. generator_name="coccinelle".
         """
+        self.active_filters_dict = active_filters_dict
         self.filters = []
         self.clauses = []
         
@@ -42,9 +43,10 @@ class Menu(object):
         for filter_ in all_filters:
             if filter_[0] in active_filters_dict.keys(): # it's an active filter
                 new_filter = filter_[1](value=active_filters_dict[filter_[0]],
-                                        active=True)
+                                        active=True,
+                                        name=filter_[0])
             else: # it's an inactive one
-                new_filter = filter_[1](active=False)
+                new_filter = filter_[1](active=False, name=filter_[0])
             # avoids adding non-relevant filters regarding the context:
             if new_filter.is_relevant(active_keys=active_filters_dict.keys()):
                 self.filters.append(new_filter)
@@ -64,7 +66,8 @@ class Menu(object):
         Returns the menu in form of a list of filters.
         Needs a SQLAlchemy session for the filters, in their items generation.
         """
-        return [filter_.get(session, clauses=self.clauses)
+        return [filter_.get(session, self.active_filters_dict,
+                            clauses=self.clauses)
                 for filter_ in self.filters]
     
     def __repr__(self):
@@ -74,7 +77,7 @@ class Menu(object):
         return string
 
 class Filter(object):
-    def __init__(self, value=None, active=False):
+    def __init__(self, value=None, active=False, name=None):
         """
         Creates a new filter.
         value is its value in case active=True
@@ -83,6 +86,7 @@ class Filter(object):
         self.active = active
         if not active:
             self.items = []
+        self.name = name
     
     def get_clauses(self):
         """
@@ -97,17 +101,24 @@ class Filter(object):
         """
         return None
     
-    def get(self, session, clauses=None):
+    def get(self, session, active_filters_dict, clauses=None):
         """
         Returns the filter with its attributes.
         """
         res = dict(active=self.active,
-                   name=self.__class__.__name__)
+                   name=self.name)#.__class__.__name__)
         
         if not self.active:
             res["items"] = self.get_items(session, clauses=clauses)
+            # for each item we add its link:
+            for item in res["items"]:
+                item["link"] = dict(active_filters_dict.items()
+                                + [(res["name"], item["value"])])
         else:
             res["value"] = self.value
+            # we add the "remove" link:
+            res["link"] = dict((k, v) for k, v in active_filters_dict.items()
+                               if k != self.name)
         return res
     
     def is_relevant(self, active_keys=None):
