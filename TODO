@@ -28,3 +28,13 @@
 * TODO views on home (shortcuts for generator, etc)
 * TODO  previews on home (last results, widgets, ...)
 * TODO infra: debuild.me -> sync with Paul & Léo
+* TODO failureid & info id mapping to testid
+  Y THIS NO WORK??
+  shell.py:
+  from firewose.bin.firewose_fill_db import insert_analysis
+  insert_analysis(session,
+  "/home/matthieu/work/debian/firewose/cache/test.xml")
+  <analysis><metadata><generator name="dgcca" /></metadata>
+  <results>
+  <failure failure-id="CACA"><location><file given-path="LOOOL"/></location>
+  </failure></results></analysis>
