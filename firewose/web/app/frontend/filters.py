@@ -101,14 +101,13 @@ class Filter(object):
         """
         Returns the SQLAlchemy clauses for this filter.
         """
-        # query.filter/filter_by/...
-        return query
+        raise NotImplementedError
     
     def get_items(self, session, clauses=None, max_items=None):
         """
         Returns the subitems of the menu (only for inactive filters).
         """
-        return None
+        raise NotImplementedError
     
     def get(self, session, active_filters_dict, clauses=None, max_items=None):
         """
@@ -140,7 +139,7 @@ class Filter(object):
         dependency is not satisfied (e.g. generator_version depends on
         generator_name)
         """
-        return True
+        raise NotImplementedError
     
     def is_active(self):
         return self.active
