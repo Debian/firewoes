@@ -25,3 +25,21 @@
   
 * TODO performances: replace UNION by something else
   requests with both failures and issues are incredibly slow
+  idea: all 3 types (issue, failure, info) in the same table
+* TODO views on home (shortcuts for generator, etc)
+* TODO  previews on home (last results, widgets, ...)
+* TODO infra: debuild.me -> sync with Paul & Léo
+* TODO failureid & info id mapping to testid
+  Y THIS NO WORK??
+  shell.py:
+  from firewose.bin.firewose_fill_db import insert_analysis
+  insert_analysis(session,
+  "/home/matthieu/work/debian/firewose/cache/test.xml")
+  <analysis><metadata><generator name="dgcca" /></metadata>
+  <results>
+  <failure failure-id="CACA"><location><file given-path="LOOOL"/></location>
+  </failure></results></analysis>
+
+* TODO package suggestions for both report and filter
+* TODO filter: all chosen arguments (active filters) at top of the page
+* TODO filters.py: decorators to activate filters

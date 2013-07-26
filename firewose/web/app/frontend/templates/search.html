@@ -25,20 +25,20 @@
                   (blank)
               {%- endif %}</em>
             (<a href="{{ url_for('.search_html',
-                                 **submenu["remove_filter"]) }}">remove</a>)
+                                 **submenu["link"]) }}">remove</a>)
           </span>
         {% elif not(submenu["active"]) and (submenu["items"]|length > 0) %}
           <h3>{{ submenu["name"] }}</h3>
           <ul>
             {% for item in submenu["items"] %}
               <li class="small">
-                <a href="{{ url_for('.search_html', **item["add_filter"]) }}">
-                  {% if item["name"] -%}
-                    {% if item["name"]|length >
+                <a href="{{ url_for('.search_html', **item["link"]) }}">
+                  {% if item["value"] -%}
+                    {% if item["value"]|length >
                   config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"] -%}{# long name #}
-                    {{ item["name"][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}…
+                    {{ item["value"][:config["SEARCH_MENU_MAX_NUMBER_OF_CHARS"]] }}…
                     {%- else -%}
-                      {{ item["name"] }}{# short name #}
+                      {{ item["value"] }}{# short name #}
                     {%- endif %}
                   {%- else -%}
                     (blank)

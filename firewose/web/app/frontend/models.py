@@ -17,7 +17,8 @@
 
 
 from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
-    Generator, Sut, Metadata
+    Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
+
 from sqlalchemy import and_, func, desc
 
 from firewose.web.app import session, app
@@ -151,8 +152,11 @@ class Result_app(FHGeneric):
         returns the results corresponding to the args in request_args,
         along with a drill down menu
         
+        request_args: GET variables dict (?generator_name=foo&bar=foobar...)
         offset: number of results (if not set, this value is read in config)
         """
+        
+        import filters
         
         # we need the arguments without "page" for the menu
         # ("page" would add page=foo on the menu links, which we don't want)
@@ -162,14 +166,28 @@ class Result_app(FHGeneric):
         except:
             pass
         
-        filter_ = FilterArgs(args_without_page)
-        menu = create_menu(filter_)
-        clauses = menu.get_clauses()
-        
-        # TODO: polymorphism?
-        q_issue = make_q(session, Issue, clauses)
-        q_failure = make_q(session, Failure, clauses)
-        q_info = make_q(session, Info, clauses)
+        query = (session.query(
+                Result.id,
+                Result.type.label("result_type"),
+                File.givenpath.label("location_file"),
+                Function.name.label("location_function"),
+                Message.text.label("message_text"),
+                Message.id.label("message_id"),
+                Point, Range,
+                Sut.name.label("sut_name"),
+                Sut.version.label("sut_version"),
+                Sut.type.label("sut_type"),
+                Sut.release.label("sut_release"),
+                Sut.buildarch.label("sut_buildarch"),
+                Generator.name.label("generator_name"),
+                Generator.version.label("generator_version"),
+                Result.testid.label("testid"))
+            .outerjoin(Location, File, Function, Point, Analysis,
+                       Metadata, Generator, Sut, Message)
+            .outerjoin(Range, Location.range_id==Range.id)
+                 )
+        menu = filters.Menu(args_without_page)
+        query = menu.filter_sqla_query(query)
         
         # we get the page number and the offset
         try:  page = int(request_args["page"])
@@ -182,36 +200,19 @@ class Result_app(FHGeneric):
         start = (page - 1) * offset
         end = start + offset
         
-        #query = q_issue.union_all(q_failure, q_info).order_by(Result.id)
-        query = q_issue.order_by(Result.id)
-        results_all = query.all()
+        menu=menu.get(session,
+                      max_items=app.config["SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS"])
         results_all_count = query.count()
-        results_sliced = query.slice(start, end).all()
-
-        menu = menu.get_menu_items(
-            results=to_dict(results_all),
-            limit=app.config["SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS"])
+        results=to_dict(query.slice(start, end).all())
         
-        # if only sut.name is in filter, we suggest similar packages:
-        try:
-            sutname = filter_.get("sut_name")
-            if len(filter_.get_all()) == 1:
-                packages_suggestions = Sut_app().name_contains(sutname, limit=5)
-            else:
-                packages_suggestions = None
-        except:
-            packages_suggestions = None
-            
-        return dict(
-            results_all_count=results_all_count,
-            results_range = (start+1, start+len(results_sliced)),
+        return dict(results=results,
+                    menu=menu,
+                    page=page,
+                    offset=offset,
+                    results_all_count=results_all_count,
+                    results_range = (start+1, start+len(results)),
                     # to avoid 1-10 of 5 results
-            page=page,
-            offset=offset,
-            results=to_dict(results_sliced),
-            filter=filter_.get_all(),
-            menu=menu,
-            packages_suggestions=packages_suggestions)
+                    )
 
 class Report(object):
     def __init__(self, package_id):
