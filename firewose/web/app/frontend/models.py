@@ -197,7 +197,8 @@ class Result_app(FHGeneric):
         start = (page - 1) * offset
         end = start + offset
         
-        menu=menu.get(session)
+        menu=menu.get(session,
+                      max_items=app.config["SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS"])
         results_all_count = query.count()
         results=to_dict(query.slice(start, end).all())
         

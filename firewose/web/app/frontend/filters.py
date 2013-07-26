@@ -69,13 +69,13 @@ class Menu(object):
         query = query.filter(and_(*self.clauses))
         return query
     
-    def get(self, session):
+    def get(self, session, max_items=None):
         """
         Returns the menu in form of a list of filters.
         Needs a SQLAlchemy session for the filters, in their items generation.
         """
         return [filter_.get(session, self.active_filters_dict,
-                            clauses=self.clauses)
+                            clauses=self.clauses, max_items=max_items)
                 for filter_ in self.filters]
     
     def __repr__(self):
@@ -94,6 +94,7 @@ class Filter(object):
         self.active = active
         if not active:
             self.items = []
+            self.is_sliced = False # sliced if max_items > number of items
         self.name = name
     
     def get_clauses(self):
@@ -103,13 +104,13 @@ class Filter(object):
         # query.filter/filter_by/...
         return query
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         """
         Returns the subitems of the menu (only for inactive filters).
         """
         return None
     
-    def get(self, session, active_filters_dict, clauses=None):
+    def get(self, session, active_filters_dict, clauses=None, max_items=None):
         """
         Returns the filter with its attributes.
         """
@@ -117,7 +118,10 @@ class Filter(object):
                    name=self.name)#.__class__.__name__)
         
         if not self.active:
-            res["items"] = self.get_items(session, clauses=clauses)
+            res["items"] = self.get_items(session, clauses=clauses,
+                                          max_items=max_items)
+            res["is_sliced"] = self.is_sliced
+            
             # for each item we add its link:
             for item in res["items"]:
                 item["link"] = dict(active_filters_dict.items()
@@ -161,7 +165,8 @@ class FilterFirehoseAttribute(Filter):
     def joins(self, query):
         raise NotImplementedError
     
-    def group_by(self, session, attribute, outerjoins, clauses=None):
+    def group_by(self, session, attribute, outerjoins, clauses=None,
+                 max_items=None):
         query = session.query(attribute.label("value"),
                               func.count(Result.id).label("count"))
         
@@ -173,8 +178,16 @@ class FilterFirehoseAttribute(Filter):
         query = (query
                .group_by(attribute)
                .order_by(desc("count"))
-               .all())
-        return query
+                 )
+
+        # slicing
+        if max_items is not None:
+            number_of_all_results = query.count()
+            if number_of_all_results > max_items:
+                query = query.limit(max_items)
+                self.is_sliced = True
+        
+        return query.all()
 
 ##################################################
 # real world filters:
@@ -199,9 +212,9 @@ class FilterGeneratorName(FilterGenerator):
     def get_clauses(self):
         return [(Generator.name == self.value)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, Generator.name, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
     
 class FilterGeneratorVersion(FilterGenerator):
@@ -210,9 +223,9 @@ class FilterGeneratorVersion(FilterGenerator):
     def get_clauses(self):
         return [(Generator.version == self.value)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, Generator.version, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 ### SUT ###
@@ -234,8 +247,9 @@ class FilterSutType(FilterSut):
     def get_clauses(self):
         return [(Sut.type == self.value)]
     
-    def get_items(self, session, clauses=None):
-        res = self.group_by(session, Sut.type, self._outerjoins, clauses=clauses)
+    def get_items(self, session, clauses=None, max_items=None):
+        res = self.group_by(session, Sut.type, self._outerjoins,
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 
@@ -245,8 +259,9 @@ class FilterSutName(FilterSut):
     def get_clauses(self):
         return [(Sut.name == self.value)]
     
-    def get_items(self, session, clauses=None):
-        res = self.group_by(session, Sut.name, self._outerjoins, clauses=clauses)
+    def get_items(self, session, clauses=None, max_items=None):
+        res = self.group_by(session, Sut.name, self._outerjoins,
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 class FilterSutVersion(FilterSut):
@@ -255,9 +270,9 @@ class FilterSutVersion(FilterSut):
     def get_clauses(self):
         return [(Sut.version == self.value)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, Sut.version, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 class FilterSutRelease(FilterSut):
@@ -266,9 +281,9 @@ class FilterSutRelease(FilterSut):
     def get_clauses(self):
         return [(Sut.release == self.value)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, Sut.release, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 class FilterSutBuildarch(FilterSut):
@@ -277,9 +292,9 @@ class FilterSutBuildarch(FilterSut):
     def get_clauses(self):
         return [(Sut.buildarch == self.value)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, Sut.buildarch, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 ### LOCATION ###
@@ -300,9 +315,9 @@ class FilterLocationFile(FilterFirehoseAttribute):
         return [(File.givenpath == self.value),
                 (Location.file_id==File.id)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, File.givenpath, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 class FilterLocationFunction(FilterFirehoseAttribute):
@@ -321,9 +336,9 @@ class FilterLocationFunction(FilterFirehoseAttribute):
         return [(Function.name == self.value),
                 (Location.function_id == Function.id)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, Function.name, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
 
 ### TESTID ###
@@ -343,9 +358,9 @@ class FilterTestId(FilterFirehoseAttribute):
     def get_clauses(self):
         return [(Result.testid == self.value)]
     
-    def get_items(self, session, clauses=None):
+    def get_items(self, session, clauses=None, max_items=None):
         res = self.group_by(session, Result.testid, self._outerjoins,
-                            clauses=clauses)
+                            clauses=clauses, max_items=max_items)
         return to_dict(res)
     
 
