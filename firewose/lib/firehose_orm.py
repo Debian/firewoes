@@ -29,7 +29,6 @@ metadata = MetaData()
 
 from firehose_noslots import *
 
-
 # imported from firehose-orm/orm.py:
 
 ############################################################################
@@ -112,8 +111,7 @@ t_result = \
           Column('message_id', String,
                  ForeignKey('message.id')), # not nullable for 'issue' type
           Column('notes_id', String, ForeignKey('notes.id')),
-          Column('location_id', String,
-                 ForeignKey('location.id'), nullable=False),
+          Column('location_id', String, ForeignKey('location.id')), #  idem
           Column('trace_id', String, ForeignKey('trace.id')),
           Column('customfields_id', String,
                  ForeignKey('customfields.id')),
@@ -322,7 +320,7 @@ mapper(State, t_state,
 #Map the Result hierarchy using Single Table Inheritance:
 result_mapper = mapper(Result, t_result,
        polymorphic_on=t_result.c.type,
-       polymorphic_identity='result',
+       #polymorphic_identity='result',
        properties={
         'analysis': relationship(Analysis),
         'location': relationship(Location, lazy='joined'),
@@ -345,11 +343,18 @@ mapper(Failure,
        inherits=result_mapper,
        polymorphic_on=t_result.c.type,
        polymorphic_identity='failure',
+       properties={
+        'failureid': t_result.c.testid, # we use the testid field
+        }
        )
 
 mapper(Info,
        inherits=result_mapper,
        polymorphic_identity='info',
+       properties={
+        'infoid': t_result.c.testid, # we use the testid field
+        }
+
        )
 
 mapper(Location, t_location,
