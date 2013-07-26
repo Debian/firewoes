@@ -159,7 +159,7 @@ mod.add_url_rule('/api/result/<id>/', view_func=ResultView.as_view(
 
 class SearchView(GeneralView):
     def get_objects(self):
-        return Result_app().filter2(request.args)
+        return Result_app().filter(request.args)
 
 def render_html_search(templatename, **kwargs):
     """ adds pagination object before rendering """

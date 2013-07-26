@@ -147,9 +147,13 @@ class Result_app(FHGeneric):
         elems = session.query(Result.id).all()
         return to_dict(elems)
     
-    def filter2(self, request_args, offset=None):
+    def filter(self, request_args, offset=None):
         """
-        Lol
+        returns the results corresponding to the args in request_args,
+        along with a drill down menu
+        
+        request_args: GET variables dict (?generator_name=foo&bar=foobar...)
+        offset: number of results (if not set, this value is read in config)
         """
         
         import filters
@@ -162,7 +166,6 @@ class Result_app(FHGeneric):
         except:
             pass
         
-        # TODO: Info + Failure
         query = (session.query(
                 Result.id,
                 Result.type.label("result_type"),
@@ -210,74 +213,6 @@ class Result_app(FHGeneric):
                     results_range = (start+1, start+len(results)),
                     # to avoid 1-10 of 5 results
                     )
-           
-    
-    def filter(self, request_args, offset=None):
-        """
-        returns the results corresponding to the args in request_args,
-        along with a drill down menu
-        
-        offset: number of results (if not set, this value is read in config)
-        """
-        
-        # we need the arguments without "page" for the menu
-        # ("page" would add page=foo on the menu links, which we don't want)
-        args_without_page = request_args.copy()
-        try:
-            del(args_without_page["page"])
-        except:
-            pass
-        
-        filter_ = FilterArgs(args_without_page)
-        menu = create_menu(filter_)
-        clauses = menu.get_clauses()
-        
-        # TODO: polymorphism?
-        q_issue = make_q(session, Issue, clauses)
-        q_failure = make_q(session, Failure, clauses)
-        q_info = make_q(session, Info, clauses)
-        
-        # we get the page number and the offset
-        try:  page = int(request_args["page"])
-        except: page = 1
-        
-        try: offset = int(request_args["offset"])
-        except: offset = offset or app.config["SEARCH_RESULTS_OFFSET"]
-        
-        # we calculate the range of results
-        start = (page - 1) * offset
-        end = start + offset
-        
-        #query = q_issue.union_all(q_failure, q_info).order_by(Result.id)
-        query = q_issue.order_by(Result.id)
-        results_all = query.all()
-        results_all_count = query.count()
-        results_sliced = query.slice(start, end).all()
-
-        menu = menu.get_menu_items(
-            results=to_dict(results_all),
-            limit=app.config["SEARCH_MENU_MAX_NUMBER_OF_ELEMENTS"])
-        
-        # if only sut.name is in filter, we suggest similar packages:
-        try:
-            sutname = filter_.get("sut_name")
-            if len(filter_.get_all()) == 1:
-                packages_suggestions = Sut_app().name_contains(sutname, limit=5)
-            else:
-                packages_suggestions = None
-        except:
-            packages_suggestions = None
-            
-        return dict(
-            results_all_count=results_all_count,
-            results_range = (start+1, start+len(results_sliced)),
-                    # to avoid 1-10 of 5 results
-            page=page,
-            offset=offset,
-            results=to_dict(results_sliced),
-            filter=filter_.get_all(),
-            menu=menu,
-            packages_suggestions=packages_suggestions)
 
 class Report(object):
     def __init__(self, package_id):
