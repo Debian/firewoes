@@ -199,7 +199,7 @@ class Result_app(FHGeneric):
         
         menu=menu.get(session)
         results_all_count = query.count()
-        results=to_dict(query.all())
+        results=to_dict(query.slice(start, end).all())
         
         return dict(results=results,
                     menu=menu,
