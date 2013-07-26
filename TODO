@@ -2,10 +2,6 @@
 
 * TODO CustomFields mapping
   http://stackoverflow.com/questions/1958219/convert-sqlalchemy-row-object-to-python-dict
-* TODO Filter: better performances
-  Filter queries all the corresponding results to extract the relevant
-  information, this is expensive.
-  Try: do this db-side, with multiple queries?
 * TODO Set correctly the height of source-code in details.html
   Iceweasel doesn't like the 100% (parent <td> height is not set)
   However it works fine with Chromium
