@@ -52,6 +52,13 @@ class Menu(object):
                 self.filters.append(new_filter)
                 if new_filter.is_active():
                     self.clauses += new_filter.get_clauses()
+            else:
+                # if there was an irrelevant filter in active_filters_dict,
+                # we remove it:
+                try:
+                    del(self.active_filters_dict[new_filter.name])
+                except:
+                    pass
     
     def filter_sqla_query(self, query):
         """
