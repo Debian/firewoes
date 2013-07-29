@@ -22,7 +22,6 @@ from firewose.lib.orm import Analysis, Issue, Failure, Info, Result, \
 from sqlalchemy import and_, func, desc
 
 from firewose.web.app import session, app
-from filter_search import FilterArgs, create_menu,make_q
 
 
 ### EXCEPTIONS ###
