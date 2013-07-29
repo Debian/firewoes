@@ -26,8 +26,8 @@ from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Report
 from models import Http404Error, Http500Error
 
-import fedorautils
-import debianutils
+import firewose.lib.fedorautils as fedorautils
+import firewose.lib.debianutils as debianutils
 
 static_folder = "static"
 template_folder = "templates"
