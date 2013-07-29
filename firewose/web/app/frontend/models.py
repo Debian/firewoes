@@ -20,7 +20,6 @@ from firewose.lib.orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
 
 from sqlalchemy import and_, func, desc
-from sqlalchemy.ext.declarative import declarative_base
 
 from firewose.web.app import session, app
 from filter_search import FilterArgs, create_menu,make_q
@@ -238,47 +237,3 @@ class Report(object):
         return dict(
             count_per_generator = to_dict(self.count_per_generator())
             )
-
-
-###################################################
-### Debian specific tables, objects and mappers ###
-###################################################
-
-Base = declarative_base()
-
-class DebianPackage(Base):
-    __tablename__ = "debian_packages"
-    
-    name = Column(String, primary_key=True)
-    
-    def __init__(self, name):
-        self.name = name
-
-Index('ix_debian_packages_name', DebianPackage.name)
-
-class DebianMaintainer(Base):
-    __tablename__ = "debian_maintainers"
-    
-    email = Column(String, primary_key=True),
-    name = Column('name', String),
-    
-    def __init__(self, email, name):
-        self.email = email
-        self.name = name
-
-Index('ix_debian_maintainers_name', DebianMaintainer.name)
-
-class DebianPackagePeopleMapping(Base):
-    __tablename__ = "debian_package_people_mapping"
-    
-    debian_package_name = Column(
-        String, ForeignKey('debian_packages.name'), primary_key=True),
-    debian_maintainer_email = Column(
-        String, ForeignKey('debian_maintainers.email'), primary_key=True),
-    
-    def __init__(self, debian_package_name, debian_maintainer_email):
-        self.debian_package_name = debian_package_name
-        self.debian_maintainer_email = debian_maintainer_email
-
-Index('ix_debian_package_people_mapping_maintainer_id',
-      DebianPackagePeopleMapping.debian_maintainer_email)

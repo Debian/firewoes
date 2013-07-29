@@ -22,6 +22,8 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
+from sqlalchemy.ext.declarative import declarative_base
+
 from debian.debian_support import version_compare
 
 from firewose.lib.orm import *
@@ -98,3 +100,45 @@ def packages_for_person(session, login):
                .all())
     return res
 
+###################################################
+### Debian specific tables, objects and mappers ###
+###################################################
+
+Base = declarative_base()
+
+class DebianPackage(Base):
+    __tablename__ = "debian_packages"
+    
+    name = Column(String, primary_key=True)
+    
+    def __init__(self, name):
+        self.name = name
+
+Index('ix_debian_packages_name', DebianPackage.name)
+
+class DebianMaintainer(Base):
+    __tablename__ = "debian_maintainers"
+    
+    email = Column(String, primary_key=True)
+    name = Column('name', String)
+    
+    def __init__(self, email, name):
+        self.email = email
+        self.name = name
+
+Index('ix_debian_maintainers_name', DebianMaintainer.name)
+
+class DebianPackagePeopleMapping(Base):
+    __tablename__ = "debian_package_people_mapping"
+    
+    debian_package_name = Column(
+        String, ForeignKey('debian_packages.name'), primary_key=True)
+    debian_maintainer_email = Column(
+        String, ForeignKey('debian_maintainers.email'), primary_key=True)
+    
+    def __init__(self, debian_package_name, debian_maintainer_email):
+        self.debian_package_name = debian_package_name
+        self.debian_maintainer_email = debian_maintainer_email
+
+Index('ix_debian_package_people_mapping_maintainer_id',
+      DebianPackagePeopleMapping.debian_maintainer_email)
