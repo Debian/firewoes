@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
+from firewose.lib.orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
 
 from sqlalchemy import and_, func, desc

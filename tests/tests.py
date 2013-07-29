@@ -6,7 +6,7 @@ from glob import glob
 
 testsdir = os.path.dirname(os.path.abspath(__file__))
 
-from firewose.lib import firehose_orm
+from firewose.lib import orm
 from firewose.bin import firewose_fill_db
 from firewose.web.app import app
 

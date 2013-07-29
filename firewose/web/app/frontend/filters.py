@@ -18,7 +18,7 @@
 
 from models import to_dict
 
-from firewose.lib.firehose_orm import Analysis, Issue, Failure, Info, Result, \
+from firewose.lib.orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
 
 from sqlalchemy import func, desc, and_
@@ -396,7 +396,7 @@ class FilterTestId(FilterFirehoseAttribute):
         res = self.group_by(session, Result.testid, self._outerjoins,
                             clauses=clauses, max_items=max_items)
         return to_dict(res)
-    
+
 
 all_filters = [
     ("type", FilterErrorType),

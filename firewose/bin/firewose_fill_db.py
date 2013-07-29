@@ -21,7 +21,7 @@
 import os, sys
 import argparse
 
-import firewose.lib.firehose_orm as fhm
+import firewose.lib.orm as fhm
 from firewose.lib.hash import idify, uniquify
 from firewose.lib.dbutils import get_engine_session
 

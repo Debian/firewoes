@@ -24,7 +24,7 @@ except ImportError:
 
 from debian.debian_support import version_compare
 
-from firewose.lib.firehose_orm import *
+from firewose.lib.orm import *
 from sqlalchemy import and_
 
 """

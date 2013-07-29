@@ -4,7 +4,7 @@ from ftplib import FTP
 from email.utils import parseaddr
 
 from firewose.lib.dbutils import get_engine_session
-from firewose.lib.firehose_orm import metadata, DebianPackage, DebianMaintainer,\
+from firewose.lib.orm import metadata, DebianPackage, DebianMaintainer,\
     DebianPackagePeopleMapping
 
 from sqlalchemy import MetaData, Column, Integer, String, ForeignKey
