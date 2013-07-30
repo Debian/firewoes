@@ -18,6 +18,7 @@
 
 from firewose.lib.orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
+from firewose.lib.debianutils import DebianPackagePeopleMapping, DebianMaintainer
 
 from sqlalchemy import and_, func, desc
 
@@ -177,6 +178,46 @@ class Result_app(FHGeneric):
                  )
         return to_dict(elems)
     
+    def _suggestions(self, current_args):
+        """
+        Returns suggestions for the current search, with probably better
+        results.
+        """
+        if current_args.get("sut_name"):
+            elems = (session.query(Sut.name,
+                                   func.count(Result.id).label("count"))
+                     .filter(Sut.name.contains(current_args["sut_name"]))
+                     .filter(Result.analysis_id == Analysis.id)
+                     .filter(Analysis.metadata_id == Metadata.id)
+                     .filter(Metadata.sut_id == Sut.id)
+                     .group_by(Sut.name)
+                     .order_by(desc("count"))
+                     .all()
+                     )
+            suggestions = [dict(sut_name=sut.name) for sut in elems]
+        elif current_args.get("maintainer"):
+            elems = (session.query(DebianMaintainer.name,
+                                   func.count(Result.id).label("count"))
+                     .filter(DebianMaintainer.name.ilike(
+                        "%" + current_args["maintainer"] + "%"))
+                     # maybe postgresql-specific
+                     .filter(Result.analysis_id == Analysis.id)
+                     .filter(Analysis.metadata_id == Metadata.id)
+                     .filter(Metadata.sut_id == Sut.id)
+                     .filter(Sut.name == DebianPackagePeopleMapping.package_name)
+                     .filter(DebianPackagePeopleMapping.maintainer_email ==
+                             DebianMaintainer.email)
+                     .group_by(DebianMaintainer.name)
+                     .order_by(desc("count"))
+                     .all()
+                     )
+            suggestions = [dict(maintainer=maint.name) for maint in elems]
+            
+        else:
+            suggestions = []
+        
+        return suggestions
+    
     def filter(self, request_args, offset=None):
         """
         returns the results corresponding to the args in request_args,
@@ -235,6 +276,13 @@ class Result_app(FHGeneric):
         results_all_count = query.count()
         results=to_dict(query.slice(start, end).all())
         
+        # do we need to suggest things?
+        if len(results) == 0:
+            suggestions = self._suggestions(request_args)
+        else:
+            suggestions = []
+                    
+        
         return dict(results=results,
                     menu=menu,
                     page=page,
@@ -242,6 +290,7 @@ class Result_app(FHGeneric):
                     results_all_count=results_all_count,
                     results_range = (start+1, start+len(results)),
                     # to avoid 1-10 of 5 results
+                    suggestions=suggestions,
                     )
 
 class Report(object):

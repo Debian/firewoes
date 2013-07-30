@@ -27,6 +27,14 @@
 
 <h2>{{ self.title() }}</h2>
 
+{% if suggestions %}
+try these searches: 
+  {% for suggestion in suggestions %}
+    <a href="{{ url_for(".search_html", **suggestion) }}">
+      {% for value in suggestion.values() %}{{ value }} {% endfor %}</a> 
+  {% endfor %}
+{% endif %}
+
 <div id="rightmenu">
   <h2>Refine search</h2>
   <ul>
