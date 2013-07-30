@@ -29,8 +29,6 @@
   <results>
   <failure failure-id="CACA"><location><file given-path="LOOOL"/></location>
   </failure></results></analysis>
-
-* TODO package suggestions for both report and filter
 * TODO filters.py: decorators to activate filters
 * TODO proper tests.py
   currently all cases are not tested, and the menu and search
