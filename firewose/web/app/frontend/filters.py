@@ -407,13 +407,9 @@ class FilterTestId(FilterFirehoseAttribute):
 class FilterByMaintainerPackages(Filter):
     _cool_name = "Maintainer"
     
-    def __init__(self, value=None, active=False, name=None):
-        if value:
-            value = email_for_person(value)
-        super(FilterByMaintainerPackages, self).__init__(value, active, name)
-    
     def get_clauses(self):
-        return [(DebianPackagePeopleMapping.maintainer_email == self.value),
+        return [(DebianPackagePeopleMapping.maintainer_email ==
+                 email_for_person(self.value)),
                 (Sut.name == DebianPackagePeopleMapping.package_name)]
     
     def get_items(self, session, clauses=None, max_items=None):
