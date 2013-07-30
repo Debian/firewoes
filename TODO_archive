@@ -2,7 +2,7 @@
 
 
 Archived entries from file /home/matthieu/work/debian/firewose/TODO
-* TODO search by people
+* DONE search by people
   :PROPERTIES:
   :ARCHIVE_TIME: 2013-07-30 Tue 11:10
   :ARCHIVE_FILE: ~/work/debian/firewose/TODO
@@ -10,7 +10,7 @@ Archived entries from file /home/matthieu/work/debian/firewose/TODO
   :ARCHIVE_TODO: TODO
   :END:
   ftp://ftp.debian.org/debian/indices/Uploaders
-* TODO  previews on home (last results, widgets, ...)
+* DONE previews on home (last results, widgets, ...)
   :PROPERTIES:
   :ARCHIVE_TIME: 2013-07-30 Tue 16:49
   :ARCHIVE_FILE: ~/work/debian/firewose/TODO
