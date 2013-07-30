@@ -134,7 +134,12 @@ class GeneralView(View):
 
 @mod.route('/')
 def index():
-    return html("index.html")
+    packages_with_most_results = Result_app().with_most_results(limit=5)
+    random_results = Result_app().random_results(limit=5)
+    
+    return html("index.html",
+                packages_with_most_results=packages_with_most_results,
+                random_results=random_results)
 
 ### RESULT DETAILS ###
 

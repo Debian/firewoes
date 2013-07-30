@@ -146,6 +146,37 @@ class Result_app(FHGeneric):
         elems = session.query(Result.id).all()
         return to_dict(elems)
     
+    def with_most_results(self, limit=5):
+        """
+        Returns the list of packages which have the most results.
+        """
+        elems = (session.query(Sut.name, func.count(Result.id).label("count"))
+                 .filter(Result.analysis_id == Analysis.id)
+                 .filter(Analysis.metadata_id == Metadata.id)
+                 .filter(Metadata.sut_id == Sut.id)
+                 .group_by(Sut.name)
+                 .order_by(desc("count"))
+                 .limit(limit)
+                 .all()
+                 )
+        return to_dict(elems)
+    
+    def random_results(self, limit=5):
+        """
+        Returns the last results.
+        """
+        elems = (session.query(Result.id, Message.text, Sut.name)
+                 .filter(Result.message_id == Message.id)
+                 .filter(Result.analysis_id == Analysis.id)
+                 .filter(Analysis.metadata_id == Metadata.id)
+                 .filter(Metadata.sut_id == Sut.id)
+                 .order_by(func.random())
+                 # PostgreSQL-specific, maybe func.rand() for other back-ends
+                 .limit(limit)
+                 .all()
+                 )
+        return to_dict(elems)
+    
     def filter(self, request_args, offset=None):
         """
         returns the results corresponding to the args in request_args,

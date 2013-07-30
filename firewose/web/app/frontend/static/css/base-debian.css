@@ -84,3 +84,13 @@ License: GNU Affero General Public License, version 3 or above.
     margin: 1em;
 }
 
+.home_block {
+    float: left;
+    /*border: 1px solid red;*/
+    width: 33%;
+    /*text-align: center;*/
+}
+
+#content {
+    margin-bottom: 30px;
+}

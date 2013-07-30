@@ -11,29 +11,40 @@
 
 <h2>{{ self.title() }}</h2>
 
-<p>
-  Welcome to this draft of <em>Firewose</em>.
-</p>
-<p>
-  <strong>Disclaimer</strong>: the look and feel is currently
-  Debianic, but easily themable. Currently, the only debian-specific
-  feature is the display of source code, because I don't know if there
-  is such an equivalent service (sources.debian.net) for the sources
-  of Fedora. If so, I'd be happy to add it!
-</p>
-<p>
-  Currently you can find in the database:
+<p>Firewose is a web user interface for Firehose.
+<br />
+You'll find here results from static analysis tools which run on
+Debian packages.</p>
+
+<div class="home_block">
+  <h2>Access results</h2>
   <ul>
-    <li>results from python-ethtool and policycoreutils
-    from <a href="https://github.com/fedora-static-analysis/firehose-saved-data">firehose-saved-data</a>;</li>
-    <li>results from Coccinelle, with 3 semantic patches on Debian
-    packages beginning with 'f' and 'r'.
-    </li>
+    {% for gen in generators_by_name %}
+      <li><a href="{{ url_for('.search_html', generator_name=gen.name) }}">{{ gen.name }}</a></li>
+    {% endfor %}
   </ul>
-</p>
 
-<p>
-  Have fun and report feedback/bugs/wishes!
-</p>
+</div>
 
+<div class="home_block">
+  <h2>Packages with most results</h2>
+  <ul>
+    {% for package in packages_with_most_results %}
+      <li><a href="{{ url_for('.search_html',
+		   sut_name=package['name']) }}">
+	  {{ package["name"] }}</a>
+	({{ package["count"] }})</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="home_block">
+  <h2>Random results</h2>
+  <ul>
+    {% for result in random_results %}
+      <li><a href="{{ url_for('.result_elem_html', id=result['id']) }}">
+	  {{ result["name"] }}</a>: {{ result["text"] }}</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}
