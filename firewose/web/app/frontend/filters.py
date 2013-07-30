@@ -43,7 +43,9 @@ class Menu(object):
         
         # we create the filters:
         for filter_ in all_filters:
-            if filter_[0] in active_filters_dict.keys(): # it's an active filter
+            if (filter_[0] in active_filters_dict.keys()
+                and active_filters_dict[filter_[0]] != ""):
+                # it's an active filter
                 new_filter = filter_[1](value=active_filters_dict[filter_[0]],
                                         active=True,
                                         name=filter_[0])
