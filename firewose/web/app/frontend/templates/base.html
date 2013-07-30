@@ -29,6 +29,37 @@
           <a href="http://debian.org" title="Debian Home"><img src="{{ url_for('.static', filename='img/debian-50.png') }}" alt="Debian"></a>
         </div> <!-- end logo -->
         <p class="section"><a href="/">Firewose</a></p>
+	<div id="searchbox">
+	  <form name="search" action="{{ url_for('.search_html') }}"
+                method="get">
+            <input type="text" name="sut_name" id="sut_name"
+		   {% if request.args["sut_name"] %}
+		     value={{ request.args["sut_name"] }}
+		   {% else %}
+		     placeholder="package name"
+		   {% endif %} />
+	    <input type="text" name="maintainer" id="maintainer"
+		   {% if request.args["maintainer"] %}
+		     value={{ request.args["maintainer"] }}
+		   {% else %}
+		     placeholder="maintainer"
+		   {% endif %} />
+	    <select name="generator_name" id="generator_name">
+	      <option name="generator"
+		      {% if not request.args["generator_name"] %}
+		        selected="selected"
+		      {% endif %}
+              disabled="disabled" value="">generator</option>
+              {% for gen in generators_by_name %}
+                <option name="{{ gen.name }}"
+			{% if request.args["generator_name"] == gen.name %}
+			  selected="selected"
+			{% endif %}>{{ gen.name }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" value="search!" />
+          </form>
+	</div>   <!-- end sitetools -->
       </div> <!-- end upperheader -->
       <!--UdmComment-->
       <div id="navbar">
