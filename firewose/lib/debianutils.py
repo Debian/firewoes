@@ -27,7 +27,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from debian.debian_support import version_compare
 
 from firewose.lib.orm import *
-from firewose.web.app import session
 from sqlalchemy import and_
 
 """
@@ -101,10 +100,17 @@ def packages_for_person(session, login):
                .all())
     return res
 
-def email_for_person(person):
+def email_for_person(person, session=None):
     """
     Given a login, a full name, or an email, returns the corresponding email.
+    This function must be imported from a running app, or a session must
+    be provided.
     """
+    # we import the session here, to avoid the exception when debianutils is
+    # imported from elsewhere than the app
+    if session is None:
+        from firewose.web.app import session
+    
     if "@" in person:
         return person
     res = (session.query(DebianMaintainer)
