@@ -18,7 +18,6 @@
   SQLAlchemy tries to compare an issue with a failure (??), which fails
   
 * TODO views on home (shortcuts for generator, etc)
-* TODO  previews on home (last results, widgets, ...)
 * TODO infra: debuild.me -> sync with Paul & Léo
 * TODO failureid & info id mapping to testid
   Y THIS NO WORK??
