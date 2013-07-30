@@ -20,6 +20,8 @@ from models import to_dict
 
 from firewose.lib.orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
+from firewose.lib.debianutils import DebianPackagePeopleMapping, \
+    email_for_person
 
 from sqlalchemy import func, desc, and_
 
@@ -397,8 +399,30 @@ class FilterTestId(FilterFirehoseAttribute):
                             clauses=clauses, max_items=max_items)
         return to_dict(res)
 
+### BY DEVELOPER ###
+
+# currently only for Debian
+class FilterByMaintainerPackages(Filter):
+    _cool_name = "Maintainer"
+    
+    def __init__(self, value=None, active=False, name=None):
+        if value:
+            value = email_for_person(value)
+        super(FilterByMaintainerPackages, self).__init__(value, active, name)
+    
+    def get_clauses(self):
+        return [(DebianPackagePeopleMapping.maintainer_email == self.value),
+                (Sut.name == DebianPackagePeopleMapping.package_name)]
+    
+    def get_items(self, session, clauses=None, max_items=None):
+        return []
+    
+    def is_relevant(self, active_keys=None):
+        return True
+    
 
 all_filters = [
+    ("maintainer", FilterByMaintainerPackages),
     ("type", FilterErrorType),
     ("generator_name", FilterGeneratorName),
     ("generator_version", FilterGeneratorVersion),
