@@ -4,7 +4,8 @@ from ftplib import FTP
 from email.utils import parseaddr
 
 from firewose.lib.dbutils import get_engine_session
-from firewose.firewose.lib.debianutils import Base
+from firewose.lib.debianutils import Base, DebianPackage, DebianMaintainer, \
+    DebianPackagePeopleMapping
 
 metadata = Base.metadata
 
@@ -48,6 +49,9 @@ def _proceed_lines(ftpo, path, session, packages, maintainers, mappings):
                 
             maint_name, maint_email = parseaddr(maintainer_full)
             
+            if not maint_name and not maint_email:
+                return
+            
             if not packages.get(package):
                 packages[package] = DebianPackage(package)
             if not maintainers.get(maint_email):
@@ -90,17 +94,23 @@ def generate_packages_for_people(ftpo, path, session):
     ftpo = ftp_connect(url)
     _proceed_lines(ftpo, path, session, packages, maintainers, mappings)
     ftp_close(ftpo)
+    
+    #session.add_all(package for package in packages.values())
+    #session.add_all(maintainer for maintainer in maintainers.values())
     session.add_all(item for item in mappings.values())
     session.commit()
 
-def clear_debian_tables(session):
-    """
-    Clear the content of the 3 Debian tables used for packages/people mapping.
-    """
-    session.execute(metadata.tables["debian_package_people_mapping"].delete())
-    session.execute(metadata.tables["debian_packages"].delete())
-    session.execute(metadata.tables["debian_maintainers"].delete())
-    #session.commit()
+# def clear_debian_tables(session):
+#     """
+#     Clear the content of the 3 Debian tables used for packages/people mapping.
+#     """
+#     try:
+#         session.execute(metadata.tables["debian_package_people_mapping"].delete())
+#         session.execute(metadata.tables["debian_packages"].delete())
+#         session.execute(metadata.tables["debian_maintainers"].delete())
+#         session.commit()
+#     except:
+#         pass
 
 
 if __name__ == "__main__":
@@ -113,11 +123,13 @@ if __name__ == "__main__":
                         action="store_true")
     args = parser.parse_args()
 
-    # db cleaning
     engine, session = get_engine_session(args.db_url, echo=args.verbose)
-    clear_debian_tables(session)
+    
+    metadata.drop_all(engine)
+    metadata.create_all(engine)
+
     
     # ftp connection, db insertion
-    #ftpo = ftp_connect(url)
-    generate_packages_for_people(path, session)
-    #ftp_close(ftpo)
+    ftpo = ftp_connect(url)
+    generate_packages_for_people(ftpo, path, session)
+    ftp_close(ftpo)
