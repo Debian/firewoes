@@ -9,8 +9,6 @@
   thumbs up/down
   comments on results
   authentication: http://wiki.debian.org/DebianSingleSignOn
-* TODO search by people
-  ftp://ftp.debian.org/debian/indices/Uploaders
 * TODO bug: uniquify
   when trying to uniquify a list of results:
   <failure>
