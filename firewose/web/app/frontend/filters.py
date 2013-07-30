@@ -37,22 +37,29 @@ class Menu(object):
         The active_filters_dict contains the already activated filters,
         in the form name=value, e.g. generator_name="coccinelle".
         """
-        self.active_filters_dict = active_filters_dict
         self.filters = []
         self.clauses = []
         
+        # we clean the active filters, removing blank values:
+        self.active_filters_dict = dict((k, v)
+                                        for (k, v) in active_filters_dict.items()
+                                        if v != "")
+        
         # we create the filters:
         for filter_ in all_filters:
-            if (filter_[0] in active_filters_dict.keys()
-                and active_filters_dict[filter_[0]] != ""):
+            if filter_[0] in self.active_filters_dict.keys():
                 # it's an active filter
-                new_filter = filter_[1](value=active_filters_dict[filter_[0]],
-                                        active=True,
-                                        name=filter_[0])
+                new_filter = filter_[1](
+                    value=self.active_filters_dict[filter_[0]],
+                    active=True,
+                    name=filter_[0])
+            
             else: # it's an inactive one
                 new_filter = filter_[1](active=False, name=filter_[0])
             # avoids adding non-relevant filters regarding the context:
-            if new_filter.is_relevant(active_keys=active_filters_dict.keys()):
+            if new_filter.is_relevant(
+                active_keys=self.active_filters_dict.keys()):
+                
                 self.filters.append(new_filter)
                 if new_filter.is_active():
                     self.clauses += new_filter.get_clauses()
