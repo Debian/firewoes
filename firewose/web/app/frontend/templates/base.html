@@ -34,13 +34,13 @@
                 method="get">
             <input type="text" name="sut_name" id="sut_name"
 		   {% if request.args["sut_name"] %}
-		     value={{ request.args["sut_name"] }}
+		     value="{{ request.args["sut_name"] }}"
 		   {% else %}
 		     placeholder="package name"
 		   {% endif %} />
 	    <input type="text" name="maintainer" id="maintainer"
 		   {% if request.args["maintainer"] %}
-		     value={{ request.args["maintainer"] }}
+		     value="{{ request.args["maintainer"] }}"
 		   {% else %}
 		     placeholder="maintainer"
 		   {% endif %} />
@@ -49,7 +49,7 @@
 		      {% if not request.args["generator_name"] %}
 		        selected="selected"
 		      {% endif %}
-              disabled="disabled" value="">generator</option>
+              value="">generator</option>
               {% for gen in generators_by_name %}
                 <option name="{{ gen.name }}"
 			{% if request.args["generator_name"] == gen.name %}
@@ -72,41 +72,6 @@
       <p id="breadcrumbs">{% block breadcrumbs %}{% endblock %}</p>
     </div> <!-- end header -->
     
-    <div id="leftmenu">
-      <h2>Search</h2>
-      <ul>
-        <li>
-          <form name="search_sut" action="{{ url_for('.search_html') }}"
-                method="get">
-            <label for="sut_name">By <em>package name</em></label>
-            <input type="text" name="sut_name" id="sut_name" />
-            <input type="submit" value="search!" />
-          </form>
-        </li>
-        <li>
-          <form name="search_gen" action="{{ url_for('.search_html') }}"
-                method="get">
-            <label for="generator_name">By <em>generator</em></label>
-            <select name="generator_name" id="generator_name">
-              {% for gen in generators_by_name %}
-                <option name="{{ gen.name }}">{{ gen.name }}</option>
-              {% endfor %}
-            </select>
-            <input type="submit" value="search!" />
-          </form>
-        </li>
-        </ul>
-
-      {#{ macros.display_searchform(searchform, filter) }#}
-      
-      <h2>Reports</h2>
-      View report for package:<br />
-      <form name="report" action="{{ url_for(".search_report_html")}}"
-            method="get">
-        <input type="text" name="package" />
-        <input type="submit" value="search!" />
-      </form>
-    </div>
     <div id="content">
       {% block content %}
       {% endblock %}

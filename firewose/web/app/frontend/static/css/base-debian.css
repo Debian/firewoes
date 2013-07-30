@@ -40,10 +40,6 @@ License: GNU Affero General Public License, version 3 or above.
     margin: 20px;
 }
 
-#content {
-    padding-left: 240px;
-}
-
 .tableresult {
     border: 1px solid black;
     border-collapse:collapse;
