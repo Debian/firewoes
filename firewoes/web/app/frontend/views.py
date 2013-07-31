@@ -1,8 +1,8 @@
 # Copyright (C) 2013  Matthieu Caneill <matthieu.caneill@gmail.com>
 #
-# This file is part of Firewose.
+# This file is part of Firewoes.
 #
-# Firewose is free software: you can redistribute it and/or modify it under
+# Firewoes is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or (at your option) any
 # later version.
@@ -21,13 +21,13 @@ from flask import render_template, jsonify, request, Blueprint, url_for, \
     redirect
 from flask.views import View
 
-from firewose.web.app import app
+from firewoes.web.app import app
 from models import Generator_app, Analysis_app, Sut_app, Result_app
 from models import Report
 from models import Http404Error, Http500Error
 
-import firewose.lib.fedorautils as fedorautils
-import firewose.lib.debianutils as debianutils
+import firewoes.lib.fedorautils as fedorautils
+import firewoes.lib.debianutils as debianutils
 
 static_folder = "static"
 template_folder = "templates"

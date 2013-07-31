@@ -5,9 +5,9 @@ import rlcompleter
 readline.parse_and_bind("tab: complete")
 
 
-from firewose.web.app import *
+from firewoes.web.app import *
 from app.frontend.models import *
-from firewose.lib.firehose_noslots import *
-from firewose.lib.debianutils import *
+from firewoes.lib.firehose_noslots import *
+from firewoes.lib.debianutils import *
 
 os.environ['PYTHONINSPECT'] = 'True'

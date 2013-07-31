@@ -1,8 +1,8 @@
 # Copyright (C) 2013  Matthieu Caneill <matthieu.caneill@gmail.com>
 #
-# This file is part of Firewose.
+# This file is part of Firewoes.
 #
-# Firewose is free software: you can redistribute it and/or modify it under
+# Firewoes is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or (at your option) any
 # later version.
@@ -21,9 +21,9 @@
 import os, sys
 import argparse
 
-import firewose.lib.orm as fhm
-from firewose.lib.hash import idify, uniquify
-from firewose.lib.dbutils import get_engine_session
+import firewoes.lib.orm as fhm
+from firewoes.lib.hash import idify, uniquify
+from firewoes.lib.dbutils import get_engine_session
 
 from xml.etree.ElementTree import ParseError as XmlParseError
 

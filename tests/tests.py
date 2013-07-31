@@ -6,11 +6,11 @@ from glob import glob
 
 testsdir = os.path.dirname(os.path.abspath(__file__))
 
-from firewose.lib import orm
-from firewose.bin import firewose_fill_db
-from firewose.web.app import app
+from firewoes.lib import orm
+from firewoes.bin import firewoes_fill_db
+from firewoes.web.app import app
 
-class FirewoseTestCase(unittest.TestCase):
+class FirewoesTestCase(unittest.TestCase):
     ClassIsSetup = False
     
     def setUp(self):
@@ -27,10 +27,10 @@ class FirewoseTestCase(unittest.TestCase):
     
     def setupClass(self):
         
-        # we fill firewose_test with our testing data:
+        # we fill firewoes_test with our testing data:
         print("Filling db...")
         xml_files = glob(testsdir + "/data/*.xml")
-        firewose_fill_db.read_and_create(app.config['DATABASE_URI'],
+        firewoes_fill_db.read_and_create(app.config['DATABASE_URI'],
                                          xml_files, drop=True, echo=False)
 
         self.__class__.app = app.test_client()
@@ -40,7 +40,7 @@ class FirewoseTestCase(unittest.TestCase):
         
     def test_static_pages(self):
         rv = self.app.get('/')
-        assert 'Firewose' in rv.data
+        assert 'Firewoes' in rv.data
 
     def test_packages_suggestions(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=pyth').data)

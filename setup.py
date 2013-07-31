@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-from firewose import __appname__, __version__
+from firewoes import __appname__, __version__
 
 with open('requirements.txt') as f:
     install_requires = [l for l in f.read().splitlines()
@@ -15,7 +15,7 @@ setup(
     version=__version__,
     packages=find_packages(),
     include_package_data=True,
-    scripts=["firewose/bin/firewose_fill_db.py"],
+    scripts=["firewoes/bin/firewoes_fill_db.py"],
     install_requires=install_requires,
     zip_safe=False,
     author="Matthieu Caneill",

@@ -1,5 +1,5 @@
 import os
 
-os.environ["FIREWOSE_CONFIG"] = "/home/matthieu/work/debian/firewose/config/webconfig_local.example.py"
+os.environ["FIREWOES_CONFIG"] = "/home/matthieu/work/debian/firewoes/config/webconfig_local.example.py"
 
-from firewose.web.app import app as application
+from firewoes.web.app import app as application

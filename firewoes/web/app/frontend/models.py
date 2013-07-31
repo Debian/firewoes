@@ -1,8 +1,8 @@
 # Copyright (C) 2013  Matthieu Caneill <matthieu.caneill@gmail.com>
 #
-# This file is part of Firewose.
+# This file is part of Firewoes.
 #
-# Firewose is free software: you can redistribute it and/or modify it under
+# Firewoes is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or (at your option) any
 # later version.
@@ -16,13 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from firewose.lib.orm import Analysis, Issue, Failure, Info, Result, \
+from firewoes.lib.orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
-from firewose.lib.debianutils import DebianPackagePeopleMapping, DebianMaintainer
+from firewoes.lib.debianutils import DebianPackagePeopleMapping, DebianMaintainer
 
 from sqlalchemy import and_, func, desc
 
-from firewose.web.app import session, app
+from firewoes.web.app import session, app
 
 
 ### EXCEPTIONS ###

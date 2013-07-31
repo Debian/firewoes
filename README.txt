@@ -1,8 +1,8 @@
 ========
-Firewose
+Firewoes
 ========
 
-Firewose is intended to be a web user interface for Firehose.
+Firewoes is intended to be a web user interface for Firehose.
 
 Dependencies
 ============
@@ -39,5 +39,5 @@ Ruuning
 =======
 
 * With the development Flask server:
-  $ export FIREWOSE_CONFIG=path/to/yout/local/config.py
-  $ python firewose/web/run.py
+  $ export FIREWOES_CONFIG=path/to/yout/local/config.py
+  $ python firewoes/web/run.py

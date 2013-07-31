@@ -20,9 +20,9 @@
 * TODO failureid & info id mapping to testid
   Y THIS NO WORK??
   shell.py:
-  from firewose.bin.firewose_fill_db import insert_analysis
+  from firewoes.bin.firewoes_fill_db import insert_analysis
   insert_analysis(session,
-  "/home/matthieu/work/debian/firewose/cache/test.xml")
+  "/home/matthieu/work/debian/firewoes/cache/test.xml")
   <analysis><metadata><generator name="dgcca" /></metadata>
   <results>
   <failure failure-id="CACA"><location><file given-path="LOOOL"/></location>

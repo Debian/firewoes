@@ -1,8 +1,8 @@
 # Copyright (C) 2013  Matthieu Caneill <matthieu.caneill@gmail.com>
 #
-# This file is part of Firewose.
+# This file is part of Firewoes.
 #
-# Firewose is free software: you can redistribute it and/or modify it under
+# Firewoes is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or (at your option) any
 # later version.
@@ -32,11 +32,11 @@ class CustomFlask(Flask):
 app = CustomFlask(__name__)
 
 # Configuration
-from firewose.web import webconfig_default
+from firewoes.web import webconfig_default
 app.config.from_object(webconfig_default)
 
-if "FIREWOSE_CONFIG" in os.environ:
-    app.config.from_envvar('FIREWOSE_CONFIG')
+if "FIREWOES_CONFIG" in os.environ:
+    app.config.from_envvar('FIREWOES_CONFIG')
 
 # SQLAlchemy
 engine = create_engine(app.config['DATABASE_URI'],

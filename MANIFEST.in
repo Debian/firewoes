@@ -2,5 +2,5 @@ include README.txt
 include AUTHORS
 include COPYING
 include requirements.txt
-recursive-include firewose/etc *
-recursive-include firewose/web/app/frontend/themes *
+recursive-include firewoes/etc *
+recursive-include firewoes/web/app/frontend/themes *

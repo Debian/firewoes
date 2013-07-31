@@ -3,8 +3,8 @@ import argparse
 from ftplib import FTP
 from email.utils import parseaddr
 
-from firewose.lib.dbutils import get_engine_session
-from firewose.lib.debianutils import Base, DebianPackage, DebianMaintainer, \
+from firewoes.lib.dbutils import get_engine_session
+from firewoes.lib.debianutils import Base, DebianPackage, DebianMaintainer, \
     DebianPackagePeopleMapping
 
 metadata = Base.metadata

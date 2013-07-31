@@ -1,8 +1,8 @@
 # Copyright (C) 2013  Matthieu Caneill <matthieu.caneill@gmail.com>
 #
-# This file is part of Firewose.
+# This file is part of Firewoes.
 #
-# Firewose is free software: you can redistribute it and/or modify it under
+# Firewoes is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or (at your option) any
 # later version.
@@ -26,7 +26,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from debian.debian_support import version_compare
 
-from firewose.lib.orm import *
+from firewoes.lib.orm import *
 from sqlalchemy import and_
 
 """
@@ -109,7 +109,7 @@ def email_for_person(person, session=None):
     # we import the session here, to avoid the exception when debianutils is
     # imported from elsewhere than the app
     if session is None:
-        from firewose.web.app import session
+        from firewoes.web.app import session
     
     if "@" in person:
         return person

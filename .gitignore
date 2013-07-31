@@ -1,5 +1,5 @@
 *.pyc
 cache/*
 dist
-firewose.egg-info
+firewoes.egg-info
 build
