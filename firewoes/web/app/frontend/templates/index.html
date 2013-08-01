@@ -32,8 +32,7 @@ Debian packages.</p>
     {% for package in packages_with_most_results %}
       <li><a href="{{ url_for('.search_html',
 		   sut_name=package['name']) }}">
-	  {{ package["name"] }}</a>
-	({{ package["count"] }})</li>
+	  {{ package["name"] }}</a> ({{ package["count"] }})</li>
     {% endfor %}
   </ul>
 </div>
