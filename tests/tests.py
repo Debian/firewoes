@@ -136,20 +136,6 @@ class FirewoesTestCase(unittest.TestCase):
         assert rv["menu"][2]["active"] == True
         assert rv["menu"][10]["items"][0]["value"] == "get_ufo"
         
-    def test_drilldown_menu(self):
-        rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loca'
-                                     'tion_file=python-ethtool%2Fethtool.c')
-                        .data)
-        
-        assert rv["menu"][2]["active"] is True
-        assert rv["menu"][2]["value"] == "python-ethtool"
-        assert rv["menu"][2]["remove_filter"].keys() == ["location_file"]
-        
-        assert rv["menu"][0]["active"] is False
-        assert rv["menu"][0]["items"][0]["add_filter"].keys() == [
-            "sut_name", "result_type", "location_file"]
-        assert rv["menu"][0]["items"][0]["name"] == "issue"
-        
     def test_reports(self):
         rv = json.loads(self.app.get('/api/report/python-ethtool/').data)
         
