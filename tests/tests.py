@@ -68,6 +68,33 @@ class FirewoesTestCase(unittest.TestCase):
         assert rv['suggestions'] == []
         assert rv['results_all_count'] == 18
         
+    def test_search_list_root(self):
+        rv = json.loads(self.app.get('/api/search/').data)
+        assert rv["results"][0] == {
+            "sut_buildarch": "x86_64", 
+            "location_function": "set_ringparam", 
+            "Point": {
+                "column": 1, 
+                "line": 881, 
+                "id": "b9a229d8cb6e8d80bbe64739c6d8e5287efc0ec6"
+                }, 
+            "message_text": "returning (PyObject*)NULL without setting an "
+                                                    "exception", 
+            "location_file": "python-ethtool/ethtool.c", 
+            "Range": None, 
+            "id": "e137be9fe3e6f9ab042f4cfd1e8074446b556fa7", 
+            "message_id": "eea211bacf3c996e3e8c0d3364384da5b299ba14", 
+            "sut_name": "python-ethtool", 
+            "testid": "returns-NULL-without-setting-exception", 
+            "generator_name": "cpychecker", 
+            "sut_release": "0.dc309d6b2781dc3810021d2e4e2d669f40227b63.fc17"
+                                                   ".src.rpm", 
+            "sut_type": "source-rpm", 
+            "result_type": "issue", 
+            "sut_version": "0.8", 
+            "generator_version": None
+            }
+        
     def test_search_list(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
                                      'ation_file=python-ethtool%2Fethtool.c')
