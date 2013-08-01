@@ -36,6 +36,7 @@ class FirewoesTestCase(unittest.TestCase):
         # TODO: test pack_people_mapping with a short file
         
         self.__class__.app = app.test_client()
+        self.__class__.config = app.config
         
     def tearDown(self):
         pass
@@ -58,6 +59,14 @@ class FirewoesTestCase(unittest.TestCase):
         assert lstr in rv.data
         assert 'python-ethtool</a> (18)' in rv.data
         # to test here: random results (...)
+        
+    def test_search_list_variables(self):
+        rv = json.loads(self.app.get('/api/search/').data)
+        assert rv['results_range'] == [1, 10]
+        assert rv['offset'] == self.config["SEARCH_RESULTS_OFFSET"]
+        assert rv['page'] == 1
+        assert rv['suggestions'] == []
+        assert rv['results_all_count'] == 18
         
     def test_search_list(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
