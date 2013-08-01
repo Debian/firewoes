@@ -103,9 +103,10 @@ class FirewoesTestCase(unittest.TestCase):
         
     def test_search_list_location(self):
         rv = json.loads(self.app.get('/api/search/?generator_name=cpychecker'
-                                     '&sut_name=python-ethtool&location_file'
-                                     '=python-ethtool%2Fethtool.c&sut_version'
-                                     '=0.8&location_function=get_ufo').data)
+                                     '&sut_name=python-ethtool'
+                                     '&location_file=python-ethtool%2Fethtool.c'
+                                     '&sut_version=0.8'
+                                     '&location_function=get_ufo').data)
         assert rv["results"][0]["location_function"] == "get_ufo"
         
     def test_drilldownmenu_root(self):
