@@ -30,9 +30,11 @@ class FirewoesTestCase(unittest.TestCase):
         # we fill firewoes_test with our testing data:
         print("Filling db...")
         xml_files = glob(testsdir + "/data/*.xml")
-        firewoes_fill_db.read_and_create(app.config['DATABASE_URI'],
-                                         xml_files, drop=True, echo=False)
-
+        #firewoes_fill_db.read_and_create(app.config['DATABASE_URI'],
+        #                                 xml_files, drop=True, echo=False)
+        
+        # TODO: test pack_people_mapping with a short file
+        
         self.__class__.app = app.test_client()
         
     def tearDown(self):
@@ -45,6 +47,10 @@ class FirewoesTestCase(unittest.TestCase):
     def test_packages_suggestions(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=pyth').data)
         assert rv['suggestions'][0]["sut_name"] == "python-ethtool"
+        
+    def test_maintainers_suggestions(self):
+        # TODO
+        assert True
         
     def test_search_list(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
