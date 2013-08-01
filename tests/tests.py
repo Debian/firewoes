@@ -108,14 +108,6 @@ class FirewoesTestCase(unittest.TestCase):
                                      '=0.8&location_function=get_ufo').data)
         assert rv["results"][0]["location_function"] == "get_ufo"
         
-    def test_search_list(self):
-        rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
-                                     'ation_file=python-ethtool%2Fethtool.c')
-                        .data)
-        assert rv["results"][0]["sut_name"] == "python-ethtool"
-        assert rv["results"][0]["location_file"] == "python-ethtool/ethtool.c"
-        assert rv["page"] == 1
-        
     def test_drilldown_menu(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loca'
                                      'tion_file=python-ethtool%2Fethtool.c')
