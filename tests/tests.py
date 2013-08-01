@@ -44,7 +44,7 @@ class FirewoesTestCase(unittest.TestCase):
 
     def test_packages_suggestions(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=pyth').data)
-        assert rv['packages_suggestions'][0]["name"] == "python-ethtool"
+        assert rv['suggestions'][0]["sut_name"] == "python-ethtool"
         
     def test_search_list(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
