@@ -52,6 +52,13 @@ class FirewoesTestCase(unittest.TestCase):
         # TODO
         assert True
         
+    def test_home_links(self):
+        rv = self.app.get('/')
+        lstr = '<li><a href="/search/?generator_name=cppcheck">cppcheck</a></li>'
+        assert lstr in rv.data
+        assert 'python-ethtool</a> (18)' in rv.data
+        # to test here: random results (...)
+        
     def test_search_list(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
                                      'ation_file=python-ethtool%2Fethtool.c')
