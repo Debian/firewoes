@@ -125,6 +125,16 @@ class FirewoesTestCase(unittest.TestCase):
                   "name": "Error type"
                   }
         
+    def test_drilldownmenu_active(self):
+        rv = json.loads(self.app.get('/api/search/?'
+                                     'generator_name=cpychecker'
+                                     '&sut_name=python-ethtool'
+                                     '&sut_version=0.8'
+                                     '&location_file=python-ethtool%2Fethtool.c'
+                                     ).data)
+        assert rv["menu"][2]["active"] == True
+        assert rv["menu"][10]["items"][0]["value"] == "get_ufo"
+        
     def test_drilldown_menu(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loca'
                                      'tion_file=python-ethtool%2Fethtool.c')
