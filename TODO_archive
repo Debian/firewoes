@@ -33,6 +33,16 @@ Archived entries from file /home/matthieu/work/debian/firewose/TODO
   :ARCHIVE_CATEGORY: TODO
   :ARCHIVE_TODO: DONE
   :END:
+* DONE proper tests.py
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2013-08-01 Thu 12:47
+  :ARCHIVE_FILE: ~/work/debian/firewose/TODO
+  :ARCHIVE_CATEGORY: TODO
+  :ARCHIVE_TODO: DONE
+  :END:
+  currently all cases are not tested, and the menu and search
+  suggestions have not been updated
+
 
 
 
