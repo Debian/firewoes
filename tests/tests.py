@@ -95,6 +95,19 @@ class FirewoesTestCase(unittest.TestCase):
             "generator_version": None
             }
         
+    def test_search_list_testid(self):
+        rv = json.loads(self.app.get('/api/search/?generator_name=cpychecker'
+                                     '&testid=null-ptr-argument').data)
+        assert rv["results"][0]["location_function"] == "get_interfaces_info"
+        assert rv["results"][0]["testid"] == "null-ptr-argument"
+        
+    def test_search_list_location(self):
+        rv = json.loads(self.app.get('/api/search/?generator_name=cpychecker'
+                                     '&sut_name=python-ethtool&location_file'
+                                     '=python-ethtool%2Fethtool.c&sut_version'
+                                     '=0.8&location_function=get_ufo').data)
+        assert rv["results"][0]["location_function"] == "get_ufo"
+        
     def test_search_list(self):
         rv = json.loads(self.app.get('/api/search/?sut_name=python-ethtool&loc'
                                      'ation_file=python-ethtool%2Fethtool.c')
