@@ -29,3 +29,5 @@
   </failure></results></analysis>
 * TODO filters.py: decorators to activate filters
 * TODO package reports -> on home? elsewhere?
+* TODO search by maintainer when multiple emails
+  email_for_person should become emails_for_person
