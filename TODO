@@ -2,6 +2,7 @@
 
 * TODO CustomFields mapping
   http://stackoverflow.com/questions/1958219/convert-sqlalchemy-row-object-to-python-dict
+  /!\ Customfields.__hash__ to check
 * TODO Set correctly the height of source-code in details.html
   Iceweasel doesn't like the 100% (parent <td> height is not set)
   However it works fine with Chromium
@@ -29,3 +30,4 @@
   </failure></results></analysis>
 * TODO filters.py: decorators to activate filters
 * TODO package reports -> on home? elsewhere?
+* TODO bug: with results_all_count, we get results_range = [1,0]
