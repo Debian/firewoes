@@ -42,6 +42,15 @@ Archived entries from file /home/matthieu/work/debian/firewose/TODO
   :END:
   currently all cases are not tested, and the menu and search
   suggestions have not been updated
+* DONE search by maintainer when multiple emails
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2013-08-02 Fri 16:22
+  :ARCHIVE_FILE: ~/work/debian/firewose/TODO
+  :ARCHIVE_CATEGORY: TODO
+  :ARCHIVE_TODO: DONE
+  :END:
+  email_for_person should become emails_for_person
+
 
 
 
