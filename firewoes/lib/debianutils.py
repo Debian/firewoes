@@ -100,7 +100,7 @@ def packages_for_person(session, login):
                .all())
     return res
 
-def email_for_person(person, session=None):
+def emails_for_person(person, session=None):
     """
     Given a login, a full name, or an email, returns the corresponding email.
     This function must be imported from a running app, or a session must
@@ -112,20 +112,20 @@ def email_for_person(person, session=None):
         from firewoes.web.app import session
     
     if "@" in person:
-        return person
-    res = (session.query(DebianMaintainer)
-           .filter(DebianMaintainer.name == person)
-           .first())
-    if res:
-        return res.email
+        return [person]
+    results = (session.query(DebianMaintainer)
+               .filter(DebianMaintainer.name == person)
+               .all())
+    if results:
+        return [res.email for res in results]
     
-    res = (session.query(DebianMaintainer)
-           .filter(DebianMaintainer.email == person + "@debian.org")
-           .first())
-    if res:
-        return res.email
+    result = (session.query(DebianMaintainer)
+               .filter(DebianMaintainer.email == person + "@debian.org")
+               .first())
+    if result:
+        return [result.email]
     
-    return None
+    return []
 
 ###################################################
 ### Debian specific tables, objects and mappers ###

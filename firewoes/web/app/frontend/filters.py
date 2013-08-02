@@ -21,7 +21,7 @@ from models import to_dict
 from firewoes.lib.orm import Analysis, Issue, Failure, Info, Result, \
     Generator, Sut, Metadata, Message, Location, File, Point, Range, Function
 from firewoes.lib.debianutils import DebianPackagePeopleMapping, \
-    email_for_person
+    emails_for_person
 
 from sqlalchemy import func, desc, and_
 
@@ -415,8 +415,8 @@ class FilterByMaintainerPackages(Filter):
     _cool_name = "Maintainer"
     
     def get_clauses(self):
-        return [(DebianPackagePeopleMapping.maintainer_email ==
-                 email_for_person(self.value)),
+        return [(DebianPackagePeopleMapping.maintainer_email.in_(
+                 emails_for_person(self.value))),
                 (Sut.name == DebianPackagePeopleMapping.package_name)]
     
     def get_items(self, session, clauses=None, max_items=None):
