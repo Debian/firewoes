@@ -126,7 +126,9 @@ try these searches:
     Go to page: {{ macros.render_pagination(pagination) }}
   </div>
 {% else %}
-  <em>No results to show.</em>
+  <p>
+    <em>No results to show.</em>
+  </p>
 {% endif %}
 
 {% endblock %}
