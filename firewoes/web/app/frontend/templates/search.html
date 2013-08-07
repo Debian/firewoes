@@ -78,16 +78,6 @@ try these searches:
 </div>
 
 
-{% if packages_suggestions %}
-  <p>
-  Try with these packages:
-  {% for package in packages_suggestions %}
-  <a href="{{ url_for(".search_html", sut_name=package.name) }}">{{
-    package.name }}</a> 
-  {% endfor %}
-  </p>
-{% endif %}
-
 {% if results %}
   displaying {{ results_range[0] }}-{{ results_range[1] }} of
   {{ results_all_count }} results
