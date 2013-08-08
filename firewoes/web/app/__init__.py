@@ -19,8 +19,7 @@
 import os, sys
 
 from flask import Flask, render_template
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
+from firewoes.lib.dbutils import get_engine_session
 import logging
 from logging import Formatter, StreamHandler
 
@@ -39,10 +38,8 @@ if "FIREWOES_CONFIG" in os.environ:
     app.config.from_envvar('FIREWOES_CONFIG')
 
 # SQLAlchemy
-engine = create_engine(app.config['DATABASE_URI'],
-                       echo=app.config['SQLALCHEMY_ECHO'])
-session = scoped_session(sessionmaker(bind=engine, autoflush=True))
-#session = Session()
+engine, session = get_engine_session(app.config['DATABASE_URI'],
+                                     echo=app.config['SQLALCHEMY_ECHO'])
 
 from frontend.views import mod as frontend_module
 app.register_blueprint(frontend_module)
