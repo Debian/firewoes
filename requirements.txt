@@ -4,3 +4,5 @@ sqlalchemy >= 0.8.1
 psycopg2
 jinja2 >= 2.7
 python-debian
+six
+# six is for Firehose, the fix is not yet deployed to Pypi
