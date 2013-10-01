@@ -82,6 +82,8 @@ def read_and_create(url, xml_files, drop=False, echo=False):
         sys.stdout.write("\r")
         sys.stdout.flush()
     
+    sys.stdout.write("\n")
+    
     session.remove()
 
 if __name__ == "__main__":
