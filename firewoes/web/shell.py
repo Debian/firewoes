@@ -7,7 +7,7 @@ readline.parse_and_bind("tab: complete")
 
 from firewoes.web.app import *
 from app.frontend.models import *
-from firewoes.lib.firehose_noslots import *
+from firehose.model import *
 from firewoes.lib.debianutils import *
 
 os.environ['PYTHONINSPECT'] = 'True'

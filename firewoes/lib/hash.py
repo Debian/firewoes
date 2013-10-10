@@ -17,7 +17,7 @@
 
 
 import hashlib
-from firehose_noslots import _string_type
+from firehose.model import _string_type
 
 def strhash(string):
     """

@@ -27,7 +27,7 @@ from sqlalchemy.schema import Sequence
 
 metadata = MetaData()
 
-from firehose_noslots import *
+from firehose.model import *
 
 # imported from firehose-orm/orm.py:
 
