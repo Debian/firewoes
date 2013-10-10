@@ -18,6 +18,7 @@ Debian dependencies
 * python-psycopg2 (required by SQLAlchemy)
 * python-jinja2 >= 2.7-3 [1]
 * python-debian
+* python-firehose >= 0.3
 
 [1] to use the option lstrip_block=True, for better whitespace dealing
     in templates
@@ -25,7 +26,7 @@ Debian dependencies
 Python packages
 ---------------
 
-* firehose (currently lib/firehose_noslots because of __slots__)
+(everythng is packaged in Debian for now)
 
 Installation
 ============
